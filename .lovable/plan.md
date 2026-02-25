@@ -1,163 +1,175 @@
 
 
-## Plan: 100+ Lecciones por Nivel, UI Amigable con Unidades, y Fondos Culturales
+## Plan: Fix i18n for Lessons, Reduce to 10 Languages, Improve UX
 
-### Problema actual
+### Problems Found
 
-1. **Contenido insuficiente**: JP tiene ~26 lecciones/nivel, los otros 15 idiomas usan generadores genéricos con ~25 lecciones de 2-5 pasos cada una. Necesitamos ~100 por nivel.
-2. **UI abrumadora**: Si se muestran 100 lecciones en una lista plana, los estudiantes se sentirán abrumados y abandonarán.
-3. **Sin identidad visual por idioma**: Las lecciones no tienen elementos visuales que conecten al estudiante con la cultura del país.
+**1. Lesson content is hardcoded in Spanish regardless of native language**
 
-### Solución
+The generator (`generator.ts`) hardcodes all instructional text in Spanish:
+- Question templates: `¿"${entry.mn}" en ${lang}?`, `Escribe "${entry.mn}" en ${lang}:`, `¿Qué significa "${entry.w}"?`
+- Theory notes: `${entry.mn} en ${lang}.`
+- Lesson titles: `${unitDef.name} ${i + 1} — ${lang}`, `Repaso: ${unitDef.name} — ${lang}`
+- Unit names: "Los Cimientos", "Saludos y Cortesía", "Números y Tiempo", etc.
+- The `makeLessons` helper in `remaining.ts` has the same problem with hardcoded `"Saludos"`, `"¿Hola en..."`, etc.
 
-#### 1. Sistema de "Unidades" para agrupar lecciones (anti-churn)
+The `mn` (meaning) field in wordbanks is in English for DE, IT, PT, KO, ZH banks but displayed raw — so a Spanish-native user sees English meanings.
 
-En lugar de mostrar 100 lecciones en una lista, se organizan en **Unidades temáticas** (como Duolingo). Cada unidad agrupa 5-8 lecciones bajo un tema con un emoji y nombre descriptivo.
+**2. 17 languages is excessive — several have minimal content**
 
-```text
-┌─────────────────────────────┐
-│  🗺 N5 — Ruta de aprendizaje │
-│                             │
-│  📦 Unidad 1: Los cimientos  │ ← Colapsable
-│  ├── 1. Hiragana あ行        │
-│  ├── 2. Hiragana か〜さ行     │
-│  ├── 3. Hiragana た〜な行     │
-│  ├── 4. Hiragana は〜ま行     │
-│  └── 5. Hiragana や〜わ行     │
-│  ✅ 5/5 completadas          │
-│                             │
-│  📦 Unidad 2: Katakana       │ ← Siguiente unidad
-│  ├── 6. Katakana ア〜サ行     │
-│  ├── 7. Katakana タ〜ワ行     │
-│  └── ...                    │
-│  🔒 0/5 completadas          │
-│                             │
-│  📦 Unidad 3: Primeras       │
-│      palabras               │
-│  ...                        │
-└─────────────────────────────┘
-```
+TR, VI, TH, NL, PL, IT, DE have skeletal generator-based content. User wants top 10 most spoken.
 
-**Beneficios anti-churn:**
-- El estudiante solo ve 1-2 unidades a la vez (la actual y la siguiente)
-- Progreso visible por micro-metas (completar una unidad de 5-8 lecciones)
-- Sensación de logro frecuente
-- No se siente abrumado al ver "100 lecciones pendientes"
+**3. UX can be more welcoming**
 
-**Cambios técnicos:**
-- Añadir campo `unit` a la interfaz `Lesson` en `types.ts`: `unit?: { id: string; name: string; emoji: string }`
-- Modificar `LevelMapPage.tsx` para agrupar lecciones por unidad y renderizar secciones colapsables
-- Las unidades se desbloquean progresivamente (completar 80% de la unidad anterior)
+Unit names, lesson flow, and general polish need improvement for a friendlier student experience.
 
-#### 2. Generador de lecciones masivo y de alta calidad
+### Changes
 
-Crear un nuevo sistema generador (`src/data/lessons/generator.ts`) que produzca ~100 lecciones por nivel con contenido auténtico y variado:
+#### 1. Reduce to 10 languages
 
-**Estructura del generador:**
-- Diccionario de datos por idioma con ~500+ palabras, frases, gramática, lecturas por nivel
-- Cada lección generada tiene 6-10 pasos con variedad de tipos (th, mc, tx, or, rd)
-- Las unidades temáticas están predefinidas por nivel
+Keep: **EN, ZH, HI, ES, FR, AR, PT, RU, JP, KO** (the 10 most spoken languages globally, with Korean replacing Bengali which isn't available).
 
-**Unidades por nivel A1 (ejemplo - aplicable a todos los idiomas):**
-1. Sistema de escritura / Fonética (5-8 lecciones)
-2. Saludos y cortesía (5-6 lecciones)
-3. Números y tiempo (5-6 lecciones)
-4. Presentarse y familia (5-6 lecciones)
-5. Colores y adjetivos básicos (5 lecciones)
-6. Días, meses, estaciones (5 lecciones)
-7. Comida y bebida (6-8 lecciones)
-8. Partes del cuerpo y ropa (5 lecciones)
-9. La casa y la ciudad (5-6 lecciones)
-10. Transporte y direcciones (5 lecciones)
-11. Clima y naturaleza (5 lecciones)
-12. Profesiones y trabajo (5 lecciones)
-13. Compras y dinero (5 lecciones)
-14. Verbos esenciales (6-8 lecciones)
-15. Gramática básica (5-6 lecciones)
-16. Preguntas y pronombres (5 lecciones)
-17. Frases de supervivencia (5 lecciones)
-18. Repaso y lectura (3-5 lecciones)
+Remove from `LANGUAGES` array and all data files: `de`, `it`, `tr`, `vi`, `th`, `nl`, `pl`.
 
-= ~95-105 lecciones por nivel
+**Files affected:**
+- `src/data/languages.ts` — Remove 7 language entries from `LANGUAGES` array and their UI translation blocks
+- `src/data/lessons/index.ts` — Remove imports and LESSON_DATA entries for removed languages
+- `src/data/lessons/remaining.ts` — Remove lesson generators for removed languages
+- `src/data/lessons/level2.ts` through `level5.ts` — Remove exports for removed languages
+- `src/data/lessons/wordbanks/de.ts`, `it.ts`, `pt.ts` — PT stays, remove DE and IT wordbanks
+- `src/data/quizzes.ts` — Remove quiz entries for removed languages
+- `src/data/exams.ts`, `exams-a2.ts`, `exams-advanced.ts`, `exams-upper.ts` — Remove exam data for removed languages
+- `src/data/achievements.ts` — Remove rank data for removed languages
+- `src/data/conversations.ts`, `src/data/stories.ts`, `src/data/culture.ts` — Remove entries for removed languages
+- `src/data/reference.ts` — Remove reference data for removed languages
 
-**Archivos nuevos:**
-- `src/data/lessons/generator.ts` — Motor de generación con plantillas de unidades
-- `src/data/lessons/wordbanks/` — Directorio con bancos de palabras por idioma:
-  - `src/data/lessons/wordbanks/es.ts`, `ko.ts`, `zh.ts`, `de.ts`, `it.ts`, `pt.ts`, `ru.ts`, `ar.ts`, `hi.ts`, `tr.ts`, `vi.ts`, `th.ts`, `nl.ts`, `pl.ts`
-  - Cada archivo contiene ~500+ entradas organizadas por categoría temática con la palabra, lectura, significado, y ejemplos
+#### 2. Make generator i18n-aware
 
-**Para JP y FR** (que ya tienen contenido manual): se mantiene el contenido existente y se **expande** con lecciones generadas adicionales hasta llegar a 100.
+**Add translation templates to `generator.ts`:**
 
-#### 3. Fondos con marcas de agua culturales por idioma
-
-Añadir imágenes SVG/emoji sutiles como fondo en `LessonPage.tsx` que reflejen el país:
-
-**Mapeo de emojis por idioma (en `languages.ts`):**
-```
-jp: ['🏯', '🗻', '🌸', '⛩️', '🎌']
-fr: ['🗼', '🥐', '🍷', '🏰', '⚜️']
-zh: ['🏮', '🐉', '🧧', '🏯', '🎋']
-de: ['🏰', '🍺', '🎄', '⚙️', '🦅']
-ko: ['🎎', '🏯', '🌸', '🍜', '🎵']
-es: ['💃', '🏟️', '🌻', '🎸', '🐂']
-it: ['🏛️', '🍕', '🎭', '⛵', '🍝']
-pt: ['⚽', '🏖️', '🎶', '🌴', '🦜']
-ru: ['❄️', '🏰', '🎻', '🐻', '⭐']
-ar: ['🕌', '🏜️', '🌙', '☕', '🐪']
-hi: ['🕉️', '🏛️', '🌺', '🐘', '🪷']
-tr: ['🕌', '🧿', '☕', '🌷', '🏺']
-vi: ['🏮', '🌾', '🍜', '⛵', '🌸']
-th: ['🏯', '🐘', '🌺', '🍜', '⛵']
-nl: ['🌷', '🚲', '🧀', '⚓', '🎨']
-pl: ['🏰', '❄️', '🦅', '🍎', '⛪']
-en: ['🗽', '🏰', '☕', '🎭', '🦁']
-```
-
-**Implementación en LessonPage.tsx:**
-- Añadir un `<div>` absoluto detrás del contenido con emojis rotados, en opacidad ~5-8%, tamaño grande (~80-120px), posicionados aleatoriamente
-- Los emojis rotan lentamente con `animation: float` para dar sutileza
-- Se seleccionan 3-4 emojis del array del idioma actual
-- Solo se muestran en la zona de contenido, no interfieren con la interacción
+Create a `LESSON_I18N` record keyed by native language code with all instructional strings:
 
 ```text
-┌──────────────────────────────┐
-│ ✕  [████████░░] ❤️❤️❤️      │
-│──────────────────────────────│
-│                     🏯       │  ← opacity: 0.05
-│  Paso 1 de 10      (rotado) │
-│  ┌──────────────┐           │
-│  │ あ            │    🌸     │  ← opacity: 0.06
-│  │ a - Vocal /a/ │  (rotado) │
-│  └──────────────┘           │
-│            ⛩️               │  ← opacity: 0.04
-│──────────────────────────────│
-│              [Continuar →]   │
-└──────────────────────────────┘
+{
+  en: {
+    whatIs: '"${mn}" in ${lang}?',
+    writeMeaning: 'Write "${mn}" in ${lang}:',
+    whatMeans: 'What does "${word}" mean?',
+    noteTemplate: '${mn} in ${lang}.',
+    review: 'Review',
+    ...unitNames (18 translated unit names)
+  },
+  es: {
+    whatIs: '¿"${mn}" en ${lang}?',
+    writeMeaning: 'Escribe "${mn}" en ${lang}:',
+    ...
+  },
+  // ... for all 10 native languages
+}
 ```
 
-### Archivos a modificar/crear
+**Modify `generateLessons()` signature** to accept `nativeLang: string` parameter and use the i18n templates.
 
-| Archivo | Acción |
-|---------|--------|
-| `src/data/types.ts` | Añadir campo `unit` a `Lesson` |
-| `src/data/languages.ts` | Añadir campo `culturalEmojis` a `LangConfig` |
-| `src/data/lessons/generator.ts` | **NUEVO** — Motor generador de 100 lecciones/nivel |
-| `src/data/lessons/wordbanks/*.ts` | **NUEVOS** — Bancos de palabras por idioma (14 archivos) |
-| `src/data/lessons/index.ts` | Integrar lecciones generadas para todos los idiomas |
-| `src/data/lessons/jp.ts` | Añadir campo `unit` a lecciones existentes, expandir a ~100 |
-| `src/data/lessons/fr.ts` | Igual que JP |
-| `src/data/lessons/remaining.ts` | Reemplazar `makeLessons` con generador rico |
-| `src/data/lessons/level2.ts` - `level5.ts` | Reemplazar generadores genéricos |
-| `src/pages/LevelMapPage.tsx` | Agrupar por unidades con secciones colapsables |
-| `src/pages/LessonPage.tsx` | Añadir fondo de emojis culturales como watermark |
+**Problem:** The generator runs at import time (module-level in `index.ts`), before we know the user's native language. This is the root cause — lessons are generated once at build/import time.
 
-### Nota sobre escala
+**Solution:** Make `LESSON_DATA` lazy. Instead of generating at import, wrap in a function `getLessons(langCode, level, nativeLang)` that generates on first access and caches. Or simpler: store the wordbank `mn` field in English as a universal language, and translate the *question templates and UI chrome* at render time in `LessonPage.tsx` rather than baking them into the data.
 
-100 lecciones × 8 pasos × 17 idiomas × 5-6 niveles = ~680,000-816,000 pasos de contenido. Esto se logra mediante:
-- **Bancos de datos ricos** (~500 palabras/idioma/nivel) como materia prima
-- **Plantillas de unidad** que generan lecciones variadas automáticamente
-- **Contenido manual** para JP y FR como modelo de calidad
-- Los generadores producen contenido real y específico del idioma, no genérico
+**Chosen approach — translate at render time:**
+- Keep wordbank `mn` in English (already is for most banks; fix `es` bank to use English too)
+- Add i18n question/note template strings to `UI` in `languages.ts` (e.g., `what_is_in_lang`, `write_in_lang`, `what_does_mean`, `review_of`)
+- In `LessonPage.tsx`, when rendering a step, detect template placeholders and replace with translated versions using `tt()`. Specifically:
+  - Theory step `note` field: if it matches the pattern `"X in Y."`, replace with `tt('note_template').replace(...)` 
+  - MC step `q` field: detect `¿"..."` pattern and re-render using `tt('what_is_in_lang')`
+  - Text step `q`: detect `Escribe` and replace with `tt('write_in_lang')`
+- Unit names in `generator.ts`: add a `UNIT_I18N` lookup with translations for each of the 18 unit names in all 10 languages
+- Lesson titles: since they contain the unit name + language name, translate at render time in `LevelMapPage.tsx`
 
-La implementación se hará en fases, empezando por el sistema de unidades + UI + fondos culturales, luego los bancos de palabras idioma por idioma.
+**Actually, cleanest approach:** Since the generator runs once at module load, we can't know native lang. So:
+
+1. Store structured data in steps instead of pre-formatted strings:
+   - Change generator to produce `q: { type: 'whatIs', mn: 'Hello', lang: 'Korean' }` instead of `q: '¿"Hola" en Coreano?'`
+   
+   This is too invasive. Better:
+
+2. **Use placeholder tokens** in generated content that get replaced at render time:
+   - Generator produces: `q: '{{what_is}} "Hello" {{in_lang}} Korean?'`
+   - `LessonPage.tsx` replaces `{{what_is}}` with `tt('what_is')` etc.
+
+   Still messy. **Simplest viable approach:**
+
+3. **Add `_mn` field and use `nativeLang` to pick translation at render time:**
+   - Keep `mn` in English in all wordbanks (standardize)
+   - Add UI keys: `q_what_is` = `"$1" in $2?` / `"$1" en $2?`, `q_write` = `Write "$1" in $2:`, `q_what_means` = `What does "$1" mean?`
+   - In `generator.ts`, encode question type metadata in the `q` field using a simple prefix convention: `q: 'QWHAT|Hello|Korean'` or store in a separate field
+   - At render time in `LessonPage.tsx`, detect these encoded questions and format with `tt()`
+
+**Final chosen approach (minimal changes, maximum impact):**
+
+- Add new UI translation keys to `languages.ts` for question templates
+- Modify `generator.ts` to use **English** as the base for `mn` fields and encode questions with a marker prefix like `##MC##Hello##Korean` 
+- Actually, even simpler: the generator already has `lang` parameter. Just make it produce questions using template markers:
+  - `q: '##WHATIS##Hello##Coreano'`  → at render → `tt('q_what_is').replace('$1','Hello').replace('$2','Coreano')`
+
+No — the absolute simplest: **regenerate lessons lazily with the user's native language.** Change `LESSON_DATA` from a static object to a function that caches per nativeLang.
+
+**Final decision:** Regenerate lazily. 
+
+- In `index.ts`, change `LESSON_DATA` to `getLessonData(nativeLang: string)` 
+- Cache results in a `Map<string, Record<string, Record<string, Lesson[]>>>`
+- Pass `nativeLang` to `generateLessons()` which uses translated templates
+- Existing hand-written JP/FR lessons: add a translation function that swaps Spanish strings for the native language equivalents
+- `LevelMapPage.tsx` and `LessonPage.tsx` call `getLessonData(state.nativeLang)` instead of importing `LESSON_DATA`
+
+#### 3. Standardize wordbank meanings to English
+
+All wordbank `mn` fields should be in English. The `es` wordbank already has Spanish meanings — convert to English. The generator will then translate to the user's native language at generation time using a simple lookup.
+
+Add a `MEANING_I18N` record with translations of common meanings (Hello, Thank you, Goodbye, etc.) for each native language. Since we have ~200 unique meanings per wordbank, this is a lookup table of ~200 entries × 10 languages.
+
+Actually, simpler: just keep `mn` in English and add a `translateMeaning(mn: string, nativeLang: string): string` utility that uses a dictionary. For languages without a translation, fall back to English.
+
+#### 4. UX improvements
+
+**Unit names translation:** Create `UNIT_NAMES_I18N` with the 18 unit names in all 10 native languages.
+
+**Lesson titles:** Format as `"{UnitName} {n}"` using translated unit names.
+
+**LevelMapPage.tsx:**
+- Show a friendly welcome message at the top: "Hi! Let's learn {language} today" (translated)
+- Add small cultural emoji next to the language flag
+- Progress celebration: when a unit is 100% done, show a subtle confetti/star animation
+
+**LessonPage.tsx:**
+- Already has cultural watermarks — keep those
+- Ensure all button text, labels, feedback messages use `tt()` (already mostly done)
+
+### Files to modify
+
+| File | Change |
+|------|--------|
+| `src/data/languages.ts` | Remove 7 languages, add question template UI keys, add meaning translations |
+| `src/data/lessons/generator.ts` | Accept `nativeLang`, use translated templates for questions/notes/titles/units |
+| `src/data/lessons/index.ts` | Change `LESSON_DATA` to lazy `getLessonData(nativeLang)`, remove 7 languages |
+| `src/data/lessons/wordbanks/es.ts` | Standardize `mn` to English |
+| `src/data/lessons/wordbanks/de.ts` | Delete (language removed) |
+| `src/data/lessons/wordbanks/it.ts` | Delete (language removed) |
+| `src/data/lessons/remaining.ts` | Remove 7 languages, use generator instead of `makeLessons` |
+| `src/data/lessons/level2.ts` - `level5.ts` | Remove 7 languages |
+| `src/data/quizzes.ts` | Remove 7 languages |
+| `src/data/exams.ts` + exam files | Remove 7 languages |
+| `src/pages/LevelMapPage.tsx` | Use `getLessonData(nativeLang)`, translate unit names |
+| `src/pages/LessonPage.tsx` | Use `getLessonData(nativeLang)` |
+| `src/pages/QuizPage.tsx` | Use `getLessonData(nativeLang)` |
+| `src/pages/HomePage.tsx` | Filter to 10 languages |
+| `src/contexts/AppContext.tsx` | No changes needed |
+| Various data files | Remove references to deleted languages |
+
+### Implementation order
+
+1. Remove 7 languages from all files (biggest cleanup)
+2. Standardize wordbank `mn` to English  
+3. Add i18n templates to `languages.ts` and `generator.ts`
+4. Make `LESSON_DATA` lazy with `nativeLang` parameter
+5. Update all pages that import `LESSON_DATA` to use the new function
+6. Test that switching native language properly translates lesson content
 
