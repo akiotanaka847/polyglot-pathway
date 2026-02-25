@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { CULTURE_DATA } from '@/data/culture';
-import { CULTURE_I18N_EN } from '@/data/cultureI18n';
+import { CULTURE_I18N } from '@/data/cultureI18n';
 import { getLangConfig } from '@/data/languages';
 
 export default function CulturePage() {
@@ -13,10 +13,11 @@ export default function CulturePage() {
   const [lang, setLang] = useState<string>(cultureLangs[0] || 'jp');
   const config = getLangConfig(lang);
   const cards = CULTURE_DATA[lang] || [];
-  const useEN = state.nativeLang !== 'es';
+  const nativeLang = state.nativeLang || 'es';
+  const overlay = nativeLang !== 'es' ? (CULTURE_I18N[nativeLang] || CULTURE_I18N['en'] || {}) : {};
   const tr = (cardId: string, field: 'title' | 'body' | 'fact', fallback: string) => {
-    if (!useEN) return fallback;
-    return CULTURE_I18N_EN[cardId]?.[field] || fallback;
+    if (nativeLang === 'es') return fallback;
+    return overlay[cardId]?.[field] || CULTURE_I18N['en']?.[cardId]?.[field] || fallback;
   };
 
   const handleRead = (id: string) => {
