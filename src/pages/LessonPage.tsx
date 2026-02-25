@@ -4,7 +4,7 @@ import { LESSON_DATA } from '@/data/lessons/index';
 import { LessonStep } from '@/data/types';
 import { getLangConfig } from '@/data/languages';
 import { useState, useCallback, useRef } from 'react';
-import { normalizeAnswer, shuffleArray, speakText } from '@/utils/helpers';
+import { normalizeAnswer, shuffleArray, speakText, playCorrectSound, playIncorrectSound } from '@/utils/helpers';
 
 export default function LessonPage() {
   const { lang, level, index } = useParams();
@@ -66,7 +66,7 @@ export default function LessonPage() {
     setFeedback({ correct, answer: correctAns });
     setLocked(true);
     setAccuracy(prev => [...prev, correct]);
-    if (!correct) setHearts(h => Math.max(0, h - 1));
+    if (correct) { playCorrectSound(); } else { playIncorrectSound(); setHearts(h => Math.max(0, h - 1)); }
   };
 
   const advance = (isTheory = false) => {

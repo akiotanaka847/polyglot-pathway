@@ -5,7 +5,7 @@ import { LEVELS } from '@/data/lessons/index';
 import { QuizQuestion } from '@/data/types';
 import { getLangConfig } from '@/data/languages';
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { normalizeAnswer, shuffleArray } from '@/utils/helpers';
+import { normalizeAnswer, shuffleArray, playCorrectSound, playIncorrectSound } from '@/utils/helpers';
 
 export default function QuizPage() {
   const { lang, level } = useParams();
@@ -51,7 +51,7 @@ export default function QuizPage() {
     }
     setFeedback({ correct, answer: correctAns });
     setLocked(true);
-    if (correct) setScore(s => s + 1);
+    if (correct) { playCorrectSound(); setScore(s => s + 1); } else { playIncorrectSound(); }
   }, [q, selected, textInput]);
 
   const advance = () => {
