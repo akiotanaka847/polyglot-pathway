@@ -1,6 +1,7 @@
 import { Exam } from './types';
+import { ADVANCED_EXAMS } from './exams-advanced';
 
-export const EXAM_DATA: Record<string, Record<string, Exam>> = {
+const BASE_EXAMS: Record<string, Record<string, Exam>> = {
   jp: {
     N5: {
       title: 'JLPT N5 — Simulacro',
@@ -1048,3 +1049,12 @@ export const EXAM_DATA: Record<string, Record<string, Exam>> = {
     },
   },
 };
+
+// Merge base and advanced exams
+export const EXAM_DATA: Record<string, Record<string, Exam>> = {};
+Object.keys(BASE_EXAMS).forEach(lang => {
+  EXAM_DATA[lang] = { ...BASE_EXAMS[lang] };
+});
+Object.keys(ADVANCED_EXAMS).forEach(lang => {
+  EXAM_DATA[lang] = { ...(EXAM_DATA[lang] || {}), ...ADVANCED_EXAMS[lang] };
+});
