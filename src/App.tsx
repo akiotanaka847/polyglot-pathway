@@ -16,6 +16,8 @@ import ConversationPage from "./pages/ConversationPage";
 import RanksPage from "./pages/RanksPage";
 import PracticePage from "./pages/PracticePage";
 import ReferencePage from "./pages/ReferencePage";
+import ExamSelectPage from "./pages/ExamSelectPage";
+import ExamPage from "./pages/ExamPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -98,6 +100,8 @@ function AppLayout() {
           <Route path="/ranks" element={<RanksPage />} />
           <Route path="/practice" element={<PracticePage />} />
           <Route path="/reference" element={<ReferencePage />} />
+          <Route path="/exams" element={<ExamSelectPage />} />
+          <Route path="/exam/:lang/:level" element={<ExamPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
