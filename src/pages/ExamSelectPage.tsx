@@ -19,7 +19,7 @@ export default function ExamSelectPage() {
           <span className="flex-1 text-center font-serif font-semibold">📝 {tt('simulation')}</span>
         </div>
         <p className="text-sm text-foreground-secondary text-center mb-4">
-          Selecciona un idioma y nivel para iniciar un simulacro de certificación
+          {tt('select_exam_desc')}
         </p>
         <div className="space-y-3">
           {langs.map(lang => {

@@ -105,6 +105,7 @@ export const UI: Record<string, Record<string, string>> = {
     vocab_ref: 'Glosario de vocabulario', search: 'Buscar...',
     polyglot_app: 'App Políglota', learn: 'Aprende', and: 'y', more_langs: 'más idiomas',
     change_language: 'Cambiar idioma',
+    examples: 'Ejemplos', native_lang_question: '¿Cuál es tu idioma nativo?', select_exam_desc: 'Selecciona un idioma y nivel para iniciar un simulacro de certificación',
   },
   en: {
     home: 'Home', lessons: 'Lessons', progress: 'Progress', practice: 'Practice', achievements: 'Achievements',
@@ -156,6 +157,7 @@ export const UI: Record<string, Record<string, string>> = {
     vocab_ref: 'Vocabulary glossary', search: 'Search...',
     polyglot_app: 'Polyglot App', learn: 'Learn', and: 'and', more_langs: 'more languages',
     change_language: 'Change language',
+    examples: 'Examples', native_lang_question: 'What is your native language?', select_exam_desc: 'Select a language and level to start a certification mock exam',
   },
   pt: {
     home: 'Início', lessons: 'Lições', progress: 'Progresso', practice: 'Prática', achievements: 'Conquistas',
@@ -207,6 +209,7 @@ export const UI: Record<string, Record<string, string>> = {
     vocab_ref: 'Glossário de vocabulário', search: 'Buscar...',
     polyglot_app: 'App Poliglota', learn: 'Aprenda', and: 'e', more_langs: 'mais idiomas',
     change_language: 'Mudar idioma',
+    examples: 'Exemplos', native_lang_question: 'Qual é o seu idioma nativo?', select_exam_desc: 'Selecione um idioma e nível para iniciar um simulado de certificação',
   },
   fr: {
     home: 'Accueil', lessons: 'Leçons', progress: 'Progrès', practice: 'Pratique', achievements: 'Succès',
@@ -258,6 +261,7 @@ export const UI: Record<string, Record<string, string>> = {
     vocab_ref: 'Glossaire de vocabulaire', search: 'Rechercher...',
     polyglot_app: 'App Polyglotte', learn: 'Apprenez', and: 'et', more_langs: 'langues supplémentaires',
     change_language: 'Changer de langue',
+    examples: 'Exemples', native_lang_question: 'Quelle est votre langue maternelle ?', select_exam_desc: 'Sélectionnez une langue et un niveau pour un examen blanc',
   },
   jp: {
     home: 'ホーム', lessons: 'レッスン', progress: '進捗', practice: '練習', achievements: '実績',
@@ -309,6 +313,7 @@ export const UI: Record<string, Record<string, string>> = {
     vocab_ref: '語彙リスト', search: '検索...',
     polyglot_app: 'ポリグロットアプリ', learn: '学ぶ', and: 'と', more_langs: 'その他の言語',
     change_language: '言語を変更',
+    examples: '例文', native_lang_question: 'あなたの母語は何ですか？', select_exam_desc: '言語とレベルを選んで模擬試験を開始',
   },
   zh: {
     home: '首页', lessons: '课程', progress: '进度', practice: '练习', achievements: '成就',
@@ -360,6 +365,7 @@ export const UI: Record<string, Record<string, string>> = {
     vocab_ref: '词汇表', search: '搜索...',
     polyglot_app: '多语言应用', learn: '学习', and: '和', more_langs: '更多语言',
     change_language: '更改语言',
+    examples: '例句', native_lang_question: '你的母语是什么？', select_exam_desc: '选择语言和级别开始模拟考试',
   },
   de: {
     home: 'Startseite', lessons: 'Lektionen', progress: 'Fortschritt', practice: 'Übung', achievements: 'Erfolge',
@@ -411,6 +417,7 @@ export const UI: Record<string, Record<string, string>> = {
     vocab_ref: 'Wortschatz-Glossar', search: 'Suchen...',
     polyglot_app: 'Polyglott-App', learn: 'Lernen', and: 'und', more_langs: 'weitere Sprachen',
     change_language: 'Sprache ändern',
+    examples: 'Beispiele', native_lang_question: 'Was ist Ihre Muttersprache?', select_exam_desc: 'Wählen Sie Sprache und Stufe für eine Probeprüfung',
   },
   it: {
     home: 'Home', lessons: 'Lezioni', progress: 'Progresso', practice: 'Pratica', achievements: 'Traguardi',
@@ -462,6 +469,7 @@ export const UI: Record<string, Record<string, string>> = {
     vocab_ref: 'Glossario', search: 'Cerca...',
     polyglot_app: 'App Poliglotta', learn: 'Impara', and: 'e', more_langs: 'altre lingue',
     change_language: 'Cambia lingua',
+    examples: 'Esempi', native_lang_question: 'Qual è la tua lingua madre?', select_exam_desc: 'Seleziona lingua e livello per un esame simulato',
   },
   ko: {
     home: '홈', lessons: '수업', progress: '진행', practice: '연습', achievements: '업적',
@@ -513,6 +521,7 @@ export const UI: Record<string, Record<string, string>> = {
     vocab_ref: '어휘 목록', search: '검색...',
     polyglot_app: '다국어 앱', learn: '배우기', and: '와', more_langs: '더 많은 언어',
     change_language: '언어 변경',
+    examples: '예문', native_lang_question: '모국어가 무엇인가요?', select_exam_desc: '언어와 레벨을 선택하여 모의고사 시작',
   },
   ru: {
     home: 'Главная', lessons: 'Уроки', progress: 'Прогресс', practice: 'Практика', achievements: 'Достижения',
@@ -564,6 +573,7 @@ export const UI: Record<string, Record<string, string>> = {
     vocab_ref: 'Словарь', search: 'Поиск...',
     polyglot_app: 'Полиглот', learn: 'Учить', and: 'и', more_langs: 'другие языки',
     change_language: 'Сменить язык',
+    examples: 'Примеры', native_lang_question: 'Какой ваш родной язык?', select_exam_desc: 'Выберите язык и уровень для пробного экзамена',
   },
   ar: {
     home: 'الرئيسية', lessons: 'الدروس', progress: 'التقدم', practice: 'تمرين', achievements: 'الإنجازات',
@@ -615,6 +625,7 @@ export const UI: Record<string, Record<string, string>> = {
     vocab_ref: 'قائمة المفردات', search: 'بحث...',
     polyglot_app: 'تطبيق متعدد اللغات', learn: 'تعلّم', and: 'و', more_langs: 'لغات أخرى',
     change_language: 'تغيير اللغة',
+    examples: 'أمثلة', native_lang_question: 'ما هي لغتك الأم؟', select_exam_desc: 'اختر لغة ومستوى لبدء اختبار تجريبي',
   },
   hi: {
     home: 'होम', lessons: 'पाठ', progress: 'प्रगति', practice: 'अभ्यास', achievements: 'उपलब्धियाँ',
@@ -666,6 +677,7 @@ export const UI: Record<string, Record<string, string>> = {
     vocab_ref: 'शब्दावली सूची', search: 'खोजें...',
     polyglot_app: 'बहुभाषी ऐप', learn: 'सीखें', and: 'और', more_langs: 'और भाषाएँ',
     change_language: 'भाषा बदलें',
+    examples: 'उदाहरण', native_lang_question: 'आपकी मातृभाषा क्या है?', select_exam_desc: 'प्रमाणन परीक्षा के लिए भाषा और स्तर चुनें',
   },
   tr: {
     home: 'Ana Sayfa', lessons: 'Dersler', progress: 'İlerleme', practice: 'Pratik', achievements: 'Başarılar',
@@ -717,6 +729,7 @@ export const UI: Record<string, Record<string, string>> = {
     vocab_ref: 'Kelime listesi', search: 'Ara...',
     polyglot_app: 'Çok dilli uygulama', learn: 'Öğren', and: 've', more_langs: 'daha fazla dil',
     change_language: 'Dil değiştir',
+    examples: 'Örnekler', native_lang_question: 'Ana diliniz nedir?', select_exam_desc: 'Sınav simülasyonu için dil ve seviye seçin',
   },
   vi: {
     home: 'Trang chủ', lessons: 'Bài học', progress: 'Tiến độ', practice: 'Luyện tập', achievements: 'Thành tựu',
@@ -768,6 +781,7 @@ export const UI: Record<string, Record<string, string>> = {
     vocab_ref: 'Danh sách từ vựng', search: 'Tìm kiếm...',
     polyglot_app: 'Ứng dụng đa ngữ', learn: 'Học', and: 'và', more_langs: 'ngôn ngữ khác',
     change_language: 'Đổi ngôn ngữ',
+    examples: 'Ví dụ', native_lang_question: 'Ngôn ngữ mẹ đẻ của bạn là gì?', select_exam_desc: 'Chọn ngôn ngữ và cấp độ để bắt đầu thi thử',
   },
   th: {
     home: 'หน้าแรก', lessons: 'บทเรียน', progress: 'ความก้าวหน้า', practice: 'ฝึกฝน', achievements: 'ความสำเร็จ',
@@ -819,6 +833,7 @@ export const UI: Record<string, Record<string, string>> = {
     vocab_ref: 'รายการคำศัพท์', search: 'ค้นหา...',
     polyglot_app: 'แอปหลายภาษา', learn: 'เรียน', and: 'และ', more_langs: 'ภาษาอื่นๆ',
     change_language: 'เปลี่ยนภาษา',
+    examples: 'ตัวอย่าง', native_lang_question: 'ภาษาแม่ของคุณคืออะไร?', select_exam_desc: 'เลือกภาษาและระดับเพื่อเริ่มสอบจำลอง',
   },
   nl: {
     home: 'Home', lessons: 'Lessen', progress: 'Voortgang', practice: 'Oefenen', achievements: 'Prestaties',
@@ -870,6 +885,7 @@ export const UI: Record<string, Record<string, string>> = {
     vocab_ref: 'Woordenlijst', search: 'Zoeken...',
     polyglot_app: 'Polyglot App', learn: 'Leer', and: 'en', more_langs: 'meer talen',
     change_language: 'Taal wijzigen',
+    examples: 'Voorbeelden', native_lang_question: 'Wat is uw moedertaal?', select_exam_desc: 'Kies een taal en niveau voor een proefexamen',
   },
   pl: {
     home: 'Strona główna', lessons: 'Lekcje', progress: 'Postępy', practice: 'Ćwiczenia', achievements: 'Osiągnięcia',
@@ -921,6 +937,7 @@ export const UI: Record<string, Record<string, string>> = {
     vocab_ref: 'Lista słówek', search: 'Szukaj...',
     polyglot_app: 'Aplikacja poligloty', learn: 'Ucz się', and: 'i', more_langs: 'więcej języków',
     change_language: 'Zmień język',
+    examples: 'Przykłady', native_lang_question: 'Jaki jest Twój język ojczysty?', select_exam_desc: 'Wybierz język i poziom do egzaminu próbnego',
   },
 };
 
