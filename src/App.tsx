@@ -19,6 +19,7 @@ import ReferencePage from "./pages/ReferencePage";
 import ExamSelectPage from "@/pages/ExamSelectPage";
 import ExamPage from "@/pages/ExamPage";
 import NotFound from "@/pages/NotFound";
+import InstallPrompt from "@/components/InstallPrompt";
 
 const queryClient = new QueryClient();
 
@@ -106,6 +107,7 @@ function AppLayout() {
         </Routes>
       </main>
       {!hideChrome && <BottomNav />}
+      {!hideChrome && <InstallPrompt />}
     </div>
   );
 }
