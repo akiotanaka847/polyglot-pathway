@@ -142,11 +142,7 @@ export default function HomePage() {
       {/* Quick links when has progress */}
       {hasProgress && (
         <div className="px-5 pb-8 max-w-xl mx-auto">
-          <div className="grid grid-cols-4 gap-1.5 mt-3">
-            <button onClick={() => navigate('/flashcards')} className="border-[1.5px] border-border rounded-xl p-2.5 bg-card text-center hover:shadow-sm transition-all">
-              <div className="text-xl">🃏</div>
-              <div className="text-[0.72rem] font-semibold">{tt('flashcards')}</div>
-            </button>
+          <div className="grid grid-cols-3 gap-1.5 mt-3">
             <button onClick={() => navigate('/story')} className="border-[1.5px] border-border rounded-xl p-2.5 bg-card text-center hover:shadow-sm transition-all">
               <div className="text-xl">📖</div>
               <div className="text-[0.72rem] font-semibold">{tt('story_mode')}</div>
