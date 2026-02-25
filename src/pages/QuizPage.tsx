@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { QUIZ_DATA } from '@/data/quizzes';
-import { LEVELS } from '@/data/lessons';
+import { LEVELS } from '@/data/lessons/index';
 import { QuizQuestion } from '@/data/types';
 import { getLangConfig } from '@/data/languages';
 import { useState, useEffect, useRef, useCallback } from 'react';
