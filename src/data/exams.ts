@@ -1,5 +1,7 @@
 import { Exam } from './types';
 import { ADVANCED_EXAMS } from './exams-advanced';
+import { A2_EXAMS } from './exams-a2';
+import { B1_EXTRA_EXAMS, B2_EXTRA_EXAMS, C1_EXTRA_EXAMS, C2_EXTRA_EXAMS } from './exams-upper';
 
 const BASE_EXAMS: Record<string, Record<string, Exam>> = {
   jp: {
@@ -1050,11 +1052,11 @@ const BASE_EXAMS: Record<string, Record<string, Exam>> = {
   },
 };
 
-// Merge base and advanced exams
+// Merge all exam sources
+const ALL_SOURCES = [BASE_EXAMS, ADVANCED_EXAMS, A2_EXAMS, B1_EXTRA_EXAMS, B2_EXTRA_EXAMS, C1_EXTRA_EXAMS, C2_EXTRA_EXAMS];
 export const EXAM_DATA: Record<string, Record<string, Exam>> = {};
-Object.keys(BASE_EXAMS).forEach(lang => {
-  EXAM_DATA[lang] = { ...BASE_EXAMS[lang] };
-});
-Object.keys(ADVANCED_EXAMS).forEach(lang => {
-  EXAM_DATA[lang] = { ...(EXAM_DATA[lang] || {}), ...ADVANCED_EXAMS[lang] };
+ALL_SOURCES.forEach(source => {
+  Object.keys(source).forEach(lang => {
+    EXAM_DATA[lang] = { ...(EXAM_DATA[lang] || {}), ...source[lang] };
+  });
 });
