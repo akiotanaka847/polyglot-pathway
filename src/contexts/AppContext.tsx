@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
 import { AppState, Lang } from '@/data/types';
 import { RANKS } from '@/data/achievements';
-import { getLangConfig } from '@/data/languages';
+import { getLangConfig, t } from '@/data/languages';
 
 const defaultState: AppState = {
   nativeLang: '',
@@ -90,7 +90,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // Import t from languages lazily to avoid circular deps
   const tt = useCallback((key: string) => {
-    const { t } = require('@/data/languages');
     return t(key, state.nativeLang || 'es');
   }, [state.nativeLang]);
 
