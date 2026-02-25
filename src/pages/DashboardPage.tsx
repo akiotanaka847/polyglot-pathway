@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
-import { LEVELS, LESSON_DATA } from '@/data/lessons';
+import { LEVELS, LESSON_DATA } from '@/data/lessons/index';
 import { getLangConfig } from '@/data/languages';
 
 export default function DashboardPage() {

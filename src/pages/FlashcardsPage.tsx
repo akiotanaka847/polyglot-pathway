@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { FLASHCARD_DATA } from '@/data/flashcards';
-import { LEVELS } from '@/data/lessons';
+import { LEVELS } from '@/data/lessons/index';
 import { getLangConfig } from '@/data/languages';
 import { speakText } from '@/utils/helpers';
 

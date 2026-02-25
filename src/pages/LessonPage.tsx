@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
-import { LESSON_DATA } from '@/data/lessons';
+import { LESSON_DATA } from '@/data/lessons/index';
 import { LessonStep } from '@/data/types';
 import { getLangConfig } from '@/data/languages';
 import { useState, useCallback, useRef } from 'react';

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { GRAMMAR_REF, VOCAB_REF } from '@/data/reference';
 import { getLangConfig, LANGUAGES } from '@/data/languages';
-import { LEVELS } from '@/data/lessons';
+import { LEVELS } from '@/data/lessons/index';
 import { speakText } from '@/utils/helpers';
 
 export default function ReferencePage() {

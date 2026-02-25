@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
-import { LESSON_DATA, LEVELS } from '@/data/lessons';
+import { LESSON_DATA, LEVELS } from '@/data/lessons/index';
 import { QUIZ_DATA } from '@/data/quizzes';
 import { getLangConfig } from '@/data/languages';
 import { useState } from 'react';
