@@ -6,8 +6,6 @@ export const ACHIEVEMENTS: Achievement[] = [
   { id: 'streak_3', icon: '🔥', title: 'Racha de 3', desc: 'Estudia 3 días seguidos', xp: 75 },
   { id: 'streak_7', icon: '💪', title: 'Semana completa', desc: 'Estudia 7 días seguidos', xp: 150 },
   { id: 'streak_30', icon: '🏆', title: 'Mes dedicado', desc: 'Estudia 30 días seguidos', xp: 500 },
-  { id: 'fc_100', icon: '🃏', title: 'Memoria de acero', desc: 'Repasa 100 flashcards', xp: 100 },
-  { id: 'fc_1000', icon: '🧠', title: 'Genio mnemónico', desc: 'Repasa 1000 flashcards', xp: 300 },
   { id: 'exam_pass', icon: '📝', title: 'Aprobado', desc: 'Aprueba un simulacro oficial', xp: 200 },
   { id: 'story_chapter', icon: '📖', title: 'Narrador', desc: 'Completa una escena de historia', xp: 75 },
   { id: 'culture_5', icon: '🌸', title: 'Explorador cultural', desc: 'Lee 5 cápsulas culturales', xp: 100 },

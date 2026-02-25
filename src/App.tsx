@@ -9,7 +9,7 @@ import LevelMapPage from "./pages/LevelMapPage";
 import LessonPage from "./pages/LessonPage";
 import QuizPage from "./pages/QuizPage";
 import DashboardPage from "./pages/DashboardPage";
-import FlashcardsPage from "./pages/FlashcardsPage";
+
 import StoryPage from "./pages/StoryPage";
 import CulturePage from "./pages/CulturePage";
 import ConversationPage from "./pages/ConversationPage";
@@ -94,7 +94,7 @@ function AppLayout() {
           <Route path="/lesson/:lang/:level/:index" element={<LessonPage />} />
           <Route path="/quiz/:lang/:level" element={<QuizPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/flashcards" element={<FlashcardsPage />} />
+          
           <Route path="/story" element={<StoryPage />} />
           <Route path="/culture" element={<CulturePage />} />
           <Route path="/conversation" element={<ConversationPage />} />

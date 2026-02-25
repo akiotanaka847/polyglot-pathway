@@ -7,7 +7,7 @@ export default function PracticePage() {
 
   const items = [
     { icon: '📝', title: tt('simulation'), desc: tt('real_situations'), path: '/exams' },
-    { icon: '🃏', title: tt('flashcards'), desc: tt('spaced_rep'), path: '/flashcards' },
+    
     { icon: '💬', title: tt('conversation'), desc: tt('real_situations'), path: '/conversation' },
     { icon: '📖', title: tt('story_mode'), desc: tt('learn_stories'), path: '/story' },
     { icon: '🌍', title: tt('culture'), desc: tt('real_context'), path: '/culture' },

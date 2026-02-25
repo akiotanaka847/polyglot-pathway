@@ -57,7 +57,7 @@ export default function DashboardPage() {
             { icon: '🔥', val: state.streak.count || 0, label: tt('streak') },
             { icon: '⭐', val: totalXp, label: 'XP' },
             { icon: '📚', val: state.lesDone || 0, label: tt('lessons') },
-            { icon: '🃏', val: state.fcTotal || 0, label: tt('cards') },
+            { icon: '📝', val: state.lesDone || 0, label: tt('practice') },
           ].map(s => (
             <div key={s.label} className="bg-card border border-border rounded-xl p-2.5 text-center">
               <div className="text-lg">{s.icon}</div>
@@ -93,7 +93,7 @@ export default function DashboardPage() {
 
         {/* Actions */}
         <div className="grid grid-cols-2 gap-2">
-          <button onClick={() => navigate('/flashcards')} className="py-3 rounded-xl bg-foreground text-background text-sm font-medium">🃏 {tt('flashcards')}</button>
+          <button onClick={() => navigate('/exams')} className="py-3 rounded-xl bg-foreground text-background text-sm font-medium">📝 {tt('simulation')}</button>
           <button onClick={() => navigate('/reference')} className="py-3 rounded-xl border border-border text-foreground-secondary text-sm font-medium">📚 {tt('reference')}</button>
         </div>
       </div>
