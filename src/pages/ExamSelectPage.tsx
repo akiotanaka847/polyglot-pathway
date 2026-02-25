@@ -7,9 +7,10 @@ export default function ExamSelectPage() {
   const navigate = useNavigate();
   const { state, tt } = useApp();
 
-  const langs = state.activeLangs.length > 0
-    ? LANGUAGES.filter(l => state.activeLangs.includes(l.code))
-    : LANGUAGES;
+  // Show active languages first, then the rest
+  const activeLangs = LANGUAGES.filter(l => state.activeLangs.includes(l.code));
+  const otherLangs = LANGUAGES.filter(l => !state.activeLangs.includes(l.code));
+  const langs = [...activeLangs, ...otherLangs];
 
   return (
     <div className="animate-fade-in flex-1 overflow-y-auto">
