@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <rect width="192" height="192" rx="38" fill="#C03B2B"/>
+  <rect x="96" y="0" width="96" height="192" rx="0" fill="#1A3A5C"/>
+  <path d="M96 0 h96 a38 38 0 0 1 0 192 H96 Z" fill="#1A3A5C"/>
+  <text x="50" y="122" font-family="Georgia,serif" font-size="78" fill="white" text-anchor="middle" dominant-baseline="auto">語</text>
+  <text x="144" y="116" font-family="Georgia,serif" font-size="46" fill="white" text-anchor="middle" font-weight="bold">FR</text>
+  <rect x="93" y="18" width="6" height="156" fill="white" opacity="0.25" rx="3"/>
+</svg>
