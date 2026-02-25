@@ -16,9 +16,9 @@ import ConversationPage from "./pages/ConversationPage";
 import RanksPage from "./pages/RanksPage";
 import PracticePage from "./pages/PracticePage";
 import ReferencePage from "./pages/ReferencePage";
-import ExamSelectPage from "./pages/ExamSelectPage";
-import ExamPage from "./pages/ExamPage";
-import NotFound from "./pages/NotFound";
+import ExamSelectPage from "@/pages/ExamSelectPage";
+import ExamPage from "@/pages/ExamPage";
+import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
 
