@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { EXAM_DATA } from '@/data/exams';
 import { getLangConfig } from '@/data/languages';
-import { normalizeAnswer } from '@/utils/helpers';
+import { normalizeAnswer, playCorrectSound, playIncorrectSound } from '@/utils/helpers';
 import { MCStep, TextStep, ReadingStep } from '@/data/types';
 
 type Q = MCStep | TextStep | ReadingStep;
@@ -43,6 +43,13 @@ export default function ExamPage() {
   const key = `${sectionIdx}-${qIdx}`;
 
   const submit = useCallback((ans: number | string) => {
+    // Play sound based on correctness
+    if (q) {
+      let isCorrect = false;
+      if (q.t === 'mc' || q.t === 'rd') isCorrect = ans === q.ans;
+      else if (q.t === 'tx') isCorrect = normalizeAnswer(String(ans)) === normalizeAnswer(String(q.ans));
+      if (isCorrect) playCorrectSound(); else playIncorrectSound();
+    }
     setAnswers(prev => ({ ...prev, [key]: ans }));
     if (qIdx < (section?.qs.length || 0) - 1) {
       setQIdx(i => i + 1);
@@ -50,7 +57,7 @@ export default function ExamPage() {
     } else {
       nextSection();
     }
-  }, [key, qIdx, section]);
+  }, [key, qIdx, section, q]);
 
   const nextSection = () => {
     if (sectionIdx < (exam?.sections.length || 0) - 1) {
