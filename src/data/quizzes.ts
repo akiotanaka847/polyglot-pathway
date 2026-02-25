@@ -13,18 +13,11 @@ export const QUIZ_DATA: Record<string, Record<string, QuizQuestion[]>> = {
       { t: 'mc', q: '¿Qué significa みず?', opts: ['Fuego', 'Agua', 'Arroz', 'Pan'], ans: 1 },
       { t: 'mc', q: '¿Cuál es el negativo de たべます?', opts: ['たべません', 'たべました', 'たべない', 'たべる'], ans: 0 },
       { t: 'mc', q: '¿Qué color es 赤い?', opts: ['Azul', 'Verde', 'Rojo', 'Negro'], ans: 2 },
-      { t: 'mc', q: '¿Qué día es 月曜日?', opts: ['Martes', 'Lunes', 'Miércoles', 'Jueves'], ans: 1 },
-      { t: 'tx', q: '¿Cómo se dice "perro" en japonés?', ans: 'inu' },
-      { t: 'mc', q: '¿Cómo dices "Yo soy estudiante"?', opts: ['わたしを学生です', 'わたしは学生です', 'わたしが学生です', 'わたしに学生です'], ans: 1 },
-      { t: 'mc', q: '¿Qué significa おかあさん?', opts: ['Padre', 'Madre (de otros)', 'Hermana', 'Abuela'], ans: 1 },
-      { t: 'mc', q: '¿Qué partícula se usa con いきます para destino?', opts: ['を', 'は', 'に', 'で'], ans: 2 },
     ],
     N4: [
       { t: 'mc', q: '¿Cuál es la forma て de のみます?', opts: ['のんで', 'のみて', 'のめて', 'のって'], ans: 0 },
-      { t: 'mc', q: '¿Cómo se niega おおきい?', opts: ['おおきくない', 'おおきじゃない', 'おおきいない', 'おおきません'], ans: 0 },
       { t: 'tx', q: '¿Cómo se dice "derecha" en japonés?', ans: 'migi' },
       { t: 'mc', q: '¿Qué significa まっすぐ?', opts: ['Izquierda', 'Derecha', 'Recto', 'Atrás'], ans: 2 },
-      { t: 'mc', q: '¿Cómo se niega きれい(な)?', opts: ['きれくない', 'きれいくない', 'きれいじゃない', 'きれいません'], ans: 2 },
     ],
   },
   fr: {
@@ -32,23 +25,63 @@ export const QUIZ_DATA: Record<string, Record<string, QuizQuestion[]>> = {
       { t: 'mc', q: '¿Cómo se dice "hola" en francés?', opts: ['Bonsoir', 'Bonjour', 'Au revoir', 'Salut'], ans: 1 },
       { t: 'mc', q: '¿Qué significa "merci"?', opts: ['Hola', 'Adiós', 'Gracias', 'Por favor'], ans: 2 },
       { t: 'tx', q: '¿Cómo se dice "adiós" en francés?', ans: 'au revoir' },
-      { t: 'mc', q: '¿Cuál es el artículo femenino definido?', opts: ['le', 'la', 'les', 'un'], ans: 1 },
       { t: 'mc', q: '¿Cómo se dice "yo soy"?', opts: ['tu es', 'je suis', 'il est', 'je ai'], ans: 1 },
       { t: 'mc', q: '¿Qué número es "cinq"?', opts: ['3', '4', '5', '6'], ans: 2 },
       { t: 'tx', q: '¿Cómo se dice "pan" en francés?', ans: 'pain' },
-      { t: 'mc', q: '¿Cómo se niega "je mange"?', opts: ['je pas mange', 'je ne mange pas', 'je mange ne pas', 'ne mange pas je'], ans: 1 },
-      { t: 'mc', q: '¿Qué día es "mardi"?', opts: ['Lunes', 'Martes', 'Miércoles', 'Jueves'], ans: 1 },
-      { t: 'mc', q: '¿Cómo se dice "rojo"?', opts: ['bleu', 'vert', 'rouge', 'noir'], ans: 2 },
-      { t: 'tx', q: '¿Cómo se dice "hermana" en francés?', ans: 'soeur' },
-      { t: 'mc', q: '¿Qué auxiliar usa "aller" en passé composé?', opts: ['avoir', 'être', 'faire', 'pouvoir'], ans: 1 },
-      { t: 'mc', q: '¿Qué terminación tiene "vous" para verbos -er?', opts: ['-e', '-es', '-ons', '-ez'], ans: 3 },
-      { t: 'mc', q: '¿Qué significa "le fromage"?', opts: ['El pan', 'El queso', 'El vino', 'El café'], ans: 1 },
-      { t: 'mc', q: '¿Cuándo se usa "bonsoir"?', opts: ['Mañana', 'Mediodía', 'Atardecer/noche', 'Despedida'], ans: 2 },
     ],
     A2: [
       { t: 'mc', q: '¿Cómo se forma el passé composé?', opts: ['Verbo + ment', 'avoir/être + participio', 'ne + verbo + pas', 'je + infinitivo'], ans: 1 },
       { t: 'tx', q: 'Forma el passé composé de "parler" (yo):', ans: "j'ai parlé" },
-      { t: 'mc', q: '¿Cuál usa "être" como auxiliar?', opts: ['manger', 'parler', 'aller', 'boire'], ans: 2 },
+    ],
+  },
+  zh: {
+    HSK1: [
+      { t: 'mc', q: '¿Cómo se dice "hola" en chino?', opts: ['谢谢', '你好', '再见', '对不起'], ans: 1 },
+      { t: 'mc', q: '¿Qué significa 谢谢?', opts: ['Hola', 'Adiós', 'Gracias', 'Por favor'], ans: 2 },
+      { t: 'tx', q: '¿Cómo se dice "adiós" en chino? (pinyin)', ans: 'zai jian' },
+      { t: 'mc', q: '¿Qué significa 我?', opts: ['Tú', 'Yo', 'Él', 'Nosotros'], ans: 1 },
+    ],
+  },
+  de: {
+    A1: [
+      { t: 'mc', q: '¿Cómo se dice "gracias" en alemán?', opts: ['Bitte', 'Danke', 'Hallo', 'Tschüss'], ans: 1 },
+      { t: 'tx', q: '¿Cómo saludas en alemán?', ans: 'guten tag' },
+      { t: 'mc', q: '¿Cómo dices "Me llamo" en alemán?', opts: ['Ich bin', 'Ich heiße', 'Ich spreche', 'Ich komme'], ans: 1 },
+      { t: 'mc', q: '¿Qué número es "fünf"?', opts: ['3', '4', '5', '6'], ans: 2 },
+    ],
+  },
+  it: {
+    A1: [
+      { t: 'mc', q: '¿Cuál es el saludo informal italiano?', opts: ['Buongiorno', 'Arrivederci', 'Ciao', 'Grazie'], ans: 2 },
+      { t: 'tx', q: '¿Cómo se dice "gracias" en italiano?', ans: 'grazie' },
+      { t: 'mc', q: '¿Cómo dices "Me llamo" en italiano?', opts: ['Io sono', 'Mi chiamo', 'Io parlo', 'Io vivo'], ans: 1 },
+    ],
+  },
+  pt: {
+    A1: [
+      { t: 'mc', q: '¿Cómo se dice "hola" en portugués?', opts: ['Tchau', 'Olá', 'Obrigado', 'Bom dia'], ans: 1 },
+      { t: 'tx', q: '¿Cómo dice "gracias" un hombre en portugués?', ans: 'obrigado' },
+      { t: 'mc', q: '¿Cómo dices "Yo soy" en portugués?', opts: ['Eu sou', 'Eu tenho', 'Eu falo', 'Eu vivo'], ans: 0 },
+    ],
+  },
+  ko: {
+    TOPIK1: [
+      { t: 'mc', q: '¿Cómo saludas en coreano?', opts: ['감사합니다', '안녕하세요', '안녕히 가세요', '죄송합니다'], ans: 1 },
+      { t: 'tx', q: '¿Cómo dices "gracias" en coreano? (romanización)', ans: 'gamsahamnida' },
+      { t: 'mc', q: '¿Qué partícula marca el tema en coreano?', opts: ['을', '는', '이', '에'], ans: 1 },
+    ],
+  },
+  ru: {
+    A1: [
+      { t: 'mc', q: '¿Cómo se dice "gracias" en ruso?', opts: ['Привет', 'Спасибо', 'Пожалуйста', 'До свидания'], ans: 1 },
+      { t: 'tx', q: '¿Cómo saludas informalmente en ruso?', ans: 'privet' },
+    ],
+  },
+  en: {
+    A1: [
+      { t: 'mc', q: '¿Cómo se dice "hola" en inglés?', opts: ['Goodbye', 'Hello', 'Thank you', 'Please'], ans: 1 },
+      { t: 'tx', q: '¿Cómo se dice "gracias" en inglés?', ans: 'thank you' },
+      { t: 'mc', q: '¿Cómo dices "Yo soy" en inglés?', opts: ['I am', 'I have', 'I do', 'I go'], ans: 0 },
     ],
   },
 };
