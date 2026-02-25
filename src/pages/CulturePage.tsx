@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { CULTURE_DATA } from '@/data/culture';
+import { CULTURE_I18N_EN } from '@/data/cultureI18n';
 import { getLangConfig } from '@/data/languages';
 
 export default function CulturePage() {
@@ -12,6 +13,11 @@ export default function CulturePage() {
   const [lang, setLang] = useState<string>(cultureLangs[0] || 'jp');
   const config = getLangConfig(lang);
   const cards = CULTURE_DATA[lang] || [];
+  const useEN = state.nativeLang !== 'es';
+  const tr = (cardId: string, field: 'title' | 'body' | 'fact', fallback: string) => {
+    if (!useEN) return fallback;
+    return CULTURE_I18N_EN[cardId]?.[field] || fallback;
+  };
 
   const handleRead = (id: string) => {
     if (!state.cultRead.includes(id)) {
@@ -51,14 +57,14 @@ export default function CulturePage() {
               <div className="px-4 pt-4 pb-2 flex items-center gap-3">
                 <span className="text-3xl">{card.icon}</span>
                 <div>
-                  <div className="font-serif text-lg font-semibold">{card.title}</div>
+                  <div className="font-serif text-lg font-semibold">{tr(card.id, 'title', card.title)}</div>
                   {read && <span className="text-[0.65rem] text-success font-semibold">✅ {tt('read')} · +20 XP</span>}
                 </div>
               </div>
               <div className="px-4 pb-4 text-sm leading-relaxed text-foreground-secondary">
-                {card.body}
+                {tr(card.id, 'body', card.body)}
                 <div className="mt-2.5 p-2.5 rounded-lg bg-gold-light text-sm border-l-[3px] border-l-gold">
-                  <span className="font-bold">💡 {tt('fun_fact')}: </span>{card.fact}
+                  <span className="font-bold">💡 {tt('fun_fact')}: </span>{tr(card.id, 'fact', card.fact)}
                 </div>
               </div>
             </div>
