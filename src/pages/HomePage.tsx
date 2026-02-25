@@ -1,17 +1,51 @@
 import { useApp } from '@/contexts/AppContext';
 import { useNavigate } from 'react-router-dom';
-import { Lang } from '@/data/types';
+import { LANGUAGES, getLangConfig, t } from '@/data/languages';
 
 export default function HomePage() {
-  const { state, getRank } = useApp();
+  const { state, getRank, setNativeLang, addActiveLang, tt } = useApp();
   const navigate = useNavigate();
-  const totalXp = (state.xp.jp || 0) + (state.xp.fr || 0);
-  const jpR = getRank('jp');
-  const frR = getRank('fr');
+  const totalXp = Object.values(state.xp).reduce((a, b) => a + b, 0);
   const hasProgress = totalXp > 0;
+  const activeLangs = state.activeLangs || [];
 
-  const pickLang = (lang: Lang) => {
-    navigate(`/levels/${lang}`);
+  // If no native language set, show language picker
+  if (!state.nativeLang) {
+    return (
+      <div className="animate-fade-in flex-1 overflow-y-auto">
+        <div className="max-w-lg mx-auto p-6 flex flex-col items-center justify-center min-h-[70vh]">
+          <div className="text-5xl mb-4">🌍</div>
+          <h1 className="font-serif text-3xl font-light mb-2 text-center">
+            ¿Cuál es tu idioma nativo?
+          </h1>
+          <p className="text-sm text-foreground-secondary mb-6 text-center">
+            What is your native language? · Quelle est votre langue maternelle?
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 w-full">
+            {LANGUAGES.map(lang => (
+              <button
+                key={lang.code}
+                onClick={() => setNativeLang(lang.code)}
+                className="border-[1.5px] border-border rounded-[14px] p-3 bg-card text-left hover:-translate-y-0.5 hover:shadow-md transition-all"
+              >
+                <span className="text-2xl block mb-1">{lang.flag}</span>
+                <div className="text-sm font-semibold">{lang.nativeName}</div>
+                <div className="text-[0.68rem] text-foreground-muted">{lang.name}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Target language selection
+  const availableLangs = LANGUAGES.filter(l => l.code !== state.nativeLang);
+  const nativeConfig = getLangConfig(state.nativeLang);
+
+  const pickLang = (code: string) => {
+    addActiveLang(code);
+    navigate(`/levels/${code}`);
   };
 
   return (
@@ -19,112 +53,111 @@ export default function HomePage() {
       <div className="flex flex-col lg:flex-row min-h-full">
         {/* Hero */}
         <div className="flex-1 flex flex-col justify-center px-5 py-8 lg:px-12 lg:py-16 relative">
-          <div className="absolute bottom-0 right-0 font-serif-jp text-[100px] font-bold text-jp/[0.04] pointer-events-none animate-float select-none">語</div>
-
           <p className="text-[0.66rem] font-semibold tracking-[0.14em] uppercase text-foreground-muted mb-5 flex items-center gap-2">
             <span className="w-3.5 h-px bg-foreground-muted" />
-            100% gratuito · 48 lecciones · Sin registro
+            {tt('free')} · 17 {tt('lessons')} · {tt('no_signup')}
           </p>
 
-          <h1 className="font-serif text-[clamp(1.9rem,6vw,3.6rem)] font-light leading-[1.1] tracking-tight mb-3">
-            Aprende<br />
-            <em className="italic text-jp">japonés</em><br />
-            y <em className="italic text-fr">francés</em>.
+          <h1 className="font-serif text-[clamp(1.9rem,6vw,3.2rem)] font-light leading-[1.1] tracking-tight mb-3">
+            {tt('learn')}<br />
+            <span className="text-foreground-secondary">{availableLangs.length}+ {tt('more_langs')}</span>
           </h1>
 
-          <p className="text-[0.9rem] text-foreground-secondary leading-relaxed max-w-[400px] mb-7">
-            12 lecciones por nivel · Quiz desbloqueante · Vocabulario, gramática, lectura y escritura. Empieza ahora.
+          <p className="text-[0.9rem] text-foreground-secondary leading-relaxed max-w-[400px] mb-5">
+            {nativeConfig.flag} {tt('learning_path')} · {tt('complete_lessons')} {tt('unlock_quiz')}
           </p>
 
-          <div className="flex gap-2.5 flex-wrap">
-            <button onClick={() => pickLang('jp')} className="inline-flex items-center gap-1.5 px-7 py-3 rounded-full bg-foreground text-background font-sans text-[0.9rem] font-medium hover:bg-foreground-secondary transition-colors">
-              Empezar japonés 🇯🇵
-            </button>
-            <button onClick={() => pickLang('fr')} className="inline-flex items-center gap-1.5 px-7 py-3 rounded-full border-[1.5px] border-border text-foreground-secondary font-sans text-[0.9rem] font-medium hover:border-foreground hover:text-foreground transition-colors">
-              Empezar francés 🇫🇷
-            </button>
-          </div>
+          <button
+            onClick={() => setNativeLang('')}
+            className="text-[0.72rem] text-foreground-muted hover:text-foreground mb-5 self-start"
+          >
+            {nativeConfig.flag} {nativeConfig.nativeName} — {tt('change_native')}
+          </button>
 
-          <div className="flex gap-6 mt-9 pt-7 border-t border-border">
-            <div><div className="font-serif text-3xl font-semibold text-jp">48</div><div className="text-[0.68rem] text-foreground-muted">Lecciones</div></div>
-            <div><div className="font-serif text-3xl font-semibold text-fr">4</div><div className="text-[0.68rem] text-foreground-muted">Niveles activos</div></div>
-            <div><div className="font-serif text-3xl font-semibold">500+</div><div className="text-[0.68rem] text-foreground-muted">Ejercicios</div></div>
-            <div><div className="font-serif text-3xl font-semibold text-success">100%</div><div className="text-[0.68rem] text-foreground-muted">Gratis</div></div>
-          </div>
+          {/* Active languages quick access */}
+          {activeLangs.length > 0 && (
+            <div className="mb-5">
+              <div className="text-[0.68rem] font-bold tracking-widest uppercase text-foreground-muted mb-2">
+                {tt('your_languages')}
+              </div>
+              <div className="flex gap-2 flex-wrap">
+                {activeLangs.map(code => {
+                  const lc = getLangConfig(code);
+                  const r = getRank(code);
+                  return (
+                    <button
+                      key={code}
+                      onClick={() => navigate(`/levels/${code}`)}
+                      className="flex items-center gap-2 px-3 py-2 rounded-full border-[1.5px] border-border bg-card hover:shadow-md hover:-translate-y-0.5 transition-all"
+                    >
+                      <span>{lc.flag}</span>
+                      <span className="text-sm font-medium">{lc.nativeName}</span>
+                      <span className="text-[0.68rem] text-foreground-muted">{r.icon} {state.xp[code] || 0} XP</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Stats */}
+          {hasProgress && (
+            <div className="flex gap-6 mt-2 pt-5 border-t border-border">
+              <div><div className="font-serif text-2xl font-semibold">{totalXp}</div><div className="text-[0.68rem] text-foreground-muted">XP</div></div>
+              <div><div className="font-serif text-2xl font-semibold">{state.streak.count || 0}</div><div className="text-[0.68rem] text-foreground-muted">🔥 {tt('streak')}</div></div>
+              <div><div className="font-serif text-2xl font-semibold">{activeLangs.length}</div><div className="text-[0.68rem] text-foreground-muted">{tt('lessons')}</div></div>
+            </div>
+          )}
         </div>
 
-        {/* Right panel */}
-        <div className="grid grid-cols-2 lg:grid-cols-1 gap-2.5 p-4 lg:p-5 lg:w-[300px] lg:border-l border-border lg:justify-center">
-          <button onClick={() => pickLang('jp')} className="border-[1.5px] border-border rounded-[20px] p-6 bg-card transition-all hover:-translate-y-1 hover:shadow-lg hover:border-jp hover:bg-jp-light cursor-pointer text-left">
-            <span className="text-3xl block mb-2">🇯🇵</span>
-            <div className="font-serif text-2xl mb-1">Japonés</div>
-            <div className="text-[0.7rem] text-foreground-muted mb-2">JLPT · Hiragana · Katakana · Kanji</div>
-            <div className="flex gap-1 flex-wrap mb-3">
-              {['N5 ✓', 'N4 ✓', 'N3', 'N2', 'N1'].map(l => (
-                <span key={l} className="px-2 py-0.5 rounded-full text-[0.65rem] font-semibold border border-jp text-jp bg-jp/[0.07]">{l}</span>
-              ))}
-            </div>
-            <div className="text-[0.78rem] text-foreground-muted flex items-center gap-1 group-hover:gap-3 transition-all">Comenzar →</div>
-          </button>
-
-          <button onClick={() => pickLang('fr')} className="border-[1.5px] border-border rounded-[20px] p-6 bg-card transition-all hover:-translate-y-1 hover:shadow-lg hover:border-fr hover:bg-fr-light cursor-pointer text-left">
-            <span className="text-3xl block mb-2">🇫🇷</span>
-            <div className="font-serif text-2xl mb-1">Francés</div>
-            <div className="text-[0.7rem] text-foreground-muted mb-2">MCER · DELF / DALF</div>
-            <div className="flex gap-1 flex-wrap mb-3">
-              {['A1 ✓', 'A2 ✓', 'B1', 'B2', 'C1'].map(l => (
-                <span key={l} className="px-2 py-0.5 rounded-full text-[0.65rem] font-semibold border border-fr text-fr bg-fr/[0.07]">{l}</span>
-              ))}
-            </div>
-            <div className="text-[0.78rem] text-foreground-muted">Comenzar →</div>
-          </button>
+        {/* Language grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 p-4 lg:p-5 lg:w-[320px] lg:border-l border-border overflow-y-auto lg:max-h-[calc(100dvh-54px)]">
+          <div className="col-span-2 lg:col-span-1 text-[0.68rem] font-bold tracking-widest uppercase text-foreground-muted mb-1">
+            {tt('choose_to_learn')}
+          </div>
+          {availableLangs.map(lang => {
+            const isActive = activeLangs.includes(lang.code);
+            const xp = state.xp[lang.code] || 0;
+            return (
+              <button
+                key={lang.code}
+                onClick={() => pickLang(lang.code)}
+                className={`border-[1.5px] rounded-[16px] p-4 bg-card transition-all hover:-translate-y-1 hover:shadow-lg cursor-pointer text-left ${isActive ? 'border-foreground/30' : 'border-border'}`}
+                style={isActive ? { borderColor: `hsl(${lang.hue}, 60%, 50%)`, background: `hsl(${lang.hue}, 80%, 97%)` } : undefined}
+              >
+                <span className="text-2xl block mb-1">{lang.flag}</span>
+                <div className="font-serif text-lg mb-0.5">{lang.nativeName}</div>
+                <div className="text-[0.68rem] text-foreground-muted mb-1">{lang.levelSystem} · {lang.levels.length} {tt('lessons')}</div>
+                {xp > 0 && (
+                  <div className="text-[0.65rem] font-bold" style={{ color: `hsl(${lang.hue}, 60%, 45%)` }}>
+                    ⚡ {xp} XP
+                  </div>
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* Dashboard mini if has progress */}
+      {/* Quick links when has progress */}
       {hasProgress && (
         <div className="px-5 pb-8 max-w-xl mx-auto">
-          <div className="grid grid-cols-2 gap-2 mb-3">
-            <button onClick={() => navigate('/ranks')} className="bg-jp-light rounded-[13px] p-3 border border-jp/15 text-left">
-              <div className="text-xl">{jpR.icon}</div>
-              <div className="font-serif text-sm font-semibold text-jp">{jpR.title}</div>
-              <div className="text-[0.68rem] text-foreground-secondary">{state.xp.jp} XP</div>
+          <div className="grid grid-cols-4 gap-1.5 mt-3">
+            <button onClick={() => navigate('/flashcards')} className="border-[1.5px] border-border rounded-xl p-2.5 bg-card text-center hover:shadow-sm transition-all">
+              <div className="text-xl">🃏</div>
+              <div className="text-[0.72rem] font-semibold">{tt('flashcards')}</div>
             </button>
-            <button onClick={() => navigate('/ranks')} className="bg-fr-light rounded-[13px] p-3 border border-fr/15 text-left">
-              <div className="text-xl">{frR.icon}</div>
-              <div className="font-serif text-sm font-semibold text-fr">{frR.title}</div>
-              <div className="text-[0.68rem] text-foreground-secondary">{state.xp.fr} XP</div>
-            </button>
-          </div>
-          <div className="flex gap-2 mb-3">
-            <div className="flex-1 bg-background rounded-xl p-2.5 text-center border border-border">
-              <div className="text-lg">🔥</div>
-              <div className="text-lg font-bold">{state.streak.count || 0}</div>
-              <div className="text-[0.68rem] text-foreground-secondary">días racha</div>
-            </div>
-            <div className="flex-1 bg-background rounded-xl p-2.5 text-center border border-border">
-              <div className="text-lg">⭐</div>
-              <div className="text-lg font-bold">{totalXp}</div>
-              <div className="text-[0.68rem] text-foreground-secondary">XP total</div>
-            </div>
-            <div className="flex-1 bg-background rounded-xl p-2.5 text-center border border-border">
-              <div className="text-lg">🃏</div>
-              <div className="text-lg font-bold">{state.fcTotal || 0}</div>
-              <div className="text-[0.68rem] text-foreground-secondary">flashcards</div>
-            </div>
-          </div>
-          <div className="grid grid-cols-3 gap-1.5">
-            <button onClick={() => navigate('/story')} className="border-[1.5px] border-border rounded-xl p-2.5 bg-card text-center hover:border-jp transition-colors">
+            <button onClick={() => navigate('/story')} className="border-[1.5px] border-border rounded-xl p-2.5 bg-card text-center hover:shadow-sm transition-all">
               <div className="text-xl">📖</div>
-              <div className="text-[0.75rem] font-semibold">Historia</div>
+              <div className="text-[0.72rem] font-semibold">{tt('story_mode')}</div>
             </button>
-            <button onClick={() => navigate('/culture')} className="border-[1.5px] border-border rounded-xl p-2.5 bg-card text-center hover:border-jp transition-colors">
+            <button onClick={() => navigate('/culture')} className="border-[1.5px] border-border rounded-xl p-2.5 bg-card text-center hover:shadow-sm transition-all">
               <div className="text-xl">🌍</div>
-              <div className="text-[0.75rem] font-semibold">Cultura</div>
+              <div className="text-[0.72rem] font-semibold">{tt('culture')}</div>
             </button>
-            <button onClick={() => navigate('/conversation')} className="border-[1.5px] border-border rounded-xl p-2.5 bg-card text-center hover:border-jp transition-colors">
-              <div className="text-xl">💬</div>
-              <div className="text-[0.75rem] font-semibold">Conversar</div>
+            <button onClick={() => navigate('/reference')} className="border-[1.5px] border-border rounded-xl p-2.5 bg-card text-center hover:shadow-sm transition-all">
+              <div className="text-xl">📚</div>
+              <div className="text-[0.72rem] font-semibold">{tt('reference')}</div>
             </button>
           </div>
         </div>

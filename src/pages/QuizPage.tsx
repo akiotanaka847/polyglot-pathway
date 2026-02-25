@@ -2,17 +2,18 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { QUIZ_DATA } from '@/data/quizzes';
 import { LEVELS } from '@/data/lessons';
-import { Lang, QuizQuestion } from '@/data/types';
+import { QuizQuestion } from '@/data/types';
+import { getLangConfig } from '@/data/languages';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { normalizeAnswer, shuffleArray } from '@/utils/helpers';
 
 export default function QuizPage() {
   const { lang, level } = useParams();
   const navigate = useNavigate();
-  const { addXP, markQuizPassed, unlockNextLevel } = useApp();
-  const l = (lang || 'jp') as Lang;
+  const { addXP, markQuizPassed, unlockNextLevel, tt } = useApp();
+  const l = lang || 'jp';
   const lvl = level || 'N5';
-  const isJp = l === 'jp';
+  const config = getLangConfig(l);
 
   const [questions] = useState(() => shuffleArray(QUIZ_DATA[l]?.[lvl] || []).slice(0, 15));
   const [qIdx, setQIdx] = useState(0);
@@ -28,10 +29,7 @@ export default function QuizPage() {
   useEffect(() => {
     timer.current = setInterval(() => {
       setTimeLeft(t => {
-        if (t <= 1) {
-          handleCheck();
-          return 60;
-        }
+        if (t <= 1) { handleCheck(); return 60; }
         return t - 1;
       });
     }, 1000);
@@ -44,7 +42,6 @@ export default function QuizPage() {
     if (!q) return;
     let correct = false;
     let correctAns = '';
-
     if (q.t === 'mc') {
       correct = selected === q.ans;
       correctAns = q.opts?.[q.ans as number] || '';
@@ -52,38 +49,27 @@ export default function QuizPage() {
       correct = normalizeAnswer(textInput) === normalizeAnswer(q.ans as string);
       correctAns = q.ans as string;
     }
-
     setFeedback({ correct, answer: correctAns });
     setLocked(true);
     if (correct) setScore(s => s + 1);
   }, [q, selected, textInput]);
 
   const advance = () => {
-    setFeedback(null);
-    setLocked(false);
-    setSelected(null);
-    setTextInput('');
-    setTimeLeft(60);
+    setFeedback(null); setLocked(false); setSelected(null); setTextInput(''); setTimeLeft(60);
     const next = qIdx + 1;
-    if (next >= questions.length) {
-      endQuiz();
-    } else {
-      setQIdx(next);
-    }
+    if (next >= questions.length) endQuiz();
+    else setQIdx(next);
   };
 
   const endQuiz = () => {
     clearInterval(timer.current);
-    const finalScore = score;
-    const pct = Math.round((finalScore / questions.length) * 100);
+    const pct = Math.round((score / questions.length) * 100);
     if (pct >= 70) {
       addXP(l, 200);
       markQuizPassed(l, lvl);
-      const levels = LEVELS[l];
+      const levels = LEVELS[l] || config.levels;
       const curIdx = levels.indexOf(lvl);
-      if (curIdx < levels.length - 1) {
-        unlockNextLevel(l, levels[curIdx + 1]);
-      }
+      if (curIdx < levels.length - 1) unlockNextLevel(l, levels[curIdx + 1]);
     }
     setDone(true);
   };
@@ -91,48 +77,30 @@ export default function QuizPage() {
   if (done) {
     const pct = Math.round((score / questions.length) * 100);
     const passed = pct >= 70;
-    const levels = LEVELS[l];
-    const curIdx = levels.indexOf(lvl);
-    const nextLvl = levels[curIdx + 1];
+    const levels = LEVELS[l] || config.levels;
+    const nextLvl = levels[levels.indexOf(lvl) + 1];
 
     return (
       <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-fade-in">
         <div className="text-5xl mb-4 animate-pop-in">{pct >= 90 ? '🏆' : pct >= 70 ? '🎉' : '😓'}</div>
-        <h2 className="font-serif text-3xl font-light mb-1">{passed ? '¡Quiz superado!' : 'Sigue practicando'}</h2>
+        <h2 className="font-serif text-3xl font-light mb-1">{passed ? tt('quiz_passed') : tt('keep_practicing')}</h2>
         <p className="text-sm text-foreground-secondary mb-5">
-          {passed ? `Obtuviste ${pct}% — ¡Has desbloqueado el siguiente nivel!` : `Obtuviste ${pct}% — Necesitas 70%.`}
+          {passed ? `${tt('you_got')} ${pct}% — ${tt('unlocked_next')}` : `${tt('you_got')} ${pct}% — ${tt('need_70')}`}
         </p>
         <div className="grid grid-cols-3 gap-2 w-full max-w-xs mb-5">
-          <div className="bg-card border border-border rounded-xl p-3 text-center">
-            <div className="font-serif text-2xl font-semibold">{score}</div>
-            <div className="text-[0.64rem] text-foreground-muted">Correctas</div>
-          </div>
-          <div className="bg-card border border-border rounded-xl p-3 text-center">
-            <div className="font-serif text-2xl font-semibold">{questions.length}</div>
-            <div className="text-[0.64rem] text-foreground-muted">Total</div>
-          </div>
-          <div className="bg-card border border-border rounded-xl p-3 text-center">
-            <div className="font-serif text-2xl font-semibold">{pct}%</div>
-            <div className="text-[0.64rem] text-foreground-muted">Precisión</div>
-          </div>
+          <div className="bg-card border border-border rounded-xl p-3 text-center"><div className="font-serif text-2xl font-semibold">{score}</div><div className="text-[0.64rem] text-foreground-muted">{tt('correct_count')}</div></div>
+          <div className="bg-card border border-border rounded-xl p-3 text-center"><div className="font-serif text-2xl font-semibold">{questions.length}</div><div className="text-[0.64rem] text-foreground-muted">{tt('total')}</div></div>
+          <div className="bg-card border border-border rounded-xl p-3 text-center"><div className="font-serif text-2xl font-semibold">{pct}%</div><div className="text-[0.64rem] text-foreground-muted">{tt('accuracy')}</div></div>
         </div>
         <div className="flex flex-col gap-2 w-full max-w-xs">
           {passed && nextLvl ? (
-            <button onClick={() => navigate(`/levels/${l}`)} className="w-full py-3 rounded-full bg-foreground text-background font-medium">
-              🔓 Ir al nivel {nextLvl}
-            </button>
+            <button onClick={() => navigate(`/levels/${l}`)} className="w-full py-3 rounded-full bg-foreground text-background font-medium">🔓 {tt('go_to_level')} {nextLvl}</button>
           ) : !passed ? (
-            <button onClick={() => window.location.reload()} className="w-full py-3 rounded-full bg-foreground text-background font-medium">
-              🔄 Repetir quiz
-            </button>
+            <button onClick={() => window.location.reload()} className="w-full py-3 rounded-full bg-foreground text-background font-medium">🔄 {tt('repeat_quiz')}</button>
           ) : (
-            <button onClick={() => navigate(`/levels/${l}`)} className="w-full py-3 rounded-full bg-foreground text-background font-medium">
-              🏅 ¡Nivel máximo!
-            </button>
+            <button onClick={() => navigate(`/levels/${l}`)} className="w-full py-3 rounded-full bg-foreground text-background font-medium">🏅 {tt('max_level')}</button>
           )}
-          <button onClick={() => navigate(`/levels/${l}`)} className="w-full py-3 rounded-full border border-border text-foreground-secondary font-medium">
-            Volver al mapa
-          </button>
+          <button onClick={() => navigate(`/levels/${l}`)} className="w-full py-3 rounded-full border border-border text-foreground-secondary font-medium">{tt('back_to_map')}</button>
         </div>
       </div>
     );
@@ -140,12 +108,14 @@ export default function QuizPage() {
 
   if (!q) return null;
 
+  function nextAction() { if (feedback) advance(); else handleCheck(); }
+
   return (
     <div className="flex-1 flex flex-col">
       <div className="flex items-center gap-3 px-4 h-[52px] border-b border-border bg-card shrink-0">
         <button onClick={() => navigate(`/levels/${l}`)} className="px-3 py-1 rounded-full border border-border text-sm">✕</button>
         <div className="flex-1 bg-border rounded-full h-1.5 overflow-hidden">
-          <div className={`h-full rounded-full transition-all duration-500 ${isJp ? 'bg-gradient-to-r from-jp-dark to-jp' : 'bg-gradient-to-r from-fr to-fr-accent'}`} style={{ width: `${(qIdx / questions.length) * 100}%` }} />
+          <div className="h-full rounded-full transition-all duration-500" style={{ width: `${(qIdx / questions.length) * 100}%`, background: `linear-gradient(to right, hsl(${config.hue}, 60%, 35%), hsl(${config.hue}, 70%, 46%))` }} />
         </div>
         <div className={`w-7 h-7 rounded-full border-2 flex items-center justify-center text-[0.7rem] font-semibold ${timeLeft <= 15 ? 'border-destructive text-destructive animate-pulse-urgent' : 'border-border text-foreground-muted'}`}>
           {timeLeft}
@@ -153,16 +123,17 @@ export default function QuizPage() {
       </div>
 
       <div className="flex-1 overflow-y-auto max-w-[600px] w-full mx-auto px-4 py-6">
-        <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[0.71rem] font-semibold mb-2 ${isJp ? 'bg-jp-light text-jp' : 'bg-fr-light text-fr'}`}>
-          {isJp ? '🇯🇵' : '🇫🇷'} Quiz Final — {lvl}
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[0.71rem] font-semibold mb-2"
+          style={{ background: `hsl(${config.hue}, 80%, 96%)`, color: `hsl(${config.hue}, 70%, 40%)` }}>
+          {config.flag} {tt('final_quiz')} — {lvl}
         </div>
         <div className="text-[0.65rem] font-semibold tracking-widest uppercase text-foreground-muted mb-3">
-          Pregunta {qIdx + 1} de {questions.length}
+          {tt('question_of').replace('{0}', String(qIdx + 1)).replace('{1}', String(questions.length))}
         </div>
 
         <div className="bg-background border border-border rounded-[18px] p-5">
           <div className="text-[0.62rem] font-semibold tracking-widest uppercase text-foreground-muted mb-2">
-            {q.t === 'mc' ? '✦ Opción múltiple' : '✦ Escribe la respuesta'}
+            {q.t === 'mc' ? `✦ ${tt('multiple_choice')}` : `✦ ${tt('write_response')}`}
           </div>
           <div className="font-serif text-xl mb-4" dangerouslySetInnerHTML={{ __html: q.q }} />
 
@@ -174,9 +145,7 @@ export default function QuizPage() {
                 if (locked) {
                   if (i === q.ans) cls = 'bg-success-light border-success text-success';
                   else if (i === selected && !feedback?.correct) cls = 'bg-destructive/10 border-destructive text-destructive';
-                } else if (i === selected) {
-                  cls = isJp ? 'bg-jp-light border-jp text-jp' : 'bg-fr-light border-fr text-fr';
-                }
+                } else if (i === selected) cls = 'bg-background border-foreground/40';
                 return (
                   <button key={i} disabled={locked} onClick={() => setSelected(i)} className={`flex items-center gap-2 p-2.5 border-[1.5px] rounded-xl text-sm text-left transition-all ${cls}`}>
                     <span className="w-5 h-5 rounded-md bg-foreground/[0.06] flex items-center justify-center text-[0.63rem] font-bold">{labels[i]}</span>
@@ -193,30 +162,25 @@ export default function QuizPage() {
               onChange={e => setTextInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && nextAction()}
               disabled={locked}
-              placeholder="Escribe tu respuesta..."
+              placeholder={tt('write_answer')}
               className={`w-full p-3 border-[1.5px] rounded-xl text-sm bg-card outline-none ${locked ? (feedback?.correct ? 'border-success bg-success-light' : 'border-destructive bg-destructive/10') : 'border-border focus:border-foreground-secondary'}`}
             />
           )}
 
           {feedback && (
             <div className={`p-3 rounded-xl text-sm mt-3 animate-fade-in ${feedback.correct ? 'bg-success-light text-success' : 'bg-destructive/10 text-destructive'}`}>
-              <strong>{feedback.correct ? '✅ Correcto' : '❌ Incorrecto'}</strong>
-              {!feedback.correct && <span> — Respuesta: <em>{feedback.answer}</em></span>}
+              <strong>{feedback.correct ? `✅ ${tt('correct')}` : `❌ ${tt('incorrect')}`}</strong>
+              {!feedback.correct && <span> — {tt('answer_was')}: <em>{feedback.answer}</em></span>}
             </div>
           )}
         </div>
       </div>
 
       <div className="sticky bottom-0 bg-background/95 backdrop-blur-sm border-t border-border px-5 py-3 flex justify-end">
-        <button onClick={feedback ? advance : handleCheck} disabled={!feedback && selected === null && textInput.trim() === ''} className="px-5 py-2 rounded-full bg-foreground text-background text-sm font-medium disabled:opacity-40">
-          {feedback ? (qIdx < questions.length - 1 ? 'Siguiente →' : 'Ver resultado →') : 'Confirmar →'}
+        <button onClick={nextAction} disabled={!feedback && selected === null && textInput.trim() === ''} className="px-5 py-2 rounded-full bg-foreground text-background text-sm font-medium disabled:opacity-40">
+          {feedback ? (qIdx < questions.length - 1 ? `${tt('next')} →` : `${tt('see_result')} →`) : `${tt('confirm')} →`}
         </button>
       </div>
     </div>
   );
-
-  function nextAction() {
-    if (feedback) advance();
-    else handleCheck();
-  }
 }

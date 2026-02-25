@@ -1,4 +1,4 @@
-export type Lang = 'jp' | 'fr';
+export type Lang = string;
 
 export interface TheoryStep {
   t: 'th';
@@ -6,7 +6,7 @@ export interface TheoryStep {
   rd: string;
   mn: string;
   note: string;
-  ex?: { j?: string; f?: string; m: string }[];
+  ex?: { j?: string; f?: string; w?: string; m: string }[];
 }
 
 export interface MCStep {
@@ -139,12 +139,24 @@ export interface RankInfo {
   romaji?: string;
 }
 
+export interface GrammarEntry {
+  title: string;
+  explanation: string;
+  examples: { text: string; translation: string }[];
+}
+
+export interface VocabEntry {
+  word: string;
+  reading?: string;
+  meaning: string;
+  example?: string;
+}
+
 export interface AppState {
-  xp: { jp: number; fr: number };
-  prog: {
-    jp: { cur: string; done: Record<string, Record<string, boolean>>; passed: Record<string, boolean> };
-    fr: { cur: string; done: Record<string, Record<string, boolean>>; passed: Record<string, boolean> };
-  };
+  nativeLang: string;
+  activeLangs: string[];
+  xp: Record<string, number>;
+  prog: Record<string, { cur: string; done: Record<string, Record<string, boolean>>; passed: Record<string, boolean> }>;
   streak: { count: number; lastDate: string | null };
   earned: string[];
   fcTotal: number;

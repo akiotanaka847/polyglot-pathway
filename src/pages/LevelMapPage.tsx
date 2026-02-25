@@ -2,18 +2,23 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { LESSON_DATA, LEVELS } from '@/data/lessons';
 import { QUIZ_DATA } from '@/data/quizzes';
-import { Lang } from '@/data/types';
+import { getLangConfig } from '@/data/languages';
 import { useState } from 'react';
 
 export default function LevelMapPage() {
   const { lang } = useParams<{ lang: string }>();
   const navigate = useNavigate();
-  const { state } = useApp();
-  const l = (lang || 'jp') as Lang;
-  const isJp = l === 'jp';
-  const levels = LEVELS[l] || [];
-  const prog = state.prog[l];
+  const { state, tt, addActiveLang } = useApp();
+  const l = lang || 'jp';
+  const config = getLangConfig(l);
+  const levels = LEVELS[l] || config.levels;
+  const prog = state.prog[l] || { cur: levels[0], done: {}, passed: {} };
   const [openLevels, setOpenLevels] = useState<Record<string, boolean>>({ [levels[0]]: true });
+
+  // Ensure this language is active
+  if (!state.activeLangs.includes(l)) {
+    addActiveLang(l);
+  }
 
   const toggleLevel = (lvl: string) => {
     setOpenLevels(p => ({ ...p, [lvl]: !p[lvl] }));
@@ -24,12 +29,15 @@ export default function LevelMapPage() {
   return (
     <div className="animate-fade-in flex-1 overflow-y-auto">
       <div className="max-w-[740px] mx-auto p-5 lg:p-7">
-        <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[0.71rem] font-semibold mb-3 ${isJp ? 'bg-jp-light text-jp' : 'bg-fr-light text-fr'}`}>
-          {isJp ? '🇯🇵 Japonés' : '🇫🇷 Francés'}
+        <div
+          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[0.71rem] font-semibold mb-3"
+          style={{ background: `hsl(${config.hue}, 80%, 96%)`, color: `hsl(${config.hue}, 70%, 40%)` }}
+        >
+          {config.flag} {config.nativeName}
         </div>
-        <h2 className="font-serif text-3xl font-light mb-1">Ruta de aprendizaje</h2>
+        <h2 className="font-serif text-3xl font-light mb-1">{tt('learning_path')}</h2>
         <p className="text-sm text-foreground-muted leading-relaxed mb-5">
-          Completa las lecciones de cada nivel y supera el quiz final (≥70%) para desbloquear el siguiente.
+          {tt('complete_lessons')} {tt('unlock_quiz')}
         </p>
 
         <div className="flex flex-col gap-2">
@@ -41,25 +49,30 @@ export default function LevelMapPage() {
             const pct = lessons.length > 0 ? Math.round((doneCount / lessons.length) * 100) : 0;
             const quizAvail = (QUIZ_DATA[l]?.[lvl] || []).length > 0;
             const quizPassed = prog.passed[lvl];
-            const allDone = lessons.length > 0 && lessons.every(l => doneLessons[l.id]);
+            const allDone = lessons.length > 0 && lessons.every(les => doneLessons[les.id]);
 
             return (
-              <div key={lvl} className={`border-[1.5px] rounded-[16px] overflow-hidden ${unlocked ? (isJp ? 'border-jp' : 'border-fr') : 'border-border opacity-55'}`}>
+              <div key={lvl} className={`border-[1.5px] rounded-[16px] overflow-hidden ${unlocked ? '' : 'border-border opacity-55'}`}
+                style={unlocked ? { borderColor: `hsl(${config.hue}, 60%, 60%)` } : undefined}
+              >
                 <button
                   onClick={() => unlocked && toggleLevel(lvl)}
                   className="w-full flex items-center gap-3 px-4 py-3.5 bg-background hover:bg-card transition-colors text-left"
                 >
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-serif text-base font-bold ${unlocked ? (isJp ? 'bg-jp-light text-jp' : 'bg-fr-light text-fr') : 'bg-muted text-foreground-muted'}`}>
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center font-serif text-base font-bold"
+                    style={unlocked ? { background: `hsl(${config.hue}, 80%, 96%)`, color: `hsl(${config.hue}, 70%, 40%)` } : undefined}
+                  >
                     {lvl}
                   </div>
                   <div className="flex-1">
-                    <div className="font-semibold text-sm">{lvl} — {lessons.length} lecciones</div>
-                    <div className="text-[0.7rem] text-foreground-muted">{doneCount}/{lessons.length} completadas</div>
+                    <div className="font-semibold text-sm">{lvl} — {lessons.length} {tt('lessons')}</div>
+                    <div className="text-[0.7rem] text-foreground-muted">{doneCount}/{lessons.length} {tt('completed')}</div>
                   </div>
                   <div className="flex flex-col items-end gap-1">
                     <div className="text-[0.68rem] text-foreground-muted">{pct}%</div>
                     <div className="w-[68px] h-1 bg-border rounded-full overflow-hidden">
-                      <div className={`h-full rounded-full ${isJp ? 'bg-jp' : 'bg-fr'}`} style={{ width: `${pct}%` }} />
+                      <div className="h-full rounded-full" style={{ width: `${pct}%`, background: `hsl(${config.hue}, 70%, 46%)` }} />
                     </div>
                   </div>
                 </button>
@@ -67,7 +80,7 @@ export default function LevelMapPage() {
                 {openLevels[lvl] && unlocked && (
                   <div className="px-3 pb-3">
                     {lessons.length === 0 ? (
-                      <p className="text-sm text-foreground-muted px-3 py-2">📅 Próximamente...</p>
+                      <p className="text-sm text-foreground-muted px-3 py-2">📅 {tt('coming_soon')}</p>
                     ) : (
                       lessons.map((les, i) => {
                         const isDone = doneLessons[les.id];
@@ -82,30 +95,28 @@ export default function LevelMapPage() {
                             </div>
                             <div className="flex-1">
                               <div className="text-[0.83rem] font-medium">{les.title}</div>
-                              <div className="text-[0.68rem] text-foreground-muted">{les.steps.length} pasos</div>
+                              <div className="text-[0.68rem] text-foreground-muted">{les.steps.length} {tt('steps')}</div>
                             </div>
                             <div className={`text-[0.7rem] ${isDone ? 'text-success' : 'text-foreground-muted'}`}>
-                              {isDone ? 'Completada ✓' : 'Empezar'}
+                              {isDone ? `${tt('completed')} ✓` : tt('start')}
                             </div>
                           </button>
                         );
                       })
                     )}
 
-                    {/* Quiz row */}
                     {quizAvail && (
                       <button
                         onClick={() => allDone && navigate(`/quiz/${l}/${lvl}`)}
                         disabled={!allDone}
-                        className={`w-full flex items-center gap-2.5 p-2.5 rounded-xl border-[1.5px] border-dashed mt-2 transition-all ${
-                          isJp ? 'border-jp/30 bg-gradient-to-br from-jp/[0.07] to-jp/[0.02]' : 'border-fr/30 bg-gradient-to-br from-fr/[0.07] to-fr/[0.02]'
-                        } ${!allDone ? 'opacity-45 cursor-not-allowed' : 'hover:bg-jp-light cursor-pointer'}`}
+                        className={`w-full flex items-center gap-2.5 p-2.5 rounded-xl border-[1.5px] border-dashed mt-2 transition-all ${!allDone ? 'opacity-45 cursor-not-allowed' : 'hover:bg-card cursor-pointer'}`}
+                        style={{ borderColor: `hsl(${config.hue}, 50%, 75%)`, background: `hsl(${config.hue}, 80%, 98%)` }}
                       >
                         <div className="text-xl">{quizPassed ? '🏆' : allDone ? '📝' : '🔒'}</div>
                         <div className="flex-1 text-left">
-                          <div className="font-semibold text-[0.82rem]">Quiz Final — {lvl} {quizPassed ? '✅' : ''}</div>
+                          <div className="font-semibold text-[0.82rem]">{tt('final_quiz')} — {lvl} {quizPassed ? '✅' : ''}</div>
                           <div className="text-[0.68rem] text-foreground-muted">
-                            {quizPassed ? 'Superado — Puedes repetirlo' : !allDone ? `Completa las ${lessons.length} lecciones` : '15 preguntas · 60 seg/pregunta · Mínimo 70%'}
+                            {quizPassed ? tt('passed') : !allDone ? `${tt('complete_all')} ${lessons.length} ${tt('lessons')}` : `15 ${tt('questions')} · 60s · 70%`}
                           </div>
                         </div>
                       </button>
@@ -119,10 +130,13 @@ export default function LevelMapPage() {
 
         <div className="flex gap-2 mt-4">
           <button onClick={() => navigate('/')} className="px-3 py-1.5 rounded-full border border-border text-sm text-foreground-secondary hover:border-foreground transition-colors">
-            ← Inicio
+            ← {tt('go_home')}
           </button>
           <button onClick={() => navigate('/dashboard')} className="px-3 py-1.5 rounded-full border border-border text-sm text-foreground-secondary hover:border-foreground transition-colors">
-            📊 Mi progreso
+            📊 {tt('progress')}
+          </button>
+          <button onClick={() => navigate('/reference')} className="px-3 py-1.5 rounded-full border border-border text-sm text-foreground-secondary hover:border-foreground transition-colors">
+            📚 {tt('reference')}
           </button>
         </div>
       </div>
