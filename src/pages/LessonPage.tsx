@@ -131,34 +131,34 @@ export default function LessonPage() {
         </div>
         <div className="flex gap-1">{[0, 1, 2].map(i => (<span key={i} className={`text-sm transition-all ${i >= hearts ? 'opacity-20 scale-75' : ''}`}>❤️</span>))}</div>
       </div>
-      <div className="flex-1 overflow-y-auto max-w-[600px] w-full mx-auto px-4 py-6">
-        <div className="text-[0.65rem] font-semibold tracking-widest uppercase text-foreground-muted mb-2">
+      <div className="flex-1 overflow-y-auto max-w-[600px] w-full mx-auto px-4 py-3">
+        <div className="text-[0.6rem] font-semibold tracking-widest uppercase text-foreground-muted mb-1">
           {tt('step_of').replace('{0}', String(stepIdx + 1)).replace('{1}', String(steps.length))}
         </div>
         {step.t === 'th' && (
-          <div className="bg-background border border-border rounded-[18px] p-6 mb-3">
-            <div className="text-center p-4 rounded-[13px] mb-3 text-[2.5rem] leading-tight" style={{ background: `hsl(${config.hue}, 80%, 96%)`, color: `hsl(${config.hue}, 70%, 40%)` }}>
+          <div className="bg-background border border-border rounded-[16px] p-4 mb-2">
+            <div className="text-center p-2.5 rounded-[11px] mb-2 text-[1.8rem] leading-tight" style={{ background: `hsl(${config.hue}, 80%, 96%)`, color: `hsl(${config.hue}, 70%, 40%)` }}>
               <span className={fontClass}>{step.char}</span>
             </div>
-            <div className="text-center font-semibold mb-1">{step.rd}</div>
-            <div className="text-center text-sm text-foreground-secondary mb-3">{step.mn}</div>
-            <div className="text-sm text-foreground-secondary leading-relaxed bg-card rounded-lg p-3 border-l-[3px]" style={{ borderLeftColor: `hsl(${config.hue}, 70%, 46%)` }}>{step.note}</div>
-            {step.ex && <div className="mt-3 flex flex-col gap-1.5">{step.ex.map((e, i) => (<div key={i} className="flex items-baseline gap-2 text-sm"><span className={fontClass} style={{ color: `hsl(${config.hue}, 70%, 40%)` }}>{e.j || e.f || e.w}</span><span className="text-foreground-muted">→ {e.m}</span></div>))}</div>}
-            <button onClick={() => speakText(step.char, l)} className="mt-2 px-3 py-1 rounded-full border border-border bg-card text-[0.7rem] hover:bg-background transition-colors">🔊 {tt('listen')}</button>
+            <div className="text-center font-semibold text-sm mb-0.5">{step.rd}</div>
+            <div className="text-center text-xs text-foreground-secondary mb-2">{step.mn}</div>
+            <div className="text-xs text-foreground-secondary leading-relaxed bg-card rounded-lg p-2.5 border-l-[3px]" style={{ borderLeftColor: `hsl(${config.hue}, 70%, 46%)` }}>{step.note}</div>
+            {step.ex && <div className="mt-2 flex flex-col gap-1">{step.ex.map((e, i) => (<div key={i} className="flex items-baseline gap-2 text-xs"><span className={fontClass} style={{ color: `hsl(${config.hue}, 70%, 40%)` }}>{e.j || e.f || e.w}</span><span className="text-foreground-muted">→ {e.m}</span></div>))}</div>}
+            <button onClick={() => speakText(step.char, l)} className="mt-1.5 px-2.5 py-0.5 rounded-full border border-border bg-card text-[0.65rem] hover:bg-background transition-colors">🔊 {tt('listen')}</button>
           </div>
         )}
         {step.t === 'rd' && (
-          <div className="bg-card border border-border rounded-[14px] p-4 mb-3">
-            <div className="font-serif text-base font-semibold mb-2">{step.title}</div>
-            <div className={`text-sm leading-[2.1] ${fontClass}`}>{step.passage}</div>
+          <div className="bg-card border border-border rounded-[12px] p-3 mb-2">
+            <div className="font-serif text-sm font-semibold mb-1.5">{step.title}</div>
+            <div className={`text-xs leading-[2] ${fontClass}`}>{step.passage}</div>
           </div>
         )}
         {step.t !== 'th' && (
-          <div className="bg-background border border-border rounded-[18px] p-5 mb-3">
-            <div className="text-[0.62rem] font-semibold tracking-widest uppercase text-foreground-muted mb-2">
+          <div className="bg-background border border-border rounded-[16px] p-4 mb-2">
+            <div className="text-[0.6rem] font-semibold tracking-widest uppercase text-foreground-muted mb-1.5">
               {step.t === 'mc' ? `✦ ${tt('multiple_choice')}` : step.t === 'tx' ? `✦ ${tt('write_response')}` : step.t === 'or' ? `✦ ${tt('order_words')}` : `✦ ${tt('reading_comp')}`}
             </div>
-            <div className="font-serif text-xl mb-4 leading-snug" dangerouslySetInnerHTML={{ __html: step.q || '' }} />
+            <div className="font-serif text-base mb-3 leading-snug" dangerouslySetInnerHTML={{ __html: step.q || '' }} />
             {(step.t === 'mc' || step.t === 'rd') && step.opts && (
               <div className={`grid gap-2 ${step.opts.some(o => o.length > 30) ? 'grid-cols-1' : 'grid-cols-2'}`}>
                 {step.opts.map((opt, i) => {
