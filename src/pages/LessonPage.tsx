@@ -3,8 +3,48 @@ import { useApp } from '@/contexts/AppContext';
 import { LESSON_DATA } from '@/data/lessons/index';
 import { LessonStep } from '@/data/types';
 import { getLangConfig } from '@/data/languages';
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useMemo } from 'react';
 import { normalizeAnswer, shuffleArray, speakText, playCorrectSound, playIncorrectSound } from '@/utils/helpers';
+
+// Cultural watermark background
+function CulturalWatermark({ emojis, hue }: { emojis: string[]; hue: number }) {
+  const positions = useMemo(() => {
+    const pts: { emoji: string; x: number; y: number; rot: number; size: number; delay: number }[] = [];
+    for (let i = 0; i < 8; i++) {
+      pts.push({
+        emoji: emojis[i % emojis.length],
+        x: 5 + (i % 4) * 25 + (Math.random() * 10 - 5),
+        y: 5 + Math.floor(i / 4) * 45 + (Math.random() * 15 - 7),
+        rot: Math.random() * 40 - 20,
+        size: 60 + Math.random() * 40,
+        delay: i * 1.2,
+      });
+    }
+    return pts;
+  }, [emojis]);
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+      {positions.map((p, i) => (
+        <span
+          key={i}
+          className="absolute animate-float select-none"
+          style={{
+            left: `${p.x}%`,
+            top: `${p.y}%`,
+            fontSize: `${p.size}px`,
+            transform: `rotate(${p.rot}deg)`,
+            opacity: 0.045,
+            animationDelay: `${p.delay}s`,
+            animationDuration: `${8 + i * 0.7}s`,
+          }}
+        >
+          {p.emoji}
+        </span>
+      ))}
+    </div>
+  );
+}
 
 export default function LessonPage() {
   const { lang, level, index } = useParams();
@@ -17,6 +57,7 @@ export default function LessonPage() {
   const config = getLangConfig(l);
   const lessons = LESSON_DATA[l]?.[lvl] || [];
   const lesson = lessons[idx];
+  const culturalEmojis = config.culturalEmojis || [];
 
   const [stepIdx, setStepIdx] = useState(0);
   const [hearts, setHearts] = useState(3);
@@ -94,19 +135,20 @@ export default function LessonPage() {
     const secs = Math.round((Date.now() - startTime.current) / 1000);
     const nextIdx = idx + 1;
     return (
-      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-fade-in">
-        <div className="w-20 h-20 rounded-full flex items-center justify-center text-4xl mb-4 animate-pop-in" style={{ background: `hsl(${config.hue}, 80%, 96%)` }}>
+      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-fade-in relative">
+        {culturalEmojis.length > 0 && <CulturalWatermark emojis={culturalEmojis} hue={config.hue} />}
+        <div className="w-20 h-20 rounded-full flex items-center justify-center text-4xl mb-4 animate-pop-in relative z-10" style={{ background: `hsl(${config.hue}, 80%, 96%)` }}>
           {acc >= 90 ? '⭐' : acc >= 70 ? '🏆' : '🎯'}
         </div>
-        <h2 className="font-serif text-3xl font-light mb-1">{acc >= 90 ? tt('perfect') : tt('lesson_complete')}</h2>
-        <p className="text-sm text-foreground-secondary mb-4">{acc >= 70 ? tt('excellent') : tt('keep_practicing')}</p>
-        <div className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-gold text-card rounded-full font-semibold text-sm mb-5 animate-pop-in">⚡ +{xpEarned} XP</div>
-        <div className="grid grid-cols-3 gap-2 w-full max-w-xs mb-5">
+        <h2 className="font-serif text-3xl font-light mb-1 relative z-10">{acc >= 90 ? tt('perfect') : tt('lesson_complete')}</h2>
+        <p className="text-sm text-foreground-secondary mb-4 relative z-10">{acc >= 70 ? tt('excellent') : tt('keep_practicing')}</p>
+        <div className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-gold text-card rounded-full font-semibold text-sm mb-5 animate-pop-in relative z-10">⚡ +{xpEarned} XP</div>
+        <div className="grid grid-cols-3 gap-2 w-full max-w-xs mb-5 relative z-10">
           <div className="bg-card border border-border rounded-[13px] p-3 text-center"><div className="font-serif text-2xl font-semibold">{acc}%</div><div className="text-[0.64rem] text-foreground-muted">{tt('accuracy')}</div></div>
           <div className="bg-card border border-border rounded-[13px] p-3 text-center"><div className="font-serif text-2xl font-semibold">{secs}s</div><div className="text-[0.64rem] text-foreground-muted">{tt('time')}</div></div>
           <div className="bg-card border border-border rounded-[13px] p-3 text-center"><div className="font-serif text-2xl font-semibold text-gold">+{xpEarned}</div><div className="text-[0.64rem] text-foreground-muted">XP</div></div>
         </div>
-        <div className="flex flex-col gap-2 w-full max-w-xs">
+        <div className="flex flex-col gap-2 w-full max-w-xs relative z-10">
           {nextIdx < lessons.length ? (
             <button onClick={() => { window.location.href = `/lesson/${l}/${lvl}/${nextIdx}`; }} className="w-full py-3 rounded-full bg-foreground text-background font-medium">{tt('next_lesson')} →</button>
           ) : (
@@ -123,15 +165,18 @@ export default function LessonPage() {
   const fontClass = config.fontClass || 'font-serif';
 
   return (
-    <div className="flex-1 flex flex-col">
-      <div className="flex items-center gap-3 px-4 h-[52px] border-b border-border bg-card shrink-0">
+    <div className="flex-1 flex flex-col relative">
+      {/* Cultural watermark */}
+      {culturalEmojis.length > 0 && <CulturalWatermark emojis={culturalEmojis} hue={config.hue} />}
+      
+      <div className="flex items-center gap-3 px-4 h-[52px] border-b border-border bg-card shrink-0 relative z-10">
         <button onClick={() => { if (confirm(tt('exit_confirm'))) navigate(`/levels/${l}`); }} className="px-3 py-1 rounded-full border border-border text-sm">✕</button>
         <div className="flex-1 bg-border rounded-full h-1.5 overflow-hidden">
           <div className="h-full rounded-full transition-all duration-500" style={{ width: `${progress}%`, background: `linear-gradient(to right, hsl(${config.hue}, 60%, 35%), hsl(${config.hue}, 70%, 46%))` }} />
         </div>
         <div className="flex gap-1">{[0, 1, 2].map(i => (<span key={i} className={`text-sm transition-all ${i >= hearts ? 'opacity-20 scale-75' : ''}`}>❤️</span>))}</div>
       </div>
-      <div className="flex-1 overflow-y-auto max-w-[600px] w-full mx-auto px-4 py-3">
+      <div className="flex-1 overflow-y-auto max-w-[600px] w-full mx-auto px-4 py-3 relative z-10">
         <div className="text-[0.6rem] font-semibold tracking-widest uppercase text-foreground-muted mb-1">
           {tt('step_of').replace('{0}', String(stepIdx + 1)).replace('{1}', String(steps.length))}
         </div>
@@ -195,7 +240,7 @@ export default function LessonPage() {
           </div>
         )}
       </div>
-      <div className="sticky bottom-0 bg-background/95 backdrop-blur-sm border-t border-border px-5 py-3 flex justify-end gap-2">
+      <div className="sticky bottom-0 bg-background/95 backdrop-blur-sm border-t border-border px-5 py-3 flex justify-end gap-2 relative z-10">
         {!locked && step.t !== 'th' && (<button onClick={() => { setAccuracy(p => [...p, false]); advance(); }} className="px-3 py-2 rounded-full border border-border text-sm text-foreground-secondary">{tt('skip')}</button>)}
         <button onClick={nextAction} disabled={!canCheck && !feedback} className="px-5 py-2 rounded-full bg-foreground text-background text-sm font-medium disabled:opacity-40 transition-opacity">
           {feedback ? `${tt('next')} →` : step.t === 'th' ? `${tt('continue')} →` : `${tt('check')} →`}

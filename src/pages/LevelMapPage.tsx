@@ -3,7 +3,15 @@ import { useApp } from '@/contexts/AppContext';
 import { LESSON_DATA, LEVELS } from '@/data/lessons/index';
 import { QUIZ_DATA } from '@/data/quizzes';
 import { getLangConfig } from '@/data/languages';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { Lesson } from '@/data/types';
+
+interface UnitGroup {
+  id: string;
+  name: string;
+  emoji: string;
+  lessons: { lesson: Lesson; originalIndex: number }[];
+}
 
 export default function LevelMapPage() {
   const { lang } = useParams<{ lang: string }>();
@@ -14,14 +22,39 @@ export default function LevelMapPage() {
   const levels = LEVELS[l] || config.levels;
   const prog = state.prog[l] || { cur: levels[0], done: {}, passed: {} };
   const [openLevels, setOpenLevels] = useState<Record<string, boolean>>({ [levels[0]]: true });
+  const [openUnits, setOpenUnits] = useState<Record<string, boolean>>({});
 
-  // Ensure this language is active
   if (!state.activeLangs.includes(l)) {
     addActiveLang(l);
   }
 
   const toggleLevel = (lvl: string) => {
     setOpenLevels(p => ({ ...p, [lvl]: !p[lvl] }));
+  };
+
+  const toggleUnit = (key: string) => {
+    setOpenUnits(p => ({ ...p, [key]: !p[key] }));
+  };
+
+  // Group lessons by unit
+  const groupByUnit = (lessons: Lesson[]): UnitGroup[] => {
+    const groups: UnitGroup[] = [];
+    const map = new Map<string, UnitGroup>();
+
+    lessons.forEach((lesson, i) => {
+      const unitId = lesson.unit?.id || `auto-${Math.floor(i / 6)}`;
+      const unitName = lesson.unit?.name || `Unidad ${Math.floor(i / 6) + 1}`;
+      const unitEmoji = lesson.unit?.emoji || '📦';
+
+      if (!map.has(unitId)) {
+        const group: UnitGroup = { id: unitId, name: unitName, emoji: unitEmoji, lessons: [] };
+        map.set(unitId, group);
+        groups.push(group);
+      }
+      map.get(unitId)!.lessons.push({ lesson, originalIndex: i });
+    });
+
+    return groups;
   };
 
   const icons: Record<string, string> = { vocab: '📝', grammar: '📖', reading: '📚', writing: '✍️' };
@@ -50,6 +83,7 @@ export default function LevelMapPage() {
             const quizAvail = (QUIZ_DATA[l]?.[lvl] || []).length > 0;
             const quizPassed = prog.passed[lvl];
             const allDone = lessons.length > 0 && lessons.every(les => doneLessons[les.id]);
+            const units = groupByUnit(lessons);
 
             return (
               <div key={lvl} className={`border-[1.5px] rounded-[16px] overflow-hidden ${unlocked ? '' : 'border-border opacity-55'}`}
@@ -81,7 +115,68 @@ export default function LevelMapPage() {
                   <div className="px-3 pb-3">
                     {lessons.length === 0 ? (
                       <p className="text-sm text-foreground-muted px-3 py-2">📅 {tt('coming_soon')}</p>
+                    ) : units.length > 1 ? (
+                      // Unit-based view
+                      units.map((unit, unitIdx) => {
+                        const unitKey = `${lvl}-${unit.id}`;
+                        const unitDoneCount = unit.lessons.filter(({ lesson }) => doneLessons[lesson.id]).length;
+                        const unitPct = Math.round((unitDoneCount / unit.lessons.length) * 100);
+                        // Unlock: first unit always open, others need 80% of previous
+                        const prevUnit = unitIdx > 0 ? units[unitIdx - 1] : null;
+                        const prevDone = prevUnit ? prevUnit.lessons.filter(({ lesson }) => doneLessons[lesson.id]).length : 0;
+                        const prevTotal = prevUnit ? prevUnit.lessons.length : 0;
+                        const unitUnlocked = unitIdx === 0 || (prevTotal > 0 && prevDone / prevTotal >= 0.8);
+                        const isOpen = openUnits[unitKey] ?? (unitIdx === 0 && unitDoneCount < unit.lessons.length);
+
+                        return (
+                          <div key={unit.id} className={`mb-1.5 ${!unitUnlocked ? 'opacity-40' : ''}`}>
+                            <button
+                              onClick={() => unitUnlocked && toggleUnit(unitKey)}
+                              className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl hover:bg-background transition-all text-left"
+                            >
+                              <span className="text-base">{unitUnlocked ? unit.emoji : '🔒'}</span>
+                              <div className="flex-1">
+                                <div className="text-[0.78rem] font-semibold">{unit.name}</div>
+                                <div className="text-[0.65rem] text-foreground-muted">
+                                  {unitDoneCount}/{unit.lessons.length} {tt('completed')} · {unitPct}%
+                                </div>
+                              </div>
+                              <div className="w-[50px] h-1 bg-border rounded-full overflow-hidden">
+                                <div className="h-full rounded-full transition-all" style={{ width: `${unitPct}%`, background: `hsl(${config.hue}, 70%, 46%)` }} />
+                              </div>
+                              <span className={`text-[0.65rem] text-foreground-muted transition-transform ${isOpen ? 'rotate-90' : ''}`}>▶</span>
+                            </button>
+
+                            {isOpen && unitUnlocked && (
+                              <div className="pl-4 mt-0.5">
+                                {unit.lessons.map(({ lesson: les, originalIndex: i }) => {
+                                  const isDone = doneLessons[les.id];
+                                  return (
+                                    <button
+                                      key={les.id}
+                                      onClick={() => navigate(`/lesson/${l}/${lvl}/${i}`)}
+                                      className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl hover:bg-background border border-transparent hover:border-border transition-all text-left mb-0.5"
+                                    >
+                                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs ${isDone ? 'bg-success-light' : 'bg-background'}`}>
+                                        {isDone ? '✅' : icons[les.type] || '📝'}
+                                      </div>
+                                      <div className="flex-1 min-w-0">
+                                        <div className="text-[0.78rem] font-medium truncate">{les.title}</div>
+                                        <div className="text-[0.63rem] text-foreground-muted">{les.steps.length} {tt('steps')}</div>
+                                      </div>
+                                      <div className={`text-[0.65rem] shrink-0 ${isDone ? 'text-success' : 'text-foreground-muted'}`}>
+                                        {isDone ? '✓' : tt('start')}
+                                      </div>
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })
                     ) : (
+                      // Flat view for few lessons
                       lessons.map((les, i) => {
                         const isDone = doneLessons[les.id];
                         return (
