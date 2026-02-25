@@ -1,0 +1,197 @@
+import { useParams, useNavigate } from 'react-router-dom';
+import { useApp } from '@/contexts/AppContext';
+import { LESSON_DATA } from '@/data/lessons';
+import { Lang, LessonStep } from '@/data/types';
+import { useState, useCallback, useRef } from 'react';
+import { normalizeAnswer, shuffleArray, speakText } from '@/utils/helpers';
+
+export default function LessonPage() {
+  const { lang, level, index } = useParams();
+  const navigate = useNavigate();
+  const { addXP, markLessonDone, checkStreak, earnAchievement } = useApp();
+
+  const l = (lang || 'jp') as Lang;
+  const lvl = level || 'N5';
+  const idx = parseInt(index || '0');
+  const isJp = l === 'jp';
+  const lessons = LESSON_DATA[l]?.[lvl] || [];
+  const lesson = lessons[idx];
+
+  const [stepIdx, setStepIdx] = useState(0);
+  const [hearts, setHearts] = useState(3);
+  const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
+  const [textInput, setTextInput] = useState('');
+  const [orderPlaced, setOrderPlaced] = useState<number[]>([]);
+  const [shuffledWords, setShuffledWords] = useState<string[]>([]);
+  const [feedback, setFeedback] = useState<{ correct: boolean; answer: string } | null>(null);
+  const [locked, setLocked] = useState(false);
+  const [accuracy, setAccuracy] = useState<boolean[]>([]);
+  const startTime = useRef(Date.now());
+  const [completed, setCompleted] = useState(false);
+  const [xpEarned, setXpEarned] = useState(0);
+
+  const initOrderWords = useCallback((step: LessonStep) => {
+    if (step.t === 'or') {
+      setShuffledWords(shuffleArray([...step.words]));
+      setOrderPlaced([]);
+    }
+  }, []);
+
+  if (!lesson) {
+    return <div className="flex-1 flex items-center justify-center"><p>Lección no disponible</p></div>;
+  }
+
+  const steps = lesson.steps;
+  const step = steps[stepIdx] as LessonStep | undefined;
+  const progress = stepIdx / steps.length * 100;
+
+  const handleCheck = () => {
+    if (!step) return;
+    if (step.t === 'th') { advance(true); return; }
+    let correct = false;
+    let correctAns = '';
+    if (step.t === 'mc' || step.t === 'rd') {
+      correct = selectedChoice === step.ans;
+      correctAns = step.opts[step.ans];
+    } else if (step.t === 'tx') {
+      correct = normalizeAnswer(textInput) === normalizeAnswer(step.ans);
+      correctAns = step.ans;
+    } else if (step.t === 'or') {
+      const expected = step.ans.map(i => step.words[i]);
+      const got = orderPlaced.map(i => shuffledWords[i]);
+      correct = JSON.stringify(got) === JSON.stringify(expected);
+      correctAns = expected.join(' ');
+    }
+    setFeedback({ correct, answer: correctAns });
+    setLocked(true);
+    setAccuracy(prev => [...prev, correct]);
+    if (!correct) setHearts(h => Math.max(0, h - 1));
+  };
+
+  const advance = (isTheory = false) => {
+    if (!isTheory) setAccuracy(prev => [...prev, true]);
+    setFeedback(null); setLocked(false); setSelectedChoice(null); setTextInput(''); setOrderPlaced([]);
+    const next = stepIdx + 1;
+    if (next >= steps.length) { completeLesson(); }
+    else { setStepIdx(next); const ns = steps[next]; if (ns?.t === 'or') initOrderWords(ns); }
+  };
+
+  const completeLesson = () => {
+    const acc = accuracy.length ? Math.round(accuracy.filter(Boolean).length / accuracy.length * 100) : 100;
+    const xp = Math.round(80 * (acc / 100) + hearts * 10);
+    addXP(l, xp); markLessonDone(l, lvl, lesson.id); checkStreak(); earnAchievement('first_lesson');
+    setXpEarned(xp); setCompleted(true);
+  };
+
+  const nextAction = () => { if (feedback) advance(); else handleCheck(); };
+  const canCheck = step?.t === 'th' || selectedChoice !== null || textInput.trim().length > 0 || orderPlaced.length > 0;
+
+  if (step?.t === 'or' && shuffledWords.length === 0) initOrderWords(step);
+
+  if (completed) {
+    const acc = accuracy.length ? Math.round(accuracy.filter(Boolean).length / accuracy.length * 100) : 100;
+    const secs = Math.round((Date.now() - startTime.current) / 1000);
+    const nextIdx = idx + 1;
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-fade-in">
+        <div className={`w-20 h-20 rounded-full flex items-center justify-center text-4xl mb-4 animate-pop-in ${isJp ? 'bg-jp-light' : 'bg-fr-light'}`}>{acc >= 90 ? '⭐' : acc >= 70 ? '🏆' : '🎯'}</div>
+        <h2 className="font-serif text-3xl font-light mb-1">{acc >= 90 ? '¡Perfecto!' : '¡Lección completada!'}</h2>
+        <p className="text-sm text-foreground-secondary mb-4">{acc >= 70 ? 'Excelente trabajo.' : 'Sigue practicando.'}</p>
+        <div className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-gold text-card rounded-full font-semibold text-sm mb-5 animate-pop-in">⚡ +{xpEarned} XP</div>
+        <div className="grid grid-cols-3 gap-2 w-full max-w-xs mb-5">
+          <div className="bg-card border border-border rounded-[13px] p-3 text-center"><div className="font-serif text-2xl font-semibold">{acc}%</div><div className="text-[0.64rem] text-foreground-muted">Precisión</div></div>
+          <div className="bg-card border border-border rounded-[13px] p-3 text-center"><div className="font-serif text-2xl font-semibold">{secs}s</div><div className="text-[0.64rem] text-foreground-muted">Tiempo</div></div>
+          <div className="bg-card border border-border rounded-[13px] p-3 text-center"><div className="font-serif text-2xl font-semibold text-gold">+{xpEarned}</div><div className="text-[0.64rem] text-foreground-muted">XP</div></div>
+        </div>
+        <div className="flex flex-col gap-2 w-full max-w-xs">
+          {nextIdx < lessons.length ? (
+            <button onClick={() => { window.location.href = `/lesson/${l}/${lvl}/${nextIdx}`; }} className="w-full py-3 rounded-full bg-foreground text-background font-medium">Siguiente lección →</button>
+          ) : (
+            <button onClick={() => navigate(`/levels/${l}`)} className="w-full py-3 rounded-full bg-foreground text-background font-medium">🗺 Ver mapa</button>
+          )}
+          <button onClick={() => navigate(`/levels/${l}`)} className="w-full py-3 rounded-full border border-border text-foreground-secondary font-medium">Ver mapa</button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!step) return null;
+
+  return (
+    <div className="flex-1 flex flex-col">
+      <div className="flex items-center gap-3 px-4 h-[52px] border-b border-border bg-card shrink-0">
+        <button onClick={() => { if (confirm('¿Seguro que quieres salir?')) navigate(`/levels/${l}`); }} className="px-3 py-1 rounded-full border border-border text-sm">✕</button>
+        <div className="flex-1 bg-border rounded-full h-1.5 overflow-hidden">
+          <div className={`h-full rounded-full transition-all duration-500 ${isJp ? 'bg-gradient-to-r from-jp-dark to-jp' : 'bg-gradient-to-r from-fr to-fr-accent'}`} style={{ width: `${progress}%` }} />
+        </div>
+        <div className="flex gap-1">{[0, 1, 2].map(i => (<span key={i} className={`text-sm transition-all ${i >= hearts ? 'opacity-20 scale-75' : ''}`}>❤️</span>))}</div>
+      </div>
+      <div className="flex-1 overflow-y-auto max-w-[600px] w-full mx-auto px-4 py-6">
+        <div className="text-[0.65rem] font-semibold tracking-widest uppercase text-foreground-muted mb-2">Paso {stepIdx + 1} de {steps.length}</div>
+        {step.t === 'th' && (
+          <div className="bg-background border border-border rounded-[18px] p-6 mb-3">
+            <div className={`text-center p-4 rounded-[13px] mb-3 text-[2.5rem] leading-tight ${isJp ? 'bg-jp-light font-serif-jp text-jp' : 'bg-fr-light font-serif italic text-fr'}`}>{step.char}</div>
+            <div className="text-center font-semibold mb-1">{step.rd}</div>
+            <div className="text-center text-sm text-foreground-secondary mb-3">{step.mn}</div>
+            <div className={`text-sm text-foreground-secondary leading-relaxed bg-card rounded-lg p-3 border-l-[3px] ${isJp ? 'border-l-jp' : 'border-l-fr'}`}>{step.note}</div>
+            {step.ex && <div className="mt-3 flex flex-col gap-1.5">{step.ex.map((e, i) => (<div key={i} className="flex items-baseline gap-2 text-sm"><span className={isJp ? 'font-serif-jp text-jp' : 'font-serif italic text-fr'}>{e.j || e.f}</span><span className="text-foreground-muted">→ {e.m}</span></div>))}</div>}
+            <button onClick={() => speakText(step.char, l)} className="mt-2 px-3 py-1 rounded-full border border-border bg-card text-[0.7rem] hover:bg-background transition-colors">🔊 Escuchar</button>
+          </div>
+        )}
+        {step.t === 'rd' && (
+          <div className="bg-card border border-border rounded-[14px] p-4 mb-3">
+            <div className="font-serif text-base font-semibold mb-2">{step.title}</div>
+            <div className={`text-sm leading-[2.1] ${isJp ? 'font-serif-jp' : 'font-serif'}`}>{step.passage}</div>
+          </div>
+        )}
+        {step.t !== 'th' && (
+          <div className="bg-background border border-border rounded-[18px] p-5 mb-3">
+            <div className="text-[0.62rem] font-semibold tracking-widest uppercase text-foreground-muted mb-2">
+              {step.t === 'mc' ? '✦ Opción múltiple' : step.t === 'tx' ? '✦ Escribe la respuesta' : step.t === 'or' ? '✦ Ordena las palabras' : '✦ Comprensión lectora'}
+            </div>
+            <div className="font-serif text-xl mb-4 leading-snug" dangerouslySetInnerHTML={{ __html: step.q || '' }} />
+            {(step.t === 'mc' || step.t === 'rd') && step.opts && (
+              <div className={`grid gap-2 ${step.opts.some(o => o.length > 30) ? 'grid-cols-1' : 'grid-cols-2'}`}>
+                {step.opts.map((opt, i) => {
+                  const labels = ['A', 'B', 'C', 'D'];
+                  let cls = 'bg-card border-border hover:border-foreground-secondary hover:bg-background';
+                  if (locked) { if (i === step.ans) cls = 'bg-success-light border-success text-success'; else if (i === selectedChoice && !feedback?.correct) cls = 'bg-destructive/10 border-destructive text-destructive'; else cls = 'bg-card border-border'; }
+                  else if (i === selectedChoice) cls = isJp ? 'bg-jp-light border-jp text-jp' : 'bg-fr-light border-fr text-fr';
+                  return (<button key={i} disabled={locked} onClick={() => setSelectedChoice(i)} className={`flex items-center gap-2 p-2.5 border-[1.5px] rounded-xl text-sm text-left transition-all ${cls}`}><span className="w-5 h-5 rounded-md bg-foreground/[0.06] flex items-center justify-center text-[0.63rem] font-bold shrink-0">{labels[i]}</span>{opt}</button>);
+                })}
+              </div>
+            )}
+            {step.t === 'tx' && (
+              <>
+                <input value={textInput} onChange={e => setTextInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && canCheck && nextAction()} disabled={locked} placeholder="Escribe tu respuesta..." className={`w-full p-3 border-[1.5px] rounded-xl text-sm bg-card outline-none transition-colors ${locked ? (feedback?.correct ? 'border-success bg-success-light' : 'border-destructive bg-destructive/10') : 'border-border focus:border-foreground-secondary'}`} />
+                {step.hint && <div className="text-[0.68rem] text-foreground-muted mt-1">💡 Pista: {step.hint}</div>}
+              </>
+            )}
+            {step.t === 'or' && (
+              <>
+                <div className={`min-h-[46px] p-2 border-[1.5px] border-dashed rounded-xl flex flex-wrap gap-1.5 mb-2 transition-colors ${locked ? (feedback?.correct ? 'border-success bg-success-light' : 'border-destructive bg-destructive/10') : 'border-border'}`}>
+                  {orderPlaced.map((wi, pi) => (<span key={pi} onClick={() => { if (locked) return; setOrderPlaced(p => p.filter((_, j) => j !== pi)); }} className={`px-3 py-1 rounded-lg text-[0.78rem] font-medium cursor-pointer text-card ${isJp ? 'bg-jp' : 'bg-fr'}`}>{shuffledWords[wi]}</span>))}
+                </div>
+                <div className="min-h-[40px] p-2 bg-foreground/[0.03] rounded-lg flex flex-wrap gap-1.5">
+                  {shuffledWords.map((w, i) => { const used = orderPlaced.includes(i); return (<span key={i} onClick={() => { if (locked || used) return; setOrderPlaced(p => [...p, i]); }} className={`px-3 py-1 rounded-lg text-[0.78rem] font-medium border-[1.5px] border-border bg-card cursor-pointer transition-all ${used ? 'opacity-25' : 'hover:border-foreground-secondary hover:-translate-y-0.5'}`}>{w}</span>); })}
+                </div>
+              </>
+            )}
+            {feedback && (
+              <div className={`p-3 rounded-xl text-sm mt-3 animate-fade-in ${feedback.correct ? 'bg-success-light text-success border border-success/30' : 'bg-destructive/10 text-destructive border border-destructive/30'}`}>
+                <strong className="block mb-0.5">{feedback.correct ? '✅ ¡Correcto!' : '❌ Incorrecto'}</strong>
+                {feedback.correct ? 'Muy bien, sigue así.' : `La respuesta correcta era: ${feedback.answer}`}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+      <div className="sticky bottom-0 bg-background/95 backdrop-blur-sm border-t border-border px-5 py-3 flex justify-end gap-2">
+        {!locked && step.t !== 'th' && (<button onClick={() => { setAccuracy(p => [...p, false]); advance(); }} className="px-3 py-2 rounded-full border border-border text-sm text-foreground-secondary">Saltar</button>)}
+        <button onClick={nextAction} disabled={!canCheck && !feedback} className="px-5 py-2 rounded-full bg-foreground text-background text-sm font-medium disabled:opacity-40 transition-opacity">
+          {feedback ? 'Siguiente →' : step.t === 'th' ? 'Continuar →' : 'Verificar →'}
+        </button>
+      </div>
+    </div>
+  );
+}
