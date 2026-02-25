@@ -46,6 +46,7 @@ export interface Lesson {
   title: string;
   type: 'vocab' | 'grammar' | 'reading' | 'writing';
   steps: LessonStep[];
+  unit?: { id: string; name: string; emoji: string };
 }
 
 export interface QuizQuestion {

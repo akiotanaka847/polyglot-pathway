@@ -9,6 +9,7 @@ export interface LangConfig {
   levelSystem: string;
   script?: string;
   fontClass?: string;
+  culturalEmojis?: string[];
 }
 
 export const LANGUAGES: LangConfig[] = [
