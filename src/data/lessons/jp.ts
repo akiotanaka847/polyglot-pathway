@@ -345,4 +345,203 @@ export const jpN4Lessons: Lesson[] = [
       { t: 'tx', q: '¿Condicional たら de 食べる?', ans: 'tabetara' },
     ]
   },
+  {
+    id: 'jp-n4-6', title: 'Forma potencial (できる)', type: 'grammar',
+    steps: [
+      { t: 'th', char: '〜られる/〜える', rd: '~rareru/~eru', mn: 'Poder hacer ~', note: 'たべる→たべられる, のむ→のめる, する→できる.' },
+      { t: 'mc', q: '¿Forma potencial de 読む?', opts: ['読まれる', '読める', '読みられる', '読むれる'], ans: 1 },
+      { t: 'tx', q: '¿"Puedo hablar japonés" en romaji?', ans: 'nihongo ga hanaseru' },
+      { t: 'mc', q: '¿Potencial de する?', opts: ['される', 'しられる', 'できる', 'すれる'], ans: 2 },
+      { t: 'or', q: 'Ordena: "Puedo comer sushi"', words: ['すしが', 'たべられます'], ans: [0, 1] },
+    ]
+  },
+  {
+    id: 'jp-n4-7', title: 'Forma volitiva (〜よう)', type: 'grammar',
+    steps: [
+      { t: 'th', char: '〜よう/〜おう', rd: '~you/~ou', mn: 'Vamos a ~ / Hagamos ~', note: 'たべる→たべよう, 行く→行こう, する→しよう.' },
+      { t: 'mc', q: '¿Volitiva de 行く?', opts: ['行きよう', '行こう', '行くよう', '行けよう'], ans: 1 },
+      { t: 'tx', q: '¿"Vamos a comer" en romaji?', ans: 'tabeyou' },
+      { t: 'mc', q: '¿Volitiva de する?', opts: ['すよう', 'しよう', 'さよう', 'せよう'], ans: 1 },
+    ]
+  },
+  {
+    id: 'jp-n4-8', title: 'Forma pasiva (〜られる)', type: 'grammar',
+    steps: [
+      { t: 'th', char: '〜られる/〜あれる', rd: '~rareru/~areru', mn: 'Ser hecho ~', note: 'たべる→たべられる, 読む→読まれる. El sujeto recibe la acción.' },
+      { t: 'mc', q: '¿Pasiva de 書く(kaku)?', opts: ['書かれる', '書きれる', '書くれる', '書けれる'], ans: 0 },
+      { t: 'th', char: '先生に褒められた', rd: 'sensei ni homerareta', mn: 'Fui elogiado por el profesor', note: 'Agente con に.' },
+      { t: 'tx', q: '¿Pasiva de 呼ぶ(yobu)?', ans: 'yobareru' },
+    ]
+  },
+  {
+    id: 'jp-n4-9', title: 'Forma causativa (〜させる)', type: 'grammar',
+    steps: [
+      { t: 'th', char: '〜させる/〜あせる', rd: '~saseru/~aseru', mn: 'Hacer que alguien haga ~', note: 'たべる→たべさせる, 読む→読ませる.' },
+      { t: 'mc', q: '¿Causativa de 飲む?', opts: ['飲ませる', '飲みさせる', '飲まれる', '飲むさせる'], ans: 0 },
+      { t: 'th', char: '母は子供に野菜を食べさせた', rd: 'haha wa kodomo ni yasai wo tabesaseta', mn: 'La madre hizo que el niño comiera verduras', note: 'Patrón causativo.' },
+      { t: 'tx', q: '¿Causativa de 行く?', ans: 'ikaseru' },
+    ]
+  },
+  {
+    id: 'jp-n4-10', title: 'Verbos de dar y recibir', type: 'grammar',
+    steps: [
+      { t: 'th', char: 'あげる', rd: 'ageru', mn: 'Dar (yo→otro)', note: '友達にプレゼントをあげる = Dar un regalo a un amigo.' },
+      { t: 'th', char: 'もらう', rd: 'morau', mn: 'Recibir', note: '友達からプレゼントをもらう = Recibir un regalo de un amigo.' },
+      { t: 'th', char: 'くれる', rd: 'kureru', mn: 'Dar (otro→yo)', note: '友達がプレゼントをくれた = Mi amigo me dio un regalo.' },
+      { t: 'mc', q: '¿Cuál significa "recibir"?', opts: ['あげる', 'くれる', 'もらう', 'やる'], ans: 2 },
+      { t: 'tx', q: '¿"Dar" (yo a otro) en romaji?', ans: 'ageru' },
+    ]
+  },
+  {
+    id: 'jp-n4-11', title: '〜てあげる/もらう/くれる', type: 'grammar',
+    steps: [
+      { t: 'th', char: '〜てあげる', rd: '~te ageru', mn: 'Hacer algo por alguien', note: '荷物を持ってあげる = Llevar el equipaje (por alguien).' },
+      { t: 'th', char: '〜てもらう', rd: '~te morau', mn: 'Que alguien haga algo por mí', note: '友達に手伝ってもらう = Que un amigo me ayude.' },
+      { t: 'th', char: '〜てくれる', rd: '~te kureru', mn: 'Que alguien haga algo por mí (perspectiva del dador)', note: '友達が手伝ってくれた = Mi amigo me ayudó.' },
+      { t: 'mc', q: '¿"Mi amigo me enseñó" = ?', opts: ['友達が教えてくれた', '友達に教えてあげた', '友達に教えてもらった', 'A y C'], ans: 3 },
+      { t: 'tx', q: '¿"Hacer algo por alguien" en romaji?', ans: 'te ageru' },
+    ]
+  },
+  {
+    id: 'jp-n4-12', title: 'Cláusulas relativas', type: 'grammar',
+    steps: [
+      { t: 'th', char: '修飾節', rd: 'shuushokusetsu', mn: 'Cláusula modificadora', note: 'En japonés, la cláusula va ANTES del sustantivo: 赤い車 = coche rojo, 昨日買った車 = el coche que compré ayer.' },
+      { t: 'mc', q: '¿"El libro que leí"?', opts: ['読んだ本', '本を読んだ', '読む本が', '本は読んだ'], ans: 0 },
+      { t: 'or', q: 'Ordena: "La persona que vino ayer"', words: ['きのう', '来た', '人'], ans: [0, 1, 2] },
+      { t: 'tx', q: '¿"El pastel que hice" en romaji?', ans: 'tsukutta keeki' },
+    ]
+  },
+  {
+    id: 'jp-n4-13', title: 'Verbos transitivos e intransitivos', type: 'grammar',
+    steps: [
+      { t: 'th', char: '開ける/開く', rd: 'akeru/aku', mn: 'Abrir (trans.) / Abrirse (intrans.)', note: 'ドアを開ける vs ドアが開く.' },
+      { t: 'th', char: '閉める/閉まる', rd: 'shimeru/shimaru', mn: 'Cerrar / Cerrarse', note: 'を con transitivo, が con intransitivo.' },
+      { t: 'mc', q: '¿"La puerta se abrió"?', opts: ['ドアを開けた', 'ドアが開いた', 'ドアを開いた', 'ドアが開けた'], ans: 1 },
+      { t: 'th', char: '消す/消える', rd: 'kesu/kieru', mn: 'Apagar / Apagarse', note: '電気を消す = Apagar la luz. 電気が消えた = La luz se apagó.' },
+      { t: 'tx', q: '¿"Cerrar" (transitivo) en romaji?', ans: 'shimeru' },
+    ]
+  },
+  {
+    id: 'jp-n4-14', title: 'Keigo: habla honorífica (sonkeigo)', type: 'grammar',
+    steps: [
+      { t: 'th', char: 'いらっしゃる', rd: 'irassharu', mn: 'Estar/Ir/Venir (honorífico)', note: 'Honorífico de いる, 行く, 来る.' },
+      { t: 'th', char: 'おっしゃる', rd: 'ossharu', mn: 'Decir (honorífico)', note: 'Honorífico de 言う.' },
+      { t: 'th', char: '召し上がる', rd: 'meshiagaru', mn: 'Comer/Beber (honorífico)', note: 'Honorífico de 食べる/飲む.' },
+      { t: 'mc', q: '¿Honorífico de "decir"?', opts: ['いらっしゃる', 'おっしゃる', '召し上がる', 'ご覧になる'], ans: 1 },
+      { t: 'tx', q: '¿"Comer" honorífico en romaji?', ans: 'meshiagaru' },
+    ]
+  },
+  {
+    id: 'jp-n4-15', title: 'Keigo: habla humilde (kenjougo)', type: 'grammar',
+    steps: [
+      { t: 'th', char: '参る', rd: 'mairu', mn: 'Ir/Venir (humilde)', note: 'Humilde de 行く/来る.' },
+      { t: 'th', char: '申す', rd: 'mousu', mn: 'Decir (humilde)', note: 'Humilde de 言う.' },
+      { t: 'th', char: 'いただく', rd: 'itadaku', mn: 'Recibir/Comer (humilde)', note: 'Humilde de もらう/食べる.' },
+      { t: 'mc', q: '¿Humilde de "ir"?', opts: ['いらっしゃる', '参る', '申す', 'いただく'], ans: 1 },
+      { t: 'tx', q: '¿"Decir" humilde en romaji?', ans: 'mousu' },
+    ]
+  },
+  {
+    id: 'jp-n4-16', title: 'Oraciones compuestas con し', type: 'grammar',
+    steps: [
+      { t: 'th', char: '〜し、〜し', rd: '~shi, ~shi', mn: 'Además / Y también', note: 'このレストランは安いし、おいしいし、好きです = Este restaurante es barato, delicioso, y me gusta.' },
+      { t: 'mc', q: '¿Qué expresa 〜し?', opts: ['Contraste', 'Razones múltiples', 'Tiempo', 'Condición'], ans: 1 },
+      { t: 'or', q: 'Ordena: "Es barato y delicioso"', words: ['安いし', 'おいしいし', 'いいです'], ans: [0, 1, 2] },
+      { t: 'tx', q: '¿Partícula para listar razones?', ans: 'shi' },
+    ]
+  },
+  {
+    id: 'jp-n4-17', title: '〜てしまう (completar/lamentar)', type: 'grammar',
+    steps: [
+      { t: 'th', char: '〜てしまう', rd: '~te shimau', mn: 'Acabar haciendo ~ / Lamentar haber hecho ~', note: '食べてしまった = Me lo comí todo / Lamentablemente me lo comí.' },
+      { t: 'th', char: '〜ちゃう', rd: '~chau', mn: 'Forma casual de てしまう', note: '食べちゃった = Me lo comí (casual).' },
+      { t: 'mc', q: '¿Forma casual de 飲んでしまう?', opts: ['飲んちゃう', '飲みちゃう', '飲むちゃう', '飲んじゃう'], ans: 3 },
+      { t: 'tx', q: '¿"Olvidé (lamentablemente)" en romaji?', ans: 'wasurete shimatta' },
+    ]
+  },
+  {
+    id: 'jp-n4-18', title: 'Expresiones de tiempo avanzadas', type: 'grammar',
+    steps: [
+      { t: 'th', char: '〜前に', rd: '~mae ni', mn: 'Antes de ~', note: '食べる前に = Antes de comer.' },
+      { t: 'th', char: '〜た後で', rd: '~ta ato de', mn: 'Después de ~', note: '食べた後で = Después de comer.' },
+      { t: 'th', char: '〜ながら', rd: '~nagara', mn: 'Mientras ~', note: '音楽を聞きながら勉強する = Estudiar mientras escucho música.' },
+      { t: 'mc', q: '¿"Antes de dormir"?', opts: ['寝た後で', '寝る前に', '寝ながら', '寝てから'], ans: 1 },
+      { t: 'tx', q: '¿"Mientras" en romaji?', ans: 'nagara' },
+    ]
+  },
+  {
+    id: 'jp-n4-19', title: 'Contadores avanzados', type: 'vocab',
+    steps: [
+      { t: 'th', char: '〜枚 (まい)', rd: '~mai', mn: 'Contador de objetos planos', note: '紙三枚 = 3 hojas de papel.' },
+      { t: 'th', char: '〜冊 (さつ)', rd: '~satsu', mn: 'Contador de libros', note: '本二冊 = 2 libros.' },
+      { t: 'th', char: '〜杯 (はい)', rd: '~hai', mn: 'Contador de vasos/tazas', note: 'コーヒー一杯 = 1 taza de café.' },
+      { t: 'th', char: '〜台 (だい)', rd: '~dai', mn: 'Contador de máquinas/vehículos', note: '車二台 = 2 coches.' },
+      { t: 'mc', q: '¿Contador para libros?', opts: ['枚', '冊', '杯', '台'], ans: 1 },
+      { t: 'tx', q: '¿"2 tazas" en romaji?', ans: 'ni hai' },
+    ]
+  },
+  {
+    id: 'jp-n4-20', title: 'Pedir y dar direcciones', type: 'vocab',
+    steps: [
+      { t: 'th', char: '交差点', rd: 'kousaten', mn: 'Intersección', note: '交差点を右に曲がってください = Gire a la derecha en la intersección.' },
+      { t: 'th', char: '信号', rd: 'shingou', mn: 'Semáforo', note: '信号を左に = A la izquierda en el semáforo.' },
+      { t: 'th', char: '〜の隣', rd: '~no tonari', mn: 'Al lado de ~', note: '銀行の隣 = Al lado del banco.' },
+      { t: 'mc', q: '¿Qué es 交差点?', opts: ['Semáforo', 'Puente', 'Intersección', 'Esquina'], ans: 2 },
+      { t: 'or', q: 'Ordena: "Gire a la derecha en el semáforo"', words: ['信号を', '右に', '曲がってください'], ans: [0, 1, 2] },
+      { t: 'tx', q: '¿"Al lado de" en romaji?', ans: 'tonari' },
+    ]
+  },
+  {
+    id: 'jp-n4-21', title: 'En el hospital', type: 'vocab',
+    steps: [
+      { t: 'th', char: '熱がある', rd: 'netsu ga aru', mn: 'Tener fiebre', note: '38度の熱があります = Tengo 38° de fiebre.' },
+      { t: 'th', char: 'お腹が痛い', rd: 'onaka ga itai', mn: 'Me duele el estómago', note: '痛い = doloroso.' },
+      { t: 'th', char: '薬', rd: 'kusuri', mn: 'Medicina', note: '薬を飲む = Tomar medicina.' },
+      { t: 'th', char: '風邪を引く', rd: 'kaze wo hiku', mn: 'Resfriarse', note: '風邪を引きました = Me resfrié.' },
+      { t: 'mc', q: '¿"Tener fiebre"?', opts: ['頭が痛い', '熱がある', '風邪を引く', '薬を飲む'], ans: 1 },
+      { t: 'tx', q: '¿"Medicina" en romaji?', ans: 'kusuri' },
+    ]
+  },
+  {
+    id: 'jp-n4-22', title: 'En la oficina', type: 'vocab',
+    steps: [
+      { t: 'th', char: '会議', rd: 'kaigi', mn: 'Reunión', note: '会議室 = Sala de reuniones.' },
+      { t: 'th', char: '書類', rd: 'shorui', mn: 'Documentos', note: '書類を提出する = Entregar documentos.' },
+      { t: 'th', char: '締め切り', rd: 'shimekiri', mn: 'Fecha límite', note: '締め切りは明日です = La fecha límite es mañana.' },
+      { t: 'th', char: '残業', rd: 'zangyou', mn: 'Horas extra', note: '今日は残業です = Hoy trabajo horas extra.' },
+      { t: 'mc', q: '¿Qué es 締め切り?', opts: ['Reunión', 'Documento', 'Fecha límite', 'Horas extra'], ans: 2 },
+      { t: 'tx', q: '¿"Reunión" en romaji?', ans: 'kaigi' },
+    ]
+  },
+  {
+    id: 'jp-n4-23', title: '〜そう (parece que)', type: 'grammar',
+    steps: [
+      { t: 'th', char: '〜そう (apariencia)', rd: '~sou', mn: 'Parece ~', note: 'おいしそう = Parece delicioso. 雨が降りそう = Parece que va a llover.' },
+      { t: 'th', char: '〜そう (rumor)', rd: '~sou', mn: 'Dicen que ~', note: '明日は雨だそうです = Dicen que mañana llueve.' },
+      { t: 'mc', q: '¿"Parece delicioso"?', opts: ['おいしいそう', 'おいしそう', 'おいしさそう', 'おいしくそう'], ans: 1 },
+      { t: 'tx', q: '¿"Parece caro" en romaji?', ans: 'takasou' },
+    ]
+  },
+  {
+    id: 'jp-n4-24', title: '〜ようにする / 〜ことにする', type: 'grammar',
+    steps: [
+      { t: 'th', char: '〜ようにする', rd: '~you ni suru', mn: 'Esforzarse por ~', note: '毎日運動するようにしている = Me esfuerzo por hacer ejercicio cada día.' },
+      { t: 'th', char: '〜ことにする', rd: '~koto ni suru', mn: 'Decidir hacer ~', note: '日本に行くことにした = Decidí ir a Japón.' },
+      { t: 'mc', q: '¿"Decidí estudiar"?', opts: ['勉強するようにした', '勉強することにした', '勉強するようになった', '勉強することになった'], ans: 1 },
+      { t: 'th', char: '〜ことになる', rd: '~koto ni naru', mn: 'Resultar que ~', note: '転勤することになった = Resultó que me transfieren.' },
+      { t: 'tx', q: '¿"Decidir" con koto en romaji?', ans: 'koto ni suru' },
+    ]
+  },
+  {
+    id: 'jp-n4-25', title: 'Repaso general N4', type: 'reading',
+    steps: [
+      { t: 'mc', q: '¿Forma て de 飲む?', opts: ['飲んで', '飲みて', '飲んだ', '飲して'], ans: 0 },
+      { t: 'mc', q: '¿Potencial de 食べる?', opts: ['食べれる', '食べられる', '食べさせる', '食べられた'], ans: 1 },
+      { t: 'tx', q: '¿"Quiero ir" en romaji?', ans: 'ikitai' },
+      { t: 'mc', q: '¿Honorífico de "comer"?', opts: ['いただく', '召し上がる', '食べられる', 'お食べする'], ans: 1 },
+      { t: 'mc', q: '¿Contador para libros?', opts: ['枚', '冊', '台', '杯'], ans: 1 },
+      { t: 'or', q: 'Ordena: "Decidí ir a Japón"', words: ['日本に', '行くことに', 'しました'], ans: [0, 1, 2] },
+      { t: 'rd', title: 'Lectura: En la oficina', passage: '今日は会議が3つあります。書類の締め切りは明日です。残業しなければなりません。疲れましたが、頑張ります。', q: '¿Cuántas reuniones hay hoy?', opts: ['1', '2', '3', '4'], ans: 2 },
+    ]
+  },
 ];

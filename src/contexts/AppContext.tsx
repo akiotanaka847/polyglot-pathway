@@ -63,11 +63,11 @@ interface AppContextType {
   unlockNextLevel: (lang: Lang, nextLevel: string) => void;
   checkStreak: () => void;
   earnAchievement: (id: string) => void;
-  incrementFC: () => void;
+  
   markStoryDone: (id: string) => void;
   markCultureRead: (id: string) => void;
   markConvDone: (id: string) => void;
-  updateSRS: (lang: string, level: string, idx: number, data: { interval: number; ease: number; due: number }) => void;
+  
   getRank: (lang: Lang) => { icon: string; title: string; meaning: string; romaji?: string };
   getRankPct: (lang: Lang) => number;
   tt: (key: string) => string;
@@ -187,9 +187,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const incrementFC = useCallback(() => {
-    setState(s => ({ ...s, fcTotal: s.fcTotal + 1 }));
-  }, []);
 
   const markStoryDone = useCallback((id: string) => {
     setState(s => {
@@ -212,18 +209,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const updateSRS = useCallback((lang: string, level: string, idx: number, data: { interval: number; ease: number; due: number }) => {
-    setState(s => ({
-      ...s,
-      srs: {
-        ...s.srs,
-        [lang]: {
-          ...s.srs[lang],
-          [level]: { ...(s.srs[lang]?.[level] || {}), [idx]: data },
-        },
-      },
-    }));
-  }, []);
 
   const getRank = useCallback((lang: Lang) => {
     const xp = state.xp[lang] || 0;
@@ -245,8 +230,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     <AppContext.Provider value={{
       state, setNativeLang, addActiveLang, removeActiveLang,
       addXP, markLessonDone, markQuizPassed, unlockNextLevel,
-      checkStreak, earnAchievement, incrementFC, markStoryDone,
-      markCultureRead, markConvDone, updateSRS, getRank, getRankPct, tt,
+      checkStreak, earnAchievement, markStoryDone,
+      markCultureRead, markConvDone, getRank, getRankPct, tt,
     }}>
       {children}
     </AppContext.Provider>
