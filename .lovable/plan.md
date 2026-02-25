@@ -1,145 +1,46 @@
 
 
-## Plan: Expansión masiva de contenido - Lecciones, Simulacros y Repositorio
+## Plan: Remove Flashcards, Expand Culture, Fix Incomplete Lesson Levels
 
-### Problema actual
+### Problems Found
 
-1. **Lecciones**: La mayoría de idiomas tiene solo 1-3 lecciones en el primer nivel. El usuario pide 20-25 por nivel.
-2. **Simulacros/Exámenes**: Solo existe contenido de quiz básico. No hay sistema de examen de certificación para ningún idioma.
-3. **Repositorio (Reference)**: Faltan gramática y vocabulario para ru, ar, hi, tr, vi, th, nl, pl, es. El vocabulario falta para it, pt, ko y otros. El contenido existente es escaso.
+1. **Flashcards** - To be removed entirely as requested
+2. **Culture** - Only Japan (5 cards) and France (5 cards) exist in `culture.ts`. The other 15 languages have zero content.
+3. **JP N4** - Only 5 hand-written lessons in `src/data/lessons/jp.ts` (lines 300-348). Needs 25.
+4. **FR A2** - Only 5 hand-written lessons in `src/data/lessons/fr.ts` (lines 182-210). Needs 25.
+5. **Levels 3-5** use generators (`makeL3`, `makeL4`, `makeL5`) that produce 25 lessons each - those are fine.
 
-### Alcance del cambio
+---
 
-Esto es un cambio **extremadamente grande** en volumen de datos. Cada nivel con 20-25 lecciones de ~8 pasos cada una significa miles de líneas de contenido. Hay que dividirlo en archivos manejables.
+### Changes
 
-### Arquitectura propuesta
+#### 1. Remove Flashcards (6 files)
 
-**1. Dividir `lessons.ts` en archivos por idioma**
+- **Delete** `src/pages/FlashcardsPage.tsx` and `src/data/flashcards.ts`
+- **`src/App.tsx`**: Remove FlashcardsPage import and `/flashcards` route
+- **`src/pages/PracticePage.tsx`**: Remove the flashcards menu item
+- **`src/pages/DashboardPage.tsx`**: Remove the flashcards button, replace with another action (e.g., exams)
+- **`src/contexts/AppContext.tsx`**: Remove `incrementFC`, `updateSRS`, `srs` state, and `fcTotal` from state (keep if other features use them, otherwise clean up)
+- **`src/data/achievements.ts`**: Remove flashcard-related achievements (`fc_100`, `fc_1000`)
 
-```text
-src/data/lessons/
-  ├── index.ts          (re-exporta LESSON_DATA y LEVELS)
-  ├── jp.ts             (20-25 lecciones N5, 20+ N4, etc.)
-  ├── fr.ts             (20-25 lecciones A1, A2)
-  ├── zh.ts             (20-25 lecciones HSK1)
-  ├── de.ts             (20-25 lecciones A1)
-  ├── it.ts             (20-25 lecciones A1)
-  ├── pt.ts             (20-25 lecciones A1)
-  ├── ko.ts             (20-25 lecciones TOPIK1)
-  ├── ru.ts             (20-25 lecciones A1)
-  ├── ar.ts             (20-25 lecciones A1)
-  ├── hi.ts             (20-25 lecciones A1)
-  ├── en.ts             (20-25 lecciones A1)
-  ├── tr.ts, vi.ts, th.ts, nl.ts, pl.ts, es.ts
-```
+#### 2. Expand Culture Data (`src/data/culture.ts`)
 
-**2. Sistema de Simulacros de Certificación** — nuevo archivo `src/data/exams.ts`
+Add 5 culture cards each for all remaining languages: Chinese, German, Italian, Portuguese, Korean, Russian, Arabic, Hindi, Turkish, Vietnamese, Thai, Dutch, Polish, English, Spanish. Each card will have an icon, title, body text, and a fun fact, covering topics like traditions, food, festivals, history, and social customs.
 
-Crear exámenes que simulen las certificaciones reales:
-- **JP**: JLPT N5, N4, N3 (secciones: Vocabulario, Gramática, Lectura)
-- **FR**: DELF A1, A2, B1 (Comprensión escrita, Gramática, Vocabulario)
-- **ZH**: HSK 1, 2, 3 (Comprensión, Vocabulario, Gramática)
-- **DE**: Goethe A1, A2 (Lesen, Wortschatz, Grammatik)
-- **IT**: CILS A1, A2
-- **PT**: CELPE-Bras A1, A2
-- **KO**: TOPIK I, II
-- **RU**: TORFL A1, A2
-- **EN**: Cambridge A1, A2 / TOEFL-style
-- **AR, HI, TR, VI, TH, NL, PL, ES**: Exámenes tipo CEFR A1, A2
+#### 3. Expand JP N4 to 25 Lessons (`src/data/lessons/jp.ts`)
 
-Cada examen tendrá:
-- 3 secciones (vocabulario, gramática, comprensión lectora)
-- 15-20 preguntas por sección
-- Temporizador y puntuación mínima de 70%
+Currently has 5 lessons (te-form, nai-form, tai-form, particles, conditionals). Will add 20 more covering: potential form, volitional, passive, causative, giving/receiving verbs, relative clauses, transitive/intransitive, honorific speech, humble speech, compound sentences, time expressions, counters advanced, directions, at the hospital, at the office, reading comprehension passages, and a review lesson.
 
-**3. Expandir Repositorio** — `src/data/reference.ts`
+#### 4. Expand FR A2 to 25 Lessons (`src/data/lessons/fr.ts`)
 
-Para TODOS los 17 idiomas:
-- **Gramática**: 8-15 entradas por idioma (partículas, conjugaciones, estructura, tiempos verbales)
-- **Vocabulario**: 15-30 palabras por nivel, organizadas por nivel de certificación
+Currently has 5 lessons (passé composé, imparfait, futur proche, pronoms COD/COI, conditionnel). Will add 20 more covering: subjonctif intro, impératif, plus-que-parfait, pronoms relatifs, comparatif/superlatif, expressions de temps, la santé, le logement, les voyages, la nourriture, le travail, descriptions physiques, directions, au restaurant, à l'hôtel, la météo, les loisirs, opinions et sentiments, lecture compréhension, and a review lesson.
 
-Idiomas que faltan completamente: ru, ar, hi, tr, vi, th, nl, pl, es
+---
 
-**4. Expandir Quizzes** — `src/data/quizzes.ts`
+### Technical Details
 
-- 10-15 preguntas por nivel por idioma (actualmente 2-4)
-- Cubrir todos los niveles que tienen lecciones
-
-**5. Página de Simulacros** — nueva `src/pages/ExamPage.tsx`
-
-- Selección de idioma y nivel de certificación
-- Interfaz de examen con secciones, temporizador, y resultados detallados
-- Ruta: `/exam/:lang/:level`
-
-**6. Actualizar PracticePage.tsx**
-
-- El botón "Simulacros" llevará a una página de selección de examen por idioma, no solo a `/levels/jp`
-
-### Contenido de lecciones por idioma (primer nivel, 20-25 cada uno)
-
-Temas estándar para cubrir en el primer nivel de cada idioma:
-1. Saludos básicos
-2. Números 1-10
-3. Números 11-100
-4. Presentarse
-5. Familia
-6. Colores
-7. Días de la semana
-8. Meses y estaciones
-9. Comida y bebida
-10. En el restaurante
-11. Partes del cuerpo
-12. Ropa
-13. La casa / habitaciones
-14. Direcciones
-15. Transporte
-16. Clima
-17. Profesiones
-18. Tiempo (horas)
-19. Compras / dinero
-20. Verbos esenciales
-21. Adjetivos comunes
-22. Preguntas básicas
-23. Pronombres y posesivos
-24. Frases de supervivencia
-25. Repaso general
-
-Cada lección: 7-10 pasos (teoría + ejercicios mixtos mc/tx/or)
-
-### Archivos a crear/modificar
-
-| Archivo | Acción |
-|---|---|
-| `src/data/lessons/jp.ts` | Crear — 20+ lecciones N5, 20+ N4 |
-| `src/data/lessons/fr.ts` | Crear — 20+ lecciones A1, A2 |
-| `src/data/lessons/zh.ts` | Crear — 20+ lecciones HSK1 |
-| `src/data/lessons/de.ts` | Crear — 20+ lecciones A1 |
-| `src/data/lessons/it.ts` | Crear — 20+ lecciones A1 |
-| `src/data/lessons/pt.ts` | Crear — 20+ lecciones A1 |
-| `src/data/lessons/ko.ts` | Crear — 20+ lecciones TOPIK1 |
-| `src/data/lessons/ru.ts` | Crear — 20+ lecciones A1 |
-| `src/data/lessons/ar.ts` | Crear — 20+ lecciones A1 |
-| `src/data/lessons/hi.ts` | Crear — 20+ lecciones A1 |
-| `src/data/lessons/en.ts` | Crear — 20+ lecciones A1 |
-| `src/data/lessons/tr.ts` | Crear — 20+ lecciones A1 |
-| `src/data/lessons/vi.ts` | Crear — 20+ lecciones A1 |
-| `src/data/lessons/th.ts` | Crear — 20+ lecciones A1 |
-| `src/data/lessons/nl.ts` | Crear — 20+ lecciones A1 |
-| `src/data/lessons/pl.ts` | Crear — 20+ lecciones A1 |
-| `src/data/lessons/es.ts` | Crear — 20+ lecciones A1 |
-| `src/data/lessons/index.ts` | Crear — re-exportar todo |
-| `src/data/exams.ts` | Crear — exámenes de certificación para todos |
-| `src/data/reference.ts` | Expandir masivamente — gramática y vocabulario completo |
-| `src/data/quizzes.ts` | Expandir — 10-15 preguntas por nivel |
-| `src/pages/ExamPage.tsx` | Crear — interfaz de simulacro |
-| `src/pages/ExamSelectPage.tsx` | Crear — selección de examen |
-| `src/pages/PracticePage.tsx` | Modificar — ruta simulacros |
-| `src/App.tsx` | Modificar — agregar rutas de examen |
-| `src/data/lessons.ts` | Eliminar (reemplazado por carpeta) |
-
-### Nota importante
-
-Debido al volumen extremo (~20,000+ líneas de contenido educativo), la implementación se hará en varias iteraciones priorizando:
-1. **Primera iteración**: Estructura de archivos + 5 idiomas principales completos (JP, FR, ZH, EN, DE) + sistema de exámenes + repositorio expandido
-2. **Segunda iteración**: Resto de idiomas (IT, PT, KO, RU, AR, HI, TR, VI, TH, NL, PL, ES)
+- The `makeLessons` generator in `remaining.ts` already produces 25 lessons - those A1 levels are fine
+- The `makeL2Lessons` generator in `level2.ts` produces 25 lessons - those are fine
+- Only the hand-written levels (JP N4, FR A2) are short at 5 lessons each
+- Flashcard cleanup includes removing the SRS state management from AppContext, but `fcTotal` counter will remain in state shape to avoid breaking localStorage hydration for existing users
 
