@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
-import { LESSON_DATA, LEVELS } from '@/data/lessons/index';
+import { getLessonData, LEVELS } from '@/data/lessons/index';
 import { QUIZ_DATA } from '@/data/quizzes';
 import { getLangConfig } from '@/data/languages';
 import { useState, useMemo } from 'react';
@@ -76,7 +76,8 @@ export default function LevelMapPage() {
         <div className="flex flex-col gap-2">
           {levels.map((lvl, idx) => {
             const unlocked = idx === 0 || prog.passed[levels[idx - 1]];
-            const lessons = LESSON_DATA[l]?.[lvl] || [];
+            const lessonData = getLessonData(state.nativeLang || 'en');
+            const lessons = lessonData[l]?.[lvl] || [];
             const doneLessons = prog.done[lvl] || {};
             const doneCount = Object.keys(doneLessons).length;
             const pct = lessons.length > 0 ? Math.round((doneCount / lessons.length) * 100) : 0;

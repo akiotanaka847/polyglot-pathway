@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
-import { LESSON_DATA } from '@/data/lessons/index';
+import { getLessonData } from '@/data/lessons/index';
 import { LessonStep } from '@/data/types';
 import { getLangConfig } from '@/data/languages';
 import { useState, useCallback, useRef, useMemo } from 'react';
@@ -55,7 +55,8 @@ export default function LessonPage() {
   const lvl = level || 'N5';
   const idx = parseInt(index || '0');
   const config = getLangConfig(l);
-  const lessons = LESSON_DATA[l]?.[lvl] || [];
+  const lessonData = getLessonData(useApp().state.nativeLang || 'en');
+  const lessons = lessonData[l]?.[lvl] || [];
   const lesson = lessons[idx];
   const culturalEmojis = config.culturalEmojis || [];
 
