@@ -16,7 +16,7 @@ export default function HomePage() {
         <div className="max-w-lg mx-auto p-6 flex flex-col items-center justify-center min-h-[70vh]">
           <div className="text-5xl mb-4">🌍</div>
           <h1 className="font-serif text-3xl font-light mb-2 text-center">
-            ¿Cuál es tu idioma nativo?
+            {tt('native_lang_question')}
           </h1>
           <p className="text-sm text-foreground-secondary mb-6 text-center">
             What is your native language? · Quelle est votre langue maternelle?

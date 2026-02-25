@@ -86,7 +86,7 @@ export default function ReferencePage() {
                   {entry.explanation}
                 </div>
                 <div className="px-4 pb-4">
-                  <div className="text-[0.68rem] font-bold tracking-widest uppercase text-foreground-muted mb-2">Ejemplos</div>
+                  <div className="text-[0.68rem] font-bold tracking-widest uppercase text-foreground-muted mb-2">{tt('examples')}</div>
                   {entry.examples.map((ex, j) => (
                     <div key={j} className="flex items-baseline gap-2 text-sm mb-1">
                       <button onClick={() => speakText(ex.text, lang)} className="shrink-0">🔊</button>
