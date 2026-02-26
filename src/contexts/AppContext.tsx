@@ -36,6 +36,8 @@ function migrateState(parsed: any): AppState {
   }
   if (!s.nativeLang) s.nativeLang = '';
   if (!s.activeLangs) s.activeLangs = [];
+  // Always deduplicate activeLangs
+  s.activeLangs = [...new Set(s.activeLangs)];
   return s;
 }
 

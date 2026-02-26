@@ -32,6 +32,7 @@ export default function HomePage() {
     );
   }
 
+  // Only show languages not yet active (exclude native + already active)
   const availableLangs = LANGUAGES.filter(l => l.code !== state.nativeLang);
   const nativeConfig = getLangConfig(state.nativeLang);
 
