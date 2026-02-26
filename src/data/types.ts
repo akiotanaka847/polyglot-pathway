@@ -63,10 +63,17 @@ export interface FlashCard {
   ex?: string;
 }
 
+export interface SpeakingStep {
+  t: 'sp';
+  q: string;        // prompt to speak
+  expected: string;  // expected answer (for comparison)
+  hint?: string;
+}
+
 export interface ExamSection {
   name: string;
   time: number;
-  qs: (MCStep | TextStep | ReadingStep)[];
+  qs: (MCStep | TextStep | ReadingStep | SpeakingStep)[];
 }
 
 export interface Exam {

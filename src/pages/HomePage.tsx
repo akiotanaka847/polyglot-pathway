@@ -7,7 +7,7 @@ export default function HomePage() {
   const navigate = useNavigate();
   const totalXp = Object.values(state.xp).reduce((a, b) => a + b, 0);
   const hasProgress = totalXp > 0;
-  const activeLangs = state.activeLangs || [];
+  const activeLangs = [...new Set(state.activeLangs || [])];
 
   // Native language picker
   if (!state.nativeLang) {
@@ -40,8 +40,8 @@ export default function HomePage() {
     navigate(`/levels/${code}`);
   };
 
-  // Find "continue learning" - last active language with progress
-  const continueLang = activeLangs.find(code => (state.xp[code] || 0) > 0) || activeLangs[0];
+  // Find "continue learning" - most recent active language with most XP
+  const continueLang = [...activeLangs].sort((a, b) => (state.xp[b] || 0) - (state.xp[a] || 0))[0] || null;
   const continueConfig = continueLang ? getLangConfig(continueLang) : null;
 
   return (
