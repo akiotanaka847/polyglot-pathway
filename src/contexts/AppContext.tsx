@@ -101,8 +101,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const addActiveLang = useCallback((code: string) => {
     setState(s => {
-      if (s.activeLangs.includes(code)) return s;
-      const ns = { ...s, activeLangs: [...s.activeLangs, code] };
+      // Always deduplicate
+      const deduped = [...new Set(s.activeLangs)].filter(c => c && c !== code);
+      const ns = { ...s, activeLangs: [...deduped, code] };
       return ensureLangProg(ns, code);
     });
   }, []);

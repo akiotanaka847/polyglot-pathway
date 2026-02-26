@@ -7,7 +7,8 @@ export default function HomePage() {
   const navigate = useNavigate();
   const totalXp = Object.values(state.xp).reduce((a, b) => a + b, 0);
   const hasProgress = totalXp > 0;
-  const activeLangs = [...new Set(state.activeLangs || [])].filter(c => c !== state.nativeLang);
+  // Deduplicate and exclude native language
+  const activeLangs = [...new Set(state.activeLangs || [])].filter(c => c && c !== state.nativeLang);
 
   // Native language picker
   if (!state.nativeLang) {
@@ -41,12 +42,6 @@ export default function HomePage() {
     navigate(`/levels/${code}`);
   };
 
-  // Find "continue learning" - active language with most XP
-  const continueLang = activeLangs.length > 0 
-    ? [...activeLangs].sort((a, b) => (state.xp[b] || 0) - (state.xp[a] || 0))[0] 
-    : null;
-  const continueConfig = continueLang ? getLangConfig(continueLang) : null;
-
   return (
     <div className="animate-fade-in flex-1 overflow-y-auto">
       <div className="max-w-[800px] mx-auto">
@@ -68,30 +63,12 @@ export default function HomePage() {
             {tt('complete_lessons')} {tt('unlock_quiz')}
           </p>
 
-          {/* Continue learning card */}
-          {continueLang && continueConfig && (
-            <button onClick={() => navigate(`/levels/${continueLang}`)}
-              className="w-full max-w-md flex items-center gap-4 p-4 rounded-2xl border-2 bg-card mb-6 text-left hover:shadow-lg hover:-translate-y-0.5 transition-all"
-              style={{ borderColor: `hsl(${continueConfig.hue}, 60%, 70%)` }}>
-              <div className="w-14 h-14 rounded-xl flex items-center justify-center text-3xl shadow-sm"
-                style={{ background: `hsl(${continueConfig.hue}, 80%, 96%)` }}>
-                {continueConfig.flag}
-              </div>
-              <div className="flex-1">
-                <div className="text-xs font-bold uppercase tracking-wider text-foreground-muted mb-0.5">{tt('continue')}</div>
-                <div className="font-semibold">{continueConfig.nativeName}</div>
-                <div className="text-xs text-foreground-muted">⚡ {state.xp[continueLang] || 0} XP · {getRank(continueLang).icon}</div>
-              </div>
-              <span className="text-2xl">→</span>
-            </button>
-          )}
-
-          {/* Active languages - only show if more than 1 (the continue one is already shown) */}
-          {activeLangs.filter(c => c !== continueLang).length > 0 && (
+          {/* Active languages */}
+          {activeLangs.length > 0 && (
             <div className="mb-6">
               <div className="text-[0.68rem] font-bold tracking-widest uppercase text-foreground-muted mb-2">{tt('your_languages')}</div>
               <div className="flex gap-2 flex-wrap">
-                {activeLangs.filter(c => c !== continueLang).map(code => {
+                {activeLangs.map(code => {
                   const lc = getLangConfig(code);
                   const r = getRank(code);
                   return (
