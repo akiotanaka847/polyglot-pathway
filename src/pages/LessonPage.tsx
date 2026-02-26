@@ -80,13 +80,9 @@ export default function LessonPage() {
     }
   }, []);
 
-  if (!lesson) {
-    return <div className="flex-1 flex items-center justify-center"><p>{tt('coming_soon')}</p></div>;
-  }
-
-  const steps = lesson.steps;
+  const steps = lesson?.steps ?? [];
   const rawStep = steps[stepIdx] as LessonStep | undefined;
-  const progress = stepIdx / steps.length * 100;
+  const progress = steps.length > 0 ? stepIdx / steps.length * 100 : 0;
 
   // Randomize MC/RD options so repeating lessons tests knowledge, not memory
   const step = useMemo(() => {
@@ -102,6 +98,10 @@ export default function LessonPage() {
     return s as LessonStep;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stepIdx]) as LessonStep | undefined;
+
+  if (!lesson) {
+    return <div className="flex-1 flex items-center justify-center"><p>{tt('coming_soon')}</p></div>;
+  }
 
   const handleCheck = () => {
     if (!step) return;
