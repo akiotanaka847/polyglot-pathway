@@ -29,39 +29,72 @@ export function normalizeAnswer(s: string): string {
     .replace(/\s+/g, ' ').trim();
 }
 
-// Audio feedback for correct/incorrect answers using Web Audio API
+// ── Audio feedback ──
 const audioCtx = typeof window !== 'undefined' ? new (window.AudioContext || (window as any).webkitAudioContext)() : null;
 
-export function playCorrectSound() {
+function playTone(freq: number, duration: number, type: OscillatorType, vol: number, delay = 0) {
   if (!audioCtx) return;
-  audioCtx.resume();
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
   osc.connect(gain);
   gain.connect(audioCtx.destination);
-  gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
-  // Pleasant ascending two-tone
-  osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
-  osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.12); // E5
-  osc.type = 'sine';
-  osc.start(audioCtx.currentTime);
-  osc.stop(audioCtx.currentTime + 0.4);
+  const t = audioCtx.currentTime + delay;
+  gain.gain.setValueAtTime(vol, t);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + duration);
+  osc.frequency.setValueAtTime(freq, t);
+  osc.type = type;
+  osc.start(t);
+  osc.stop(t + duration);
+}
+
+export function playCorrectSound() {
+  if (!audioCtx) return;
+  audioCtx.resume();
+  // Pleasant major chord arpeggio: C5 → E5 → G5 → C6
+  playTone(523.25, 0.25, 'sine', 0.12, 0);
+  playTone(659.25, 0.25, 'sine', 0.10, 0.08);
+  playTone(783.99, 0.25, 'sine', 0.08, 0.16);
+  playTone(1046.50, 0.35, 'sine', 0.06, 0.24);
 }
 
 export function playIncorrectSound() {
   if (!audioCtx) return;
   audioCtx.resume();
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
-  gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
-  // Descending buzz
-  osc.frequency.setValueAtTime(349.23, audioCtx.currentTime); // F4
-  osc.frequency.setValueAtTime(261.63, audioCtx.currentTime + 0.12); // C4
-  osc.type = 'square';
-  osc.start(audioCtx.currentTime);
-  osc.stop(audioCtx.currentTime + 0.35);
+  // Soft descending minor: Eb4 → C4 (gentle, not harsh)
+  playTone(311.13, 0.3, 'triangle', 0.10, 0);
+  playTone(261.63, 0.4, 'triangle', 0.08, 0.15);
+}
+
+export function playLevelUpSound() {
+  if (!audioCtx) return;
+  audioCtx.resume();
+  // Celebratory fanfare
+  playTone(523.25, 0.15, 'sine', 0.10, 0);
+  playTone(659.25, 0.15, 'sine', 0.10, 0.1);
+  playTone(783.99, 0.15, 'sine', 0.10, 0.2);
+  playTone(1046.50, 0.5, 'sine', 0.12, 0.3);
+}
+
+// ── Confetti helper ──
+export function spawnConfetti(container: HTMLElement) {
+  const colors = ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8'];
+  for (let i = 0; i < 40; i++) {
+    const el = document.createElement('div');
+    el.style.cssText = `
+      position: absolute;
+      width: ${4 + Math.random() * 6}px;
+      height: ${4 + Math.random() * 6}px;
+      background: ${colors[Math.floor(Math.random() * colors.length)]};
+      border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+      left: ${Math.random() * 100}%;
+      top: -10px;
+      pointer-events: none;
+      z-index: 50;
+      animation: confetti-fall ${1.5 + Math.random() * 1.5}s ease-out forwards;
+      animation-delay: ${Math.random() * 0.3}s;
+      transform: rotate(${Math.random() * 360}deg);
+    `;
+    container.appendChild(el);
+    setTimeout(() => el.remove(), 3500);
+  }
 }
