@@ -7,6 +7,48 @@ import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { normalizeAnswer, shuffleArray, speakText, playCorrectSound, playIncorrectSound, playLevelUpSound, spawnConfetti } from '@/utils/helpers';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
 
+// Topic-related emoji illustrations for visual association
+const TOPIC_ILLUSTRATIONS: Record<string, string[]> = {
+  greetings: ['👋', '🤝', '😊', '🙏'],
+  numbers: ['🔢', '🎲', '📊', '🧮'],
+  family: ['👨‍👩‍👧‍👦', '👶', '🏠', '❤️'],
+  colors: ['🎨', '🌈', '🖌️', '🎭'],
+  days: ['📅', '🗓️', '⏰', '🌅'],
+  food: ['🍽️', '🍜', '🥗', '🍲'],
+  body: ['🫀', '💪', '👁️', '🦶'],
+  clothes: ['👕', '👗', '🧥', '👟'],
+  house: ['🏠', '🛋️', '🚿', '🛏️'],
+  transport: ['🚗', '🚆', '✈️', '🚌'],
+  weather: ['🌤️', '🌧️', '❄️', '🌈'],
+  jobs: ['👩‍⚕️', '👨‍🏫', '👩‍💼', '👨‍🍳'],
+  shopping: ['🛒', '💰', '🏪', '🛍️'],
+  verbs: ['🏃', '📝', '🗣️', '👀'],
+  adjectives: ['📏', '🎯', '✨', '⚡'],
+  questions: ['❓', '🤔', '💭', '🗨️'],
+  survival: ['🆘', '🗺️', '📞', '🏥'],
+  animals: ['🐕', '🐈', '🐘', '🦋'],
+  vocab: ['📚', '✏️', '💡', '🧠'],
+  grammar: ['📐', '🔤', '📖', '📝'],
+  reading: ['📖', '📰', '📚', '🔍'],
+  writing: ['✍️', '📝', '✏️', '💌'],
+};
+
+function getLessonIllustration(lesson: { unit?: { id: string; emoji: string }; type: string; title: string }): string[] {
+  // Try unit id first
+  if (lesson.unit?.id) {
+    const key = lesson.unit.id.replace(/[-_]\d+/g, '').replace(/^(unit_|cat_)/, '');
+    if (TOPIC_ILLUSTRATIONS[key]) return TOPIC_ILLUSTRATIONS[key];
+  }
+  // Try lesson type
+  if (TOPIC_ILLUSTRATIONS[lesson.type]) return TOPIC_ILLUSTRATIONS[lesson.type];
+  // Try matching title keywords
+  const titleLower = lesson.title.toLowerCase();
+  for (const [key, emojis] of Object.entries(TOPIC_ILLUSTRATIONS)) {
+    if (titleLower.includes(key.slice(0, 4))) return emojis;
+  }
+  return ['📚', '✨', '🎯', '💡'];
+}
+
 export default function LessonPage() {
   const { lang, level, index } = useParams();
   const navigate = useNavigate();
@@ -232,6 +274,26 @@ export default function LessonPage() {
           </button>
         </div>
 
+        {/* Topic illustration banner */}
+        {stepIdx === 0 && (
+          <div className="flex items-center gap-3 p-3 rounded-2xl mb-3 border border-border"
+            style={{ background: `linear-gradient(135deg, hsl(${config.hue}, 80%, 96%), hsl(${config.hue}, 60%, 92%))` }}>
+            <div className="flex gap-1">
+              {getLessonIllustration(lesson).map((emoji, i) => (
+                <span key={i} className="text-2xl animate-pop-in" style={{ animationDelay: `${i * 100}ms` }}>{emoji}</span>
+              ))}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="font-serif text-sm font-semibold truncate" style={{ color: `hsl(${config.hue}, 70%, 35%)` }}>
+                {lesson.title}
+              </div>
+              {lesson.unit && (
+                <div className="text-[0.65rem] text-foreground-muted">{lesson.unit.emoji} {lesson.unit.name}</div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Theory step */}
         {step.t === 'th' && (
           <div className="bg-card border border-border rounded-2xl p-5 mb-3 shadow-sm">
@@ -267,9 +329,13 @@ export default function LessonPage() {
         {/* Interactive step */}
         {step.t !== 'th' && (
           <div className="bg-card border border-border rounded-2xl p-5 mb-3 shadow-sm">
-            <div className="text-[0.6rem] font-bold tracking-widest uppercase mb-2"
-              style={{ color: `hsl(${config.hue}, 60%, 50%)` }}>
-              {step.t === 'mc' ? `✦ ${tt('multiple_choice')}` : step.t === 'tx' ? `✦ ${tt('write_response')}` : step.t === 'or' ? `✦ ${tt('order_words')}` : `✦ ${tt('reading_comp')}`}
+            {/* Small topic emoji next to question type */}
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-lg">{lesson.unit?.emoji || getLessonIllustration(lesson)[0]}</span>
+              <span className="text-[0.6rem] font-bold tracking-widest uppercase"
+                style={{ color: `hsl(${config.hue}, 60%, 50%)` }}>
+                {step.t === 'mc' ? tt('multiple_choice') : step.t === 'tx' ? tt('write_response') : step.t === 'or' ? tt('order_words') : tt('reading_comp')}
+              </span>
             </div>
             <div className="font-serif text-lg mb-4 leading-snug" dangerouslySetInnerHTML={{ __html: step.q || '' }} />
 
