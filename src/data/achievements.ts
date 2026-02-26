@@ -62,22 +62,4 @@ export const RANKS: Record<string, RankInfo[]> = {
     { min: 4000, max: 7999, icon: '🐉', title: '용', meaning: 'Dragón' },
     { min: 8000, max: 99999, icon: '👑', title: '왕', meaning: 'Rey' },
   ],
-  de: [
-    { min: 0, max: 199, icon: '🗺️', title: 'Reisender', meaning: 'Viajero' },
-    { min: 200, max: 499, icon: '📚', title: 'Schüler', meaning: 'Estudiante' },
-    { min: 500, max: 999, icon: '🍺', title: 'Lehrling', meaning: 'Aprendiz' },
-    { min: 1000, max: 1999, icon: '⚔️', title: 'Ritter', meaning: 'Caballero' },
-    { min: 2000, max: 3999, icon: '🏰', title: 'Baron', meaning: 'Barón' },
-    { min: 4000, max: 7999, icon: '👑', title: 'König', meaning: 'Rey' },
-    { min: 8000, max: 99999, icon: '🦅', title: 'Kaiser', meaning: 'Emperador' },
-  ],
-  it: [
-    { min: 0, max: 199, icon: '🗺️', title: 'Viaggiatore', meaning: 'Viajero' },
-    { min: 200, max: 499, icon: '📚', title: 'Studente', meaning: 'Estudiante' },
-    { min: 500, max: 999, icon: '🍕', title: 'Apprendista', meaning: 'Aprendiz' },
-    { min: 1000, max: 1999, icon: '⚔️', title: 'Cavaliere', meaning: 'Caballero' },
-    { min: 2000, max: 3999, icon: '🏛️', title: 'Senatore', meaning: 'Senador' },
-    { min: 4000, max: 7999, icon: '👑', title: 'Doge', meaning: 'Dux' },
-    { min: 8000, max: 99999, icon: '🦁', title: 'Imperatore', meaning: 'Emperador' },
-  ],
 };

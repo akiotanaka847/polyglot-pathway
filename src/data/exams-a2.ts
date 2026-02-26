@@ -2,54 +2,6 @@ import { Exam } from './types';
 
 // A2 exams for languages that only have A1 + TOPIK2 for Korean
 export const A2_EXAMS: Record<string, Record<string, Exam>> = {
-  it: {
-    A2: {
-      title: 'CILS A2 — Simulacro',
-      sections: [
-        { name: 'Vocabolario', time: 15, qs: [
-          { t: 'mc', q: '¿Qué significa "ricordare"?', opts: ['Olvidar', 'Recordar', 'Correr', 'Cocinar'], ans: 1 },
-          { t: 'mc', q: '¿"Il quartiere" significa?', opts: ['La plaza', 'El barrio', 'La calle', 'El edificio'], ans: 1 },
-          { t: 'mc', q: '¿Qué es "il sogno"?', opts: ['La pesadilla', 'El sueño', 'La realidad', 'El deseo'], ans: 1 },
-          { t: 'mc', q: '¿"Preoccupato" significa?', opts: ['Tranquilo', 'Feliz', 'Preocupado', 'Cansado'], ans: 2 },
-          { t: 'mc', q: '¿"Riuscire" significa?', opts: ['Fallar', 'Lograr', 'Intentar', 'Abandonar'], ans: 1 },
-          { t: 'mc', q: '¿"La salute" significa?', opts: ['La comida', 'La salud', 'La vida', 'La suerte'], ans: 1 },
-          { t: 'mc', q: '¿"Circa" significa?', opts: ['Exactamente', 'Aproximadamente', 'Totalmente', 'Nunca'], ans: 1 },
-          { t: 'tx', q: '¿"Desafortunadamente" en italiano?', ans: 'sfortunatamente' },
-          { t: 'mc', q: '¿"Orgoglioso" significa?', opts: ['Triste', 'Orgulloso', 'Cansado', 'Aburrido'], ans: 1 },
-          { t: 'mc', q: '¿"Spiegare" significa?', opts: ['Preguntar', 'Responder', 'Explicar', 'Describir'], ans: 2 },
-          { t: 'mc', q: '¿"Dimenticare" significa?', opts: ['Recordar', 'Olvidar', 'Aprender', 'Enseñar'], ans: 1 },
-          { t: 'mc', q: '¿"Il viaggio" significa?', opts: ['La vacación', 'El viaje', 'La aventura', 'El destino'], ans: 1 },
-          { t: 'mc', q: '¿"Provare" significa?', opts: ['Lograr', 'Intentar/Probar', 'Fallar', 'Decidir'], ans: 1 },
-          { t: 'mc', q: '¿"D\'accordo" significa?', opts: ['No estoy seguro', 'De acuerdo', 'Lo siento', 'No sé'], ans: 1 },
-          { t: 'mc', q: '¿"Ambiente" significa?', opts: ['Habitación', 'Medio ambiente', 'Mueble', 'Edificio'], ans: 1 },
-        ]},
-        { name: 'Grammatica', time: 15, qs: [
-          { t: 'mc', q: '¿Imperfetto de "essere" (io)?', opts: ['ero', 'sono stato', 'sarò', 'sono'], ans: 0 },
-          { t: 'mc', q: 'Se avessi soldi, ___ (viajar)', opts: ['viaggio', 'viaggerei', 'viaggerò', 'ho viaggiato'], ans: 1 },
-          { t: 'mc', q: '¿Pronombre directo para "il libro"?', opts: ['gli', 'lo', 'la', 'li'], ans: 1 },
-          { t: 'mc', q: '¿Cuál es correcto?', opts: ['Lo vedo', 'Lo vedo io', 'Io lo vedo', 'Vedo io lo'], ans: 2 },
-          { t: 'mc', q: 'Bisogna che tu ___ (venir)', opts: ['vieni', 'venga', 'venivi', 'verrai'], ans: 1 },
-          { t: 'mc', q: '¿"Yo querría" (condizionale)?', opts: ['Voglio', 'Vorrei', 'Volevo', 'Vorrò'], ans: 1 },
-          { t: 'mc', q: 'La casa ___ abito', opts: ['che', 'cui', 'dove', 'di cui'], ans: 2 },
-          { t: 'mc', q: '¿Comparativo de "buono"?', opts: ['più buono', 'migliore', 'il migliore', 'meglio'], ans: 1 },
-          { t: 'mc', q: 'Mi sono alzato ___ 7 (pasado)', opts: ['a', 'alle', 'di', 'in'], ans: 1 },
-          { t: 'mc', q: '¿"Da" con tiempo indica?', opts: ['Hasta', 'Desde', 'Durante', 'Antes'], ans: 1 },
-          { t: 'tx', q: '¿"Yo iré" en italiano?', ans: 'andrò' },
-          { t: 'mc', q: 'Quando ___ piccolo, giocavo a calcio', opts: ['sono', 'ero', 'sarò', 'sono stato'], ans: 1 },
-          { t: 'mc', q: '¿"Mentre" significa?', opts: ['Mientras', 'Porque', 'Para que', 'Aunque'], ans: 0 },
-          { t: 'mc', q: 'Gli ___ dato il libro', opts: ['sono', 'ho', 'ha', 'è'], ans: 1 },
-          { t: 'mc', q: '¿"Più grande di"?', opts: ['più grande di', 'più grande che', 'il più grande', 'tanto grande'], ans: 0 },
-        ]},
-        { name: 'Comprensione', time: 20, qs: [
-          { t: 'rd', title: 'Testo 1', passage: "Maria si è trasferita a Firenze l'anno scorso. Lavora in un ospedale come infermiera. Le piace la sua nuova vita ma le mancano gli amici di Roma. Il fine settimana va in bicicletta lungo l'Arno.", q: '¿Dónde trabaja María?', opts: ['Escuela', 'Hospital', 'Oficina', 'Restaurante'], ans: 1 },
-          { t: 'rd', title: 'Testo 1', passage: "Maria si è trasferita a Firenze l'anno scorso. Lavora in un ospedale come infermiera. Le piace la sua nuova vita ma le mancano gli amici di Roma.", q: '¿Qué extraña María?', opts: ['La comida', 'Sus amigos', 'Su trabajo', 'El clima'], ans: 1 },
-          { t: 'rd', title: 'Testo 2', passage: "Ieri sera siamo andati al cinema a vedere un film italiano. Era una commedia molto divertente. Dopo il film, abbiamo cenato in un ristorante cinese. La cena era ottima e costava poco.", q: '¿Qué tipo de película vieron?', opts: ['Drama', 'Horror', 'Comedia', 'Acción'], ans: 2 },
-          { t: 'rd', title: 'Testo 2', passage: "Ieri sera siamo andati al cinema a vedere un film italiano. Era una commedia molto divertente. Dopo il film, abbiamo cenato in un ristorante cinese.", q: '¿Dónde cenaron?', opts: ['Restaurante italiano', 'Restaurante chino', 'En casa', 'Fast food'], ans: 1 },
-          { t: 'rd', title: 'Testo 3', passage: "Per le vacanze estive, la mia famiglia e io andremo in Grecia. Abbiamo prenotato un appartamento vicino al mare per due settimane. I bambini sono contentissimi perché adorano la spiaggia.", q: '¿Cuánto tiempo van?', opts: ['Una semana', 'Dos semanas', 'Un mes', 'Tres días'], ans: 1 },
-        ]},
-      ]
-    },
-  },
   pt: {
     A2: {
       title: 'CELPE-Bras A2 — Simulacro',

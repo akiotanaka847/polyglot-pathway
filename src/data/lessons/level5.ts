@@ -68,18 +68,6 @@ function makeL5(code: string, level: string, lang: string, d: L5Data): Lesson[] 
 
 // ===== C1 LESSONS =====
 
-export const deC1Lessons = makeL5('de', 'C1', 'German', {
-  g1: 'Erweiterter Konjunktiv II', g1Rd: 'erveiterter konjunktiv zwei', g1Ex: 'Hätte er es nur gewusst', g1ExM: 'If only he had known',
-  g2: 'Nominalisierung', g2Rd: 'nominalizierung', g2Ex: 'Das Lesen des Buches', g2ExM: 'The reading of the book',
-  topics: [['Aufsatz','aufsats'],['Rhetorik','retorik'],['Debatte','debate'],['Analyse','analize'],['Sprachphilosophie','shprachfilozofi'],['Kritisches Denken','kritishes denken'],['Forschungsmethode','forshungsmethode'],['Diplomatie','diplomati'],['Völkerrecht','foelkerrecht'],['Geopolitik','geopolitik'],['Makroökonomie','makrooekonomie'],['Strategie','strategi'],['Neurowissenschaft','neirovissenschaft'],['Quantenphysik','kvantenfizik'],['Künstliche Intelligenz','kuenstliche intelligents'],['Bioethik','bioetik'],['Vergleichende Literatur','fergleichende literatur'],['Filmtheorie','filmteori'],['Stadtplanung','shtadtplanung'],['Nachhaltigkeit','nachaltigkeit'],['Kulturwissenschaft','kulturvissenschaft'],['Semiotik','zemiotik']],
-});
-
-export const itC1Lessons = makeL5('it', 'C1', 'Italian', {
-  g1: 'Congiuntivo trapassato avanzato', g1Rd: 'congiuntivo trapassato avanzato', g1Ex: 'Qualora avesse saputo', g1ExM: 'Had he known',
-  g2: 'Periodo ipotetico misto', g2Rd: 'periodo ipotetico misto', g2Ex: 'Se avessi studiato, ora saprei', g2ExM: 'If I had studied, I would know now',
-  topics: [['Saggio','saggio'],['Retorica','retorica'],['Dibattito','dibattito'],['Analisi','analisi'],['Filosofia del linguaggio','filosofia del linguaggio'],['Pensiero critico','pensiero critico'],['Metodo di ricerca','metodo di ricerca'],['Diplomazia avanzata','diplomazia avanzata'],['Diritto internazionale','diritto internazionale'],['Geopolitica','geopolitica'],['Macroeconomia','macroeconomia'],['Strategia aziendale','strategia aziendale'],['Neuroscienze','neuroscienze'],['Fisica quantistica','fisica quantistica'],['Intelligenza artificiale','intelligenza artificiale'],['Bioetica','bioetica'],['Letteratura comparata','letteratura comparata'],['Teoria del cinema','teoria del cinema'],['Urbanistica','urbanistica'],['Sviluppo sostenibile','sviluppo sostenibile'],['Studi culturali','studi culturali'],['Semiotica','semiotica']],
-});
-
 export const ptC1Lessons = makeL5('pt', 'C1', 'Portuguese', {
   g1: 'Futuro do conjuntivo composto', g1Rd: 'futuro do conjuntivo composto', g1Ex: 'Quando tivermos terminado', g1ExM: 'When we have finished',
   g2: 'Infinitivo pessoal composto', g2Rd: 'infinitivo pessoal composto', g2Ex: 'Por termos chegado tarde', g2ExM: 'Because we arrived late',
@@ -122,29 +110,7 @@ export const trC1Lessons = makeL5('tr', 'C1', 'Turkish', {
   topics: [['Akademik yazı','akademik yazi'],['Hitabet','hitabet'],['Münazara','munazara'],['Edebi analiz','edebi analiz'],['Dil felsefesi','dil felsefesi'],['Eleştirel düşünce','elestirel dusunce'],['Araştırma yöntemi','arastirma yontemi'],['İleri diplomasi','ileri diplomasi'],['Uluslararası hukuk','uluslararasi hukuk'],['Jeopolitik','jeopolitik'],['Makroekonomi','makroekonomi'],['Kurumsal strateji','kurumsal strateji'],['Sinirbilim','sinirbilim'],['Kuantum fiziği','kuantum fizigi'],['Yapay zeka','yapay zeka'],['Biyoetik','biyoetik'],['Karşılaştırmalı edebiyat','karsilastirmali edebiyat'],['Film teorisi','film teorisi'],['Şehir planlaması','sehir planlamasi'],['Sürdürülebilir kalkınma','surdurulebilir kalkinma'],['Kültür araştırmaları','kultur arastirmalari'],['Göstergebilim','gostergebilim']],
 });
 
-export const viC1Lessons = makeL5('vi', 'C1', 'Vietnamese', {
-  g1: 'Văn phong học thuật', g1Rd: 'van phong hoc thuat', g1Ex: 'Cấu trúc luận văn', g1ExM: 'Thesis structure',
-  g2: 'Từ Hán-Việt nâng cao', g2Rd: 'tu han viet nang cao', g2Ex: 'Nhân văn, xã hội', g2ExM: 'Humanities, society',
-  topics: [['Viết học thuật','viet hoc thuat'],['Hùng biện','hung bien'],['Tranh luận','tranh luan'],['Phân tích văn học','phan tich van hoc'],['Triết học ngôn ngữ','triet hoc ngon ngu'],['Tư duy phản biện','tu duy phan bien'],['Phương pháp nghiên cứu','phuong phap nghien cuu'],['Ngoại giao nâng cao','ngoai giao nang cao'],['Luật quốc tế','luat quoc te'],['Địa chính trị','dia chinh tri'],['Kinh tế vĩ mô','kinh te vi mo'],['Chiến lược doanh nghiệp','chien luoc doanh nghiep'],['Khoa học thần kinh','khoa hoc than kinh'],['Vật lý lượng tử','vat ly luong tu'],['Trí tuệ nhân tạo','tri tue nhan tao'],['Đạo đức sinh học','dao duc sinh hoc'],['Văn học so sánh','van hoc so sanh'],['Lý thuyết điện ảnh','ly thuyet dien anh'],['Quy hoạch đô thị','quy hoach do thi'],['Phát triển bền vững','phat trien ben vung'],['Nghiên cứu văn hóa','nghien cuu van hoa'],['Ký hiệu học','ky hieu hoc']],
-});
-
-export const thC1Lessons = makeL5('th', 'C1', 'Thai', {
-  g1: 'ภาษาราชการ', g1Rd: 'phasa ratchakan', g1Ex: 'คำกราบบังคมทูล', g1ExM: 'Royal vocabulary',
-  g2: 'อักษรสมัย', g2Rd: 'aksorn samai', g2Ex: 'ภาษาวรรณคดี', g2ExM: 'Literary language',
-  topics: [['งานเขียนวิชาการ','ngan khian wichakan'],['วาทศิลป์','watha sin'],['การอภิปราย','kan aphiprai'],['วิเคราะห์วรรณกรรม','wikhroh wannakam'],['ปรัชญาภาษา','pratchaya phasa'],['การคิดเชิงวิพากษ์','kan khit choeng wiphak'],['ระเบียบวิธีวิจัย','rabiap withi wichai'],['การทูตระดับสูง','kan thut radap sung'],['กฎหมายระหว่างประเทศ','kot mai rawang prathet'],['ภูมิรัฐศาสตร์','phumi ratthasat'],['เศรษฐศาสตร์มหภาค','setthasat mahaphak'],['กลยุทธ์องค์กร','konlayut ongkon'],['ประสาทวิทยาศาสตร์','prasat witthayasat'],['ฟิสิกส์ควอนตัม','fisik khwontam'],['ปัญญาประดิษฐ์','panya pradit'],['ชีวจริยธรรม','chiwa jariyatham'],['วรรณคดีเปรียบเทียบ','wannakhadi priap thiap'],['ทฤษฎีภาพยนตร์','thritsadi phapphayon'],['ผังเมือง','phang mueang'],['การพัฒนาที่ยั่งยืน','kan phatthana thi yang yuen'],['วัฒนธรรมศึกษา','watthanatham sueksa'],['สัญศาสตร์','sanyasat']],
-});
-
-export const nlC1Lessons = makeL5('nl', 'C1', 'Dutch', {
-  g1: 'Formeel register', g1Rd: 'formeel register', g1Ex: 'Desalniettemin', g1ExM: 'Nevertheless',
-  g2: 'Nominalisatie', g2Rd: 'nominalizatie', g2Ex: 'Het schrijven van het rapport', g2ExM: 'The writing of the report',
-  topics: [['Academisch schrijven','akademies sghrijven'],['Retoriek','retorik'],['Debat','debat'],['Literaire analyse','literer analize'],['Taalfilosofie','taalfilosofi'],['Kritisch denken','kritis denken'],['Onderzoeksmethode','onderzuksmethode'],['Geavanceerde diplomatie','gheavanserde diplomati'],['Internationaal recht','internationaal recht'],['Geopolitiek','geopolitiek'],['Macro-economie','makro ekonomi'],['Bedrijfsstrategie','bedrijfsstrategi'],['Neurowetenschap','neurowetensghap'],['Kwantumfysica','kwantumfisika'],['Kunstmatige intelligentie','kunstmatighe intelighensi'],['Bio-ethiek','bio ethiek'],['Vergelijkende literatuur','verghelijkende literatuur'],['Filmtheorie','filmteori'],['Stadsplanning','stadsplanning'],['Duurzame ontwikkeling','duurzame ontwikkeling'],['Cultuurstudies','kultuurstudies'],['Semiotiek','semiotiek']],
-});
-
-export const plC1Lessons = makeL5('pl', 'C1', 'Polish', {
-  g1: 'Styl naukowy', g1Rd: 'styl naukovy', g1Ex: 'W niniejszym artykule', g1ExM: 'In this article',
-  g2: 'Archaizmy i neologizmy', g2Rd: 'arkhaizmy i neologizmy', g2Ex: 'Przeto, zatem', g2ExM: 'Therefore, thus',
-  topics: [['Pismo naukowe','pismo naukove'],['Retoryka','retoryka'],['Debata','debata'],['Analiza literacka','analiza literacka'],['Filozofia języka','filozofia yenzyka'],['Myślenie krytyczne','myshlenie krytychne'],['Metoda badawcza','metoda badavcha'],['Dyplomacja zaawansowana','dyplomatsya zaavansovana'],['Prawo międzynarodowe','pravo miendzynarodove'],['Geopolityka','geopolityka'],['Makroekonomia','makroekonomia'],['Strategia korporacyjna','strategia korporatsyjna'],['Neuronauka','neironauka'],['Fizyka kwantowa','fizyka kvantova'],['Sztuczna inteligencja','shtuczna inteligentsya'],['Bioetyka','bioetyka'],['Literatura porównawcza','literatura porovnavcha'],['Teoria filmu','teoria filmu'],['Planowanie urbanistyczne','planovanie urbanistychne'],['Zrównoważony rozwój','zruvnovazhony rozvuy'],['Studia kulturowe','studia kulturove'],['Semiotyka','semiotyka']],
-});
+// Removed vi, th, nl, pl C1 lessons (consolidated to top 10)
 
 export const enC1Lessons = makeL5('en', 'C1', 'English', {
   g1: 'Subjunctive (formal)', g1Rd: 'subjunctive formal', g1Ex: 'It is imperative that he be present', g1ExM: 'Es imperativo que esté presente',
@@ -164,18 +130,6 @@ export const frC2Lessons = makeL5('fr', 'C2', 'French', {
   g1: 'Style soutenu', g1Rd: 'stil sutny', g1Ex: 'Nonobstant les difficultés', g1ExM: 'Notwithstanding the difficulties',
   g2: 'Passé simple (maîtrise)', g2Rd: 'pase senpl metriz', g2Ex: 'Ils se regardèrent', g2ExM: 'They looked at each other',
   topics: [['Dissertation','disertasyon'],['Art oratoire','ar oratwar'],['Polémique','polemik'],['Exégèse','eksejez'],['Épistémologie','epistemoloji'],['Dialectique','dialektik'],['Herméneutique','ermenoetik'],['Relations internationales','relasyon enternasional'],['Droit constitutionnel','drwa konstitusyonel'],['Stratégie mondiale','strategi mondyal'],['Économie politique','ekonomi politik'],['Gouvernance','guvernans'],['Cognition','kognisyon'],['Cosmologie','kosmoloji'],['Éthique de l\'IA','etik de lia'],['Biopolitique','biopolitik'],['Théorie littéraire','teori literer'],['Esthétique','estetik'],['Architecture durable','arshitektyr dyrabl'],['Décroissance','dekrwasans'],['Postcolonialisme','postkolonyalism'],['Phénoménologie','fenomenoloji']],
-});
-
-export const deC2Lessons = makeL5('de', 'C2', 'German', {
-  g1: 'Gehobener Stil', g1Rd: 'gehobener shtil', g1Ex: 'Nichtsdestotrotz', g1ExM: 'Nevertheless',
-  g2: 'Literarische Formen', g2Rd: 'literarische formen', g2Ex: 'Vergleich und Metapher', g2ExM: 'Comparison and metaphor',
-  topics: [['Abhandlung','abhandlung'],['Redekunst','redekunst'],['Kontroverse','kontroverse'],['Textexegese','texteksegeze'],['Erkenntnistheorie','erkenntnistheorie'],['Dialektik','dialektik'],['Hermeneutik','hermeneutik'],['Internationale Beziehungen','internationale beziehungen'],['Verfassungsrecht','ferfassungsrecht'],['Weltstrategie','veltstrateji'],['Politische Ökonomie','politishe oekonomie'],['Regierungsführung','regierungsfuehrung'],['Kognition','kognitsion'],['Kosmologie','kosmologi'],['KI-Ethik','ki etik'],['Biopolitik','biopolitik'],['Literaturtheorie','literaturtheorie'],['Ästhetik','aesthetik'],['Nachhaltige Architektur','nachhaltige architektur'],['Postwachstum','postvachstum'],['Postkolonialismus','postkolonialismus'],['Phänomenologie','fenomenologi']],
-});
-
-export const itC2Lessons = makeL5('it', 'C2', 'Italian', {
-  g1: 'Registro aulico', g1Rd: 'registro aulico', g1Ex: 'Ciononostante', g1ExM: 'Notwithstanding',
-  g2: 'Passato remoto letterario', g2Rd: 'passato remoto letterario', g2Ex: 'Egli si avvide', g2ExM: 'He noticed',
-  topics: [['Dissertazione','dissertazione'],['Oratoria','oratoria'],['Polemica','polemica'],['Esegesi','esegesi'],['Epistemologia','epistemologia'],['Dialettica','dialettica'],['Ermeneutica','ermeneutica'],['Relazioni internazionali','relazioni internazionali'],['Diritto costituzionale','diritto costituzionale'],['Strategia globale','strategia globale'],['Economia politica','economia politica'],['Governance','governance'],['Cognizione','cognizione'],['Cosmologia','cosmologia'],['Etica dell\'IA','etica dell ia'],['Biopolitica','biopolitica'],['Teoria letteraria','teoria letteraria'],['Estetica','estetica'],['Architettura sostenibile','architettura sostenibile'],['Decrescita','decrescita'],['Postcolonialismo','postcolonialismo'],['Fenomenologia','fenomenologia']],
 });
 
 export const ptC2Lessons = makeL5('pt', 'C2', 'Portuguese', {
@@ -214,32 +168,4 @@ export const hiC2Lessons = makeL5('hi', 'C2', 'Hindi', {
   topics: [['शोध प्रबंध','shodh prabandh'],['वक्तृत्व कला','vaktritva kala'],['विवादात्मक','vivadatmak'],['व्याख्या','vyakhya'],['ज्ञानमीमांसा','gyanmimansa'],['द्वंद्ववाद','dvandvavad'],['व्याख्याशास्त्र','vyakhyashastra'],['अंतरराष्ट्रीय संबंध','antarrashtriya sambandh'],['संविधानिक कानून','samvidhaanik kanun'],['वैश्विक रणनीति','vaishvik ranniti'],['राजनीतिक अर्थशास्त्र','rajnitik arthashastra'],['शासन','shasan'],['संज्ञान','sangyan'],['ब्रह्मांड विज्ञान','brahmand vigyan'],['कृत्रिम बुद्धिमत्ता नैतिकता','kritrim buddhimatta naitikta'],['जैवराजनीति','jaivrajniti'],['साहित्यिक सिद्धांत','sahityik siddhant'],['सौंदर्यशास्त्र','saundaryashastra'],['टिकाऊ वास्तुकला','tikau vastukala'],['विकासहीनता','vikashinta'],['उत्तर-उपनिवेशवाद','uttar upniveshvad'],['घटनाविज्ञान','ghatnavigyan']],
 });
 
-export const trC2Lessons = makeL5('tr', 'C2', 'Turkish', {
-  g1: 'Edebî üslup', g1Rd: 'edebi uslup', g1Ex: 'Bununla birlikte', g1ExM: 'Along with this',
-  g2: 'Arkaik Türkçe', g2Rd: 'arkaik turkce', g2Ex: 'Maamafih, binaenaleyh', g2ExM: 'However, therefore',
-  topics: [['Tez','tez'],['Belagat','belagat'],['Polemik','polemik'],['Tefsir','tefsir'],['Epistemoloji','epistemoloji'],['Diyalektik','diyalektik'],['Hermenötik','hermenotik'],['Uluslararası ilişkiler','uluslararasi ilishkiler'],['Anayasa hukuku','anayasa hukuku'],['Küresel strateji','kuresel strateji'],['Siyasal ekonomi','siyasal ekonomi'],['Yönetişim','yonetishim'],['Biliş','bilish'],['Kozmoloji','kozmoloji'],['YZ etiği','yz etigi'],['Biyopolitika','biyopolitika'],['Edebiyat kuramı','edebiyat kurami'],['Estetik','estetik'],['Sürdürülebilir mimarlık','surdurulebilir mimarlik'],['Küçülme','kuculmeh'],['Post-kolonyalizm','post kolonyalizm'],['Fenomenoloji','fenomenoloji']],
-});
-
-export const viC2Lessons = makeL5('vi', 'C2', 'Vietnamese', {
-  g1: 'Phong cách hàn lâm', g1Rd: 'phong cach han lam', g1Ex: 'Tuy nhiên, bất chấp', g1ExM: 'However, despite',
-  g2: 'Từ ngữ cổ điển', g2Rd: 'tu ngu co dien', g2Ex: 'Tắc, tuy nhiên', g2ExM: 'Archaic conjunctions',
-  topics: [['Luận văn','luan van'],['Thuật hùng biện','thuat hung bien'],['Tranh cãi','tranh cai'],['Chú giải','chu giai'],['Nhận thức luận','nhan thuc luan'],['Biện chứng','bien chung'],['Giải thích học','giai thich hoc'],['Quan hệ quốc tế','quan he quoc te'],['Hiến pháp','hien phap'],['Chiến lược toàn cầu','chien luoc toan cau'],['Kinh tế chính trị','kinh te chinh tri'],['Quản trị','quan tri'],['Nhận thức','nhan thuc'],['Vũ trụ học','vu tru hoc'],['Đạo đức AI','dao duc ai'],['Chính trị sinh học','chinh tri sinh hoc'],['Lý thuyết văn học','ly thuyet van hoc'],['Mỹ học','my hoc'],['Kiến trúc bền vững','kien truc ben vung'],['Giảm tăng trưởng','giam tang truong'],['Hậu thuộc địa','hau thuoc dia'],['Hiện tượng học','hien tuong hoc']],
-});
-
-export const thC2Lessons = makeL5('th', 'C2', 'Thai', {
-  g1: 'ภาษาวรรณกรรม', g1Rd: 'phasa wannakam', g1Ex: 'อย่างไรก็ดี, ทว่า', g1ExM: 'However, although',
-  g2: 'ราชาศัพท์', g2Rd: 'rachasap', g2Ex: 'เสวย, ทรงพระกรุณา', g2ExM: 'Royal vocabulary (eat, be kind)',
-  topics: [['วิทยานิพนธ์','witthaya niphon'],['วาทศิลป์ขั้นสูง','watha sin khan sung'],['การโต้แย้ง','kan to yaeng'],['อรรถาธิบาย','attha thibai'],['ญาณวิทยา','yan witthaya'],['วิภาษวิธี','wiphasa withi'],['อรรถปริวรรต','attha pariwat'],['ความสัมพันธ์ระหว่างประเทศ','khwam samphan rawang prathet'],['กฎหมายรัฐธรรมนูญ','kot mai ratthathammanun'],['ยุทธศาสตร์โลก','yutthasa lot'],['เศรษฐศาสตร์การเมือง','setthasat kan mueang'],['ธรรมาภิบาล','thamma phibaan'],['การรับรู้','kan rap ru'],['จักรวาลวิทยา','jakkrawan witthaya'],['จริยธรรม AI','jariyatham ai'],['ชีวการเมือง','chiwa kan mueang'],['ทฤษฎีวรรณกรรม','thritsadi wannakam'],['สุนทรียศาสตร์','suntharisat'],['สถาปัตยกรรมยั่งยืน','sathapattayakam yang yuen'],['การลดการเติบโต','kan lot kan toep to'],['หลังอาณานิคม','lang ananikhom'],['ปรากฏการณ์วิทยา','prakat kan witthaya']],
-});
-
-export const nlC2Lessons = makeL5('nl', 'C2', 'Dutch', {
-  g1: 'Plechtig register', g1Rd: 'pleghtigh register', g1Ex: 'Desalniettemin, nochtans', g1ExM: 'Nevertheless, yet',
-  g2: 'Archaïsmen', g2Rd: 'arkhaismen', g2Ex: 'Deswege, alzo', g2ExM: 'Therefore, thus',
-  topics: [['Dissertatie','dissertati'],['Welsprekendheid','welsprekendheid'],['Polemiek','polemiek'],['Exegese','eksegeze'],['Epistemologie','epistemologi'],['Dialectiek','dialektiek'],['Hermeneutiek','hermeneutiek'],['Internationale betrekkingen','internatsionale betrekkingen'],['Grondwet','grondwet'],['Wereldstrategie','wereldstrategi'],['Politieke economie','politieke ekonomi'],['Bestuur','bestuur'],['Cognitie','kognitsi'],['Kosmologie','kosmologi'],['AI-ethiek','ai ethiek'],['Biopolitiek','biopolitiek'],['Literatuurtheorie','literatuurteoori'],['Esthetica','estetika'],['Duurzame architectuur','duurzame arshitektuur'],['Ontgroeien','ontgroeyen'],['Postkolonialisme','postkolonialisme'],['Fenomenologie','fenomenologi']],
-});
-
-export const plC2Lessons = makeL5('pl', 'C2', 'Polish', {
-  g1: 'Styl urzędowy', g1Rd: 'styl urzendovy', g1Ex: 'Niemniej jednak, zatem', g1ExM: 'Nevertheless, therefore',
-  g2: 'Archaizmy literackie', g2Rd: 'arkhaizmy literacke', g2Ex: 'Przeto, aczkolwiek', g2ExM: 'Therefore, although',
-  topics: [['Dysertacja','dysertatsya'],['Krasomówstwo','krasomuvstvo'],['Polemika','polemika'],['Egzegeza','egzegeza'],['Epistemologia','epistemologia'],['Dialektyka','dialektyka'],['Hermeneutyka','hermeneutyka'],['Stosunki międzynarodowe','stosunki miendzynarodove'],['Prawo konstytucyjne','pravo konstytucyyne'],['Strategia globalna','strategia globalna'],['Ekonomia polityczna','ekonomia politychna'],['Rządzenie','zhondzenie'],['Poznanie','poznanie'],['Kosmologia','kosmologia'],['Etyka SI','etyka si'],['Biopolityka','biopolityka'],['Teoria literacka','teoria literacka'],['Estetyka','estetyka'],['Architektura zrównoważona','arkhitektura zruvnovazhona'],['Degrowth','degrowth'],['Postkolonializm','postkolonializm'],['Fenomenologia','fenomenologia']],
-});
+// Removed tr, vi, th, nl, pl C2 lessons (consolidated to top 10)
