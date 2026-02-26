@@ -488,148 +488,142 @@ const TITLE_PATTERNS: Record<string, Record<string, string>> = {
 
 // ==================== LESSON CONTENT PATTERNS ====================
 // Translates notes, meanings, hints and other lesson body text from Spanish
+// IMPORTANT: Use COMPLETE sentences/phrases to avoid partial replacements
 
 const LESSON_CONTENT_PATTERNS: Record<string, Record<string, string>> = {
   en: {
-    // Hiragana lesson notes
+    // === COMPLETE NOTE SENTENCES (from jp.ts) ===
+    'Primera letra del hiragana. Abre la boca ampliamente.': 'First letter of hiragana. Open your mouth wide.',
+    'Se pronuncia como la "i" en español. Dos trazos.': 'Pronounced like "i" in English. Two strokes.',
+    'Más cerrada que la "u" española, sin redondear los labios.': 'More closed than English "u", without rounding the lips.',
+    'Como la "e" española.': 'Like the English "e".',
+    'Como la "o" española.': 'Like the English "o".',
+    'Consonante K + vocal. が ぎ ぐ げ ご son sus versiones sonoras (dakuten).': 'Consonant K + vowel. が ぎ ぐ げ ご are their voiced versions (dakuten).',
+    '⚠️ し se lee "shi", no "si". ざ じ ず ぜ ぞ son sonoras.': '⚠️ し is read as "shi", not "si". ざ じ ず ぜ ぞ are voiced.',
+    '⚠️ ち="chi" (no "ti"), つ="tsu" (no "tu"). だ ぢ づ で ど son sonoras.': '⚠️ ち="chi" (not "ti"), つ="tsu" (not "tu"). だ ぢ づ で ど are voiced.',
+    'Sin variantes sonoras. の es la partícula posesiva más común.': 'No voiced variants. の is the most common possessive particle.',
+    '⚠️ ふ="fu" (no "hu"). は como partícula se lee "wa". へ como partícula se lee "e".': '⚠️ ふ="fu" (not "hu"). は as a particle is read "wa". へ as a particle is read "e".',
+    'Sílabas nasales con M.': 'Nasal syllables with M.',
+    'Solo 3 sílabas. Se usan en combinaciones: きゃ(kya), しゅ(shu), etc.': 'Only 3 syllables. Used in combinations: きゃ(kya), しゅ(shu), etc.',
+    'La R japonesa es entre R y L española.': 'The Japanese R is between R and L.',
+    'を se usa como partícula de objeto directo. ん es la única consonante sola.': 'を is used as a direct object particle. ん is the only standalone consonant.',
+    'は行 es la única fila con 3 variantes: は(ha), ば(ba), ぱ(pa).': 'は行 is the only row with 3 variants: は(ha), ば(ba), ぱ(pa).',
+    'Consonante + ya/yu/yo pequeño: きゃ(kya), しゅ(shu), ちょ(cho), にゅ(nyu). El ya/yu/yo se escribe pequeño.': 'Consonant + small ya/yu/yo: きゃ(kya), しゅ(shu), ちょ(cho), にゅ(nyu). The ya/yu/yo is written small.',
+    'Katakana se usa para palabras extranjeras, onomatopeyas y nombres extranjeros.': 'Katakana is used for foreign words, onomatopoeia, and foreign names.',
+    'Mismos sonidos que hiragana, diferente forma.': 'Same sounds as hiragana, different shape.',
+    'ー (chōon) alarga la vocal anterior: コーヒー(koohii).': 'ー (chōon) lengthens the previous vowel: コーヒー(koohii).',
+    // === MEANINGS (mn field) ===
     'Fila ka': 'Row ka', 'Fila sa': 'Row sa', 'Fila ta': 'Row ta', 'Fila na': 'Row na',
     'Fila ha': 'Row ha', 'Fila ma': 'Row ma', 'Fila ya': 'Row ya', 'Fila ra': 'Row ra',
-    'Fila wa': 'Row wa',
+    'Fila wa + N': 'Row wa + N',
     'Vocal /a/': 'Vowel /a/', 'Vocal /i/': 'Vowel /i/', 'Vocal /u/': 'Vowel /u/',
     'Vocal /e/': 'Vowel /e/', 'Vocal /o/': 'Vowel /o/',
-    'Primera letra del hiragana': 'First letter of hiragana',
-    'Abre la boca ampliamente': 'Open your mouth wide',
-    'Se pronuncia como la': 'It is pronounced like the',
-    'en español': 'in Spanish',
-    'Dos trazos': 'Two strokes',
-    'Más cerrada que la': 'More closed than the',
-    'sin redondear los labios': 'without rounding the lips',
-    'Como la': 'Like the', 'española': 'Spanish (letter)',
-    'Consonante K + vocal': 'Consonant K + vowel',
-    'son sus versiones sonoras': 'are their voiced versions',
-    'se lee': 'is read as', 'no': 'not',
-    'son sonoras': 'are voiced',
-    'Katakana se usa para': 'Katakana is used for',
-    'palabras extranjeras': 'foreign words',
-    'onomatopeyas': 'onomatopoeia',
-    'nombres extranjeros': 'foreign names',
-    'Mismos sonidos que hiragana': 'Same sounds as hiragana',
-    'diferente forma': 'different shape',
-    'alarga la vocal anterior': 'lengthens the previous vowel',
-    'Sin variantes sonoras': 'No voiced variants',
-    'es la partícula posesiva más común': 'is the most common possessive particle',
-    'Solo 3 sílabas': 'Only 3 syllables',
-    'Se usan en combinaciones': 'Used in combinations',
-    'La R japonesa es entre R y L': 'The Japanese R is between R and L',
-    'se usa como partícula de objeto directo': 'is used as direct object particle',
-    'es la única consonante sola': 'is the only standalone consonant',
-    'Sílabas nasales con M': 'Nasal syllables with M',
-    'como partícula se lee': 'as a particle is read as',
-    'es la única fila con 3 variantes': 'is the only row with 3 variants',
-    'Dakuten y Handakuten': 'Dakuten and Handakuten',
-    // Common meanings
+    'Dakuten y Handakuten de は行': 'Dakuten and Handakuten of は行',
+    'Vocales en katakana': 'Vowels in katakana',
+    'Fila ka (katakana)': 'Row ka (katakana)', 'Fila sa (katakana)': 'Row sa (katakana)',
+    'Yōon (拗音)': 'Yōon (拗音)',
+    // === EXAMPLE MEANINGS (ex.m field) ===
     'lluvia': 'rain', 'mañana': 'morning', 'azul': 'blue',
     'perro': 'dog', 'casa': 'house', 'mar': 'sea', 'arriba': 'up',
-    'estación': 'station', 'yen': 'yen', 'dinero': 'money', 'té': 'tea',
+    'estación': 'station', 'dinero': 'money', 'té': 'tea',
     'río': 'river', 'escuchar': 'to listen', 'cerezo': 'cherry blossom',
-    'sushi': 'sushi', 'comer': 'to eat', 'mapa': 'map',
+    'comer': 'to eat', 'mapa': 'map',
     'verano': 'summer', 'gato': 'cat', 'montaña': 'mountain', 'nieve': 'snow',
-    'manzana': 'apple', 'yo': 'I/me', 'agua': 'water', 'bosque': 'forest',
+    'manzana': 'apple', 'agua': 'water', 'bosque': 'forest',
     'flor/nariz': 'flower/nose', 'libro': 'book',
     'América': 'America', 'Inglaterra': 'England',
     'cámera': 'camera', 'café': 'coffee',
     'fútbol': 'football/soccer', 'deportes': 'sports',
-    // Particle explanations
+    // === MC ANSWER OPTIONS ===
     'Tema': 'Topic', 'Objeto directo': 'Direct object',
     'Dirección': 'Direction', 'Posesión': 'Possession',
     'Posesiva': 'Possessive',
-    'Versión sonora': 'Voiced version',
-    // Question text
+    'Palabras japonesas': 'Japanese words', 'Palabras extranjeras': 'Foreign words',
+    'Partículas': 'Particles', 'Verbos': 'Verbs',
+    'fuego': 'fire', 'tierra': 'earth', 'aire': 'air',
+    'templo': 'temple',
+    'tú': 'you', 'él': 'he', 'nosotros': 'we',
+    // === QUESTION FRAGMENTS ===
     '¿Cómo se pronuncia': 'How is ... pronounced',
     '¿Para qué se usa': 'What is ... used for',
     '¿Cuándo se usa katakana?': 'When is katakana used?',
     '¿Cuál es la única consonante sola en hiragana?': 'Which is the only standalone consonant in hiragana?',
     '¿Cuál es la versión sonora': 'Which is the voiced version',
-    'Sonora de': 'Voiced version of',
-    '¿Sonora de': 'Voiced version of',
-    // Answer options in lessons
-    'Palabras japonesas': 'Japanese words', 'Palabras extranjeras': 'Foreign words',
-    'Partículas': 'Particles', 'Verbos': 'Verbs',
-    'fuego': 'fire', 'tierra': 'earth', 'aire': 'air',
-    'templo': 'temple',
-    'Vocales en katakana': 'Vowels in katakana',
-    'Ordena:': 'Order:', 'Ordena las sílabas:': 'Order the syllables:',
+    '¿Versión sonora de': 'Voiced version of',
+    '¿Sonora de': 'Voiced of',
     '¿Qué partícula es': 'What particle is',
+    'Ordena:': 'Order:', 'Ordena las sílabas:': 'Order the syllables:',
+    'como partícula?': 'as a particle?',
+    'como partícula': 'as a particle',
   },
   fr: {
+    // === COMPLETE NOTE SENTENCES ===
+    'Primera letra del hiragana. Abre la boca ampliamente.': 'Première lettre du hiragana. Ouvrez la bouche largement.',
+    'Se pronuncia como la "i" en español. Dos trazos.': 'Se prononce comme le "i" en français. Deux traits.',
+    'Más cerrada que la "u" española, sin redondear los labios.': 'Plus fermée que le "u" français, sans arrondir les lèvres.',
+    'Como la "e" española.': 'Comme le "e" français.',
+    'Como la "o" española.': 'Comme le "o" français.',
+    'Consonante K + vocal. が ぎ ぐ げ ご son sus versiones sonoras (dakuten).': 'Consonne K + voyelle. が ぎ ぐ げ ご sont leurs versions sonores (dakuten).',
+    '⚠️ し se lee "shi", no "si". ざ じ ず ぜ ぞ son sonoras.': '⚠️ し se lit "shi", pas "si". ざ じ ず ぜ ぞ sont sonores.',
+    '⚠️ ち="chi" (no "ti"), つ="tsu" (no "tu"). だ ぢ づ で ど son sonoras.': '⚠️ ち="chi" (pas "ti"), つ="tsu" (pas "tu"). だ ぢ づ で ど sont sonores.',
+    'Sin variantes sonoras. の es la partícula posesiva más común.': 'Pas de variantes sonores. の est la particule possessive la plus courante.',
+    '⚠️ ふ="fu" (no "hu"). は como partícula se lee "wa". へ como partícula se lee "e".': '⚠️ ふ="fu" (pas "hu"). は comme particule se lit "wa". へ comme particule se lit "e".',
+    'Sílabas nasales con M.': 'Syllabes nasales avec M.',
+    'Solo 3 sílabas. Se usan en combinaciones: きゃ(kya), しゅ(shu), etc.': 'Seulement 3 syllabes. Utilisées en combinaisons : きゃ(kya), しゅ(shu), etc.',
+    'La R japonesa es entre R y L española.': 'Le R japonais est entre le R et le L français.',
+    'を se usa como partícula de objeto directo. ん es la única consonante sola.': 'を est utilisé comme particule d\'objet direct. ん est la seule consonne isolée.',
+    'は行 es la única fila con 3 variantes: は(ha), ば(ba), ぱ(pa).': 'は行 est la seule rangée avec 3 variantes : は(ha), ば(ba), ぱ(pa).',
+    'Consonante + ya/yu/yo pequeño: きゃ(kya), しゅ(shu), ちょ(cho), にゅ(nyu). El ya/yu/yo se escribe pequeño.': 'Consonne + petit ya/yu/yo : きゃ(kya), しゅ(shu), ちょ(cho), にゅ(nyu). Le ya/yu/yo s\'écrit en petit.',
+    'Katakana se usa para palabras extranjeras, onomatopeyas y nombres extranjeros.': 'Le katakana est utilisé pour les mots étrangers, les onomatopées et les noms étrangers.',
+    'Mismos sonidos que hiragana, diferente forma.': 'Mêmes sons que le hiragana, forme différente.',
+    'ー (chōon) alarga la vocal anterior: コーヒー(koohii).': 'ー (chōon) allonge la voyelle précédente : コーヒー(koohii).',
+    // === MEANINGS ===
     'Fila ka': 'Rangée ka', 'Fila sa': 'Rangée sa', 'Fila ta': 'Rangée ta', 'Fila na': 'Rangée na',
     'Fila ha': 'Rangée ha', 'Fila ma': 'Rangée ma', 'Fila ya': 'Rangée ya', 'Fila ra': 'Rangée ra',
-    'Fila wa': 'Rangée wa',
+    'Fila wa + N': 'Rangée wa + N',
     'Vocal /a/': 'Voyelle /a/', 'Vocal /i/': 'Voyelle /i/', 'Vocal /u/': 'Voyelle /u/',
     'Vocal /e/': 'Voyelle /e/', 'Vocal /o/': 'Voyelle /o/',
-    'Primera letra del hiragana': 'Première lettre du hiragana',
-    'Abre la boca ampliamente': 'Ouvrez la bouche largement',
-    'Se pronuncia como la': 'Se prononce comme le',
-    'en español': 'en espagnol',
-    'Dos trazos': 'Deux traits',
-    'Más cerrada que la': 'Plus fermée que le',
-    'sin redondear los labios': 'sans arrondir les lèvres',
-    'Como la': 'Comme le', 'española': 'espagnol (lettre)',
-    'Consonante K + vocal': 'Consonne K + voyelle',
-    'son sus versiones sonoras': 'sont leurs versions sonores',
-    'se lee': 'se lit', 'no': 'non',
-    'son sonoras': 'sont sonores',
-    'Katakana se usa para': 'Le katakana est utilisé pour',
-    'palabras extranjeras': 'mots étrangers',
-    'onomatopeyas': 'onomatopées',
-    'nombres extranjeros': 'noms étrangers',
-    'Mismos sonidos que hiragana': 'Mêmes sons que le hiragana',
-    'diferente forma': 'forme différente',
-    'alarga la vocal anterior': 'allonge la voyelle précédente',
-    'Sin variantes sonoras': 'Pas de variantes sonores',
-    'es la partícula posesiva más común': 'est la particule possessive la plus courante',
-    'Solo 3 sílabas': 'Seulement 3 syllabes',
-    'Se usan en combinaciones': 'Utilisées en combinaisons',
-    'La R japonesa es entre R y L': 'Le R japonais est entre R et L',
-    'se usa como partícula de objeto directo': 'est utilisé comme particule d\'objet direct',
-    'es la única consonante sola': 'est la seule consonne isolée',
-    'Sílabas nasales con M': 'Syllabes nasales avec M',
-    'como partícula se lee': 'comme particule se lit',
-    'es la única fila con 3 variantes': 'est la seule rangée avec 3 variantes',
-    'Dakuten y Handakuten': 'Dakuten et Handakuten',
+    'Dakuten y Handakuten de は行': 'Dakuten et Handakuten de は行',
+    'Vocales en katakana': 'Voyelles en katakana',
+    'Fila ka (katakana)': 'Rangée ka (katakana)', 'Fila sa (katakana)': 'Rangée sa (katakana)',
+    // === EXAMPLE MEANINGS ===
     'lluvia': 'pluie', 'mañana': 'matin', 'azul': 'bleu',
     'perro': 'chien', 'casa': 'maison', 'mar': 'mer', 'arriba': 'en haut',
-    'estación': 'gare', 'yen': 'yen', 'dinero': 'argent', 'té': 'thé',
+    'estación': 'gare', 'dinero': 'argent', 'té': 'thé',
     'río': 'rivière', 'escuchar': 'écouter', 'cerezo': 'cerisier',
-    'sushi': 'sushi', 'comer': 'manger', 'mapa': 'carte',
+    'comer': 'manger', 'mapa': 'carte',
     'verano': 'été', 'gato': 'chat', 'montaña': 'montagne', 'nieve': 'neige',
-    'manzana': 'pomme', 'yo': 'je/moi', 'agua': 'eau', 'bosque': 'forêt',
+    'manzana': 'pomme', 'agua': 'eau', 'bosque': 'forêt',
     'flor/nariz': 'fleur/nez', 'libro': 'livre',
     'América': 'Amérique', 'Inglaterra': 'Angleterre',
     'cámera': 'caméra', 'café': 'café',
     'fútbol': 'football', 'deportes': 'sports',
+    // === MC ANSWER OPTIONS ===
     'Tema': 'Thème', 'Objeto directo': 'Objet direct',
     'Dirección': 'Direction', 'Posesión': 'Possession',
     'Posesiva': 'Possessif',
-    'Versión sonora': 'Version sonore',
+    'Palabras japonesas': 'Mots japonais', 'Palabras extranjeras': 'Mots étrangers',
+    'Partículas': 'Particules', 'Verbos': 'Verbes',
+    'fuego': 'feu', 'tierra': 'terre', 'aire': 'air',
+    'templo': 'temple',
+    'tú': 'toi', 'él': 'lui', 'nosotros': 'nous',
+    // === QUESTION FRAGMENTS ===
     '¿Cómo se pronuncia': 'Comment se prononce',
     '¿Para qué se usa': 'À quoi sert',
     '¿Cuándo se usa katakana?': 'Quand utilise-t-on le katakana ?',
     '¿Cuál es la única consonante sola en hiragana?': 'Quelle est la seule consonne isolée en hiragana ?',
     '¿Cuál es la versión sonora': 'Quelle est la version sonore',
-    'Sonora de': 'Version sonore de',
+    '¿Versión sonora de': 'Version sonore de',
     '¿Sonora de': 'Version sonore de',
-    'Palabras japonesas': 'Mots japonais', 'Palabras extranjeras': 'Mots étrangers',
-    'Partículas': 'Particules', 'Verbos': 'Verbes',
-    'fuego': 'feu', 'tierra': 'terre', 'aire': 'air',
-    'templo': 'temple',
-    'Vocales en katakana': 'Voyelles en katakana',
-    'Ordena:': 'Ordonnez :', 'Ordena las sílabas:': 'Ordonnez les syllabes :',
     '¿Qué partícula es': 'Quelle particule est',
+    'Ordena:': 'Ordonnez :', 'Ordena las sílabas:': 'Ordonnez les syllabes :',
+    'como partícula?': 'comme particule ?',
+    'como partícula': 'comme particule',
   },
   pt: {
     'Fila ka': 'Linha ka', 'Fila sa': 'Linha sa', 'Fila ta': 'Linha ta',
     'Fila ha': 'Linha ha', 'Fila ma': 'Linha ma', 'Fila na': 'Linha na',
+    'Fila wa + N': 'Linha wa + N',
     'Vocal /a/': 'Vogal /a/', 'Vocal /i/': 'Vogal /i/',
     'lluvia': 'chuva', 'perro': 'cão', 'casa': 'casa', 'gato': 'gato',
     'libro': 'livro', 'agua': 'água', 'flor/nariz': 'flor/nariz',
@@ -645,7 +639,13 @@ function applyPatterns(text: string, patterns: Record<string, string>): string {
   const sorted = Object.entries(patterns).sort((a, b) => b[0].length - a[0].length);
   for (const [source, translated] of sorted) {
     if (result.includes(source)) {
-      result = result.split(source).join(translated);
+      // For short patterns (<=3 chars), only replace if it's a standalone word
+      if (source.length <= 3) {
+        const regex = new RegExp(`(?<![a-záéíóúàèùâêîôûäëïöüñ])${source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![a-záéíóúàèùâêîôûäëïöüñ])`, 'gi');
+        result = result.replace(regex, translated);
+      } else {
+        result = result.split(source).join(translated);
+      }
     }
   }
   return result;
@@ -657,26 +657,22 @@ export function translateLessonText(text: string | undefined, nativeLang: string
   
   let result = text;
   
-  // Apply question patterns
+  // Apply all pattern dictionaries for the native language
   const qPatterns = QUESTION_PATTERNS[nativeLang];
+  const ePatterns = EXPLANATION_PATTERNS[nativeLang];
+  const cPatterns = LESSON_CONTENT_PATTERNS[nativeLang];
+  if (cPatterns) result = applyPatterns(result, cPatterns); // longest sentences first
+  if (ePatterns) result = applyPatterns(result, ePatterns);
   if (qPatterns) result = applyPatterns(result, qPatterns);
   
-  // Apply explanation patterns (for notes, meanings, etc.)
-  const ePatterns = EXPLANATION_PATTERNS[nativeLang];
-  if (ePatterns) result = applyPatterns(result, ePatterns);
-  
-  // Apply lesson-specific content patterns
-  const cPatterns = LESSON_CONTENT_PATTERNS[nativeLang];
-  if (cPatterns) result = applyPatterns(result, cPatterns);
-  
-  // Fallback to English if not es/en and still has Spanish
-  if (nativeLang !== 'en' && result === text) {
-    const enQ = QUESTION_PATTERNS['en'];
-    const enE = EXPLANATION_PATTERNS['en'];
+  // If native lang is not en/es, also try English as fallback for anything still in Spanish
+  if (nativeLang !== 'en' && nativeLang !== 'es') {
     const enC = LESSON_CONTENT_PATTERNS['en'];
-    if (enQ) result = applyPatterns(result, enQ);
-    if (enE) result = applyPatterns(result, enE);
+    const enE = EXPLANATION_PATTERNS['en'];
+    const enQ = QUESTION_PATTERNS['en'];
     if (enC) result = applyPatterns(result, enC);
+    if (enE) result = applyPatterns(result, enE);
+    if (enQ) result = applyPatterns(result, enQ);
   }
   
   return result;
