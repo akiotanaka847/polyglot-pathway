@@ -126,7 +126,7 @@ export default function LessonPage() {
     let correctAns = '';
     if (step.t === 'mc' || step.t === 'rd') {
       correct = selectedChoice === step.ans;
-      correctAns = step.opts[step.ans];
+      correctAns = tl(step.opts[step.ans]);
     } else if (step.t === 'tx') {
       correct = normalizeAnswer(textInput) === normalizeAnswer(step.ans);
       correctAns = step.ans;
@@ -362,7 +362,7 @@ export default function LessonPage() {
                         style={{ background: `hsl(${config.hue}, 80%, 95%)`, color: `hsl(${config.hue}, 70%, 40%)` }}>
                         {labels[i]}
                       </span>
-                      <span className="flex-1">{opt}</span>
+                      <span className="flex-1">{tl(opt)}</span>
                     </button>
                   );
                 })}
