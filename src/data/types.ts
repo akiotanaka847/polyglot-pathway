@@ -151,6 +151,8 @@ export interface GrammarEntry {
   title: string;
   explanation: string;
   examples: { text: string; translation: string }[];
+  level?: string;
+  category?: 'particles' | 'verbs' | 'adjectives' | 'sentence' | 'expressions' | 'advanced' | 'writing';
 }
 
 export interface VocabEntry {
