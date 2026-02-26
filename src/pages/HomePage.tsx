@@ -7,7 +7,7 @@ export default function HomePage() {
   const navigate = useNavigate();
   const totalXp = Object.values(state.xp).reduce((a, b) => a + b, 0);
   const hasProgress = totalXp > 0;
-  const activeLangs = [...new Set(state.activeLangs || [])];
+  const activeLangs = [...new Set(state.activeLangs || [])].filter(c => c !== state.nativeLang);
 
   // Native language picker
   if (!state.nativeLang) {
@@ -16,7 +16,7 @@ export default function HomePage() {
         <div className="max-w-lg mx-auto p-6 flex flex-col items-center justify-center min-h-[70vh]">
           <div className="text-6xl mb-5 animate-pop-in">🌍</div>
           <h1 className="font-serif text-3xl font-light mb-2 text-center">{tt('native_lang_question')}</h1>
-          <p className="text-sm text-foreground-secondary mb-6 text-center">What is your native language? · Quelle est votre langue maternelle?</p>
+          <p className="text-sm text-foreground-secondary mb-6 text-center">{tt('select_language')}</p>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 w-full">
             {LANGUAGES.map(lang => (
               <button key={lang.code} onClick={() => setNativeLang(lang.code)}
@@ -32,7 +32,7 @@ export default function HomePage() {
     );
   }
 
-  // Only show languages not yet active (exclude native + already active)
+  // Only show languages the user can learn (not their native language)
   const availableLangs = LANGUAGES.filter(l => l.code !== state.nativeLang);
   const nativeConfig = getLangConfig(state.nativeLang);
 
@@ -41,8 +41,10 @@ export default function HomePage() {
     navigate(`/levels/${code}`);
   };
 
-  // Find "continue learning" - most recent active language with most XP
-  const continueLang = [...activeLangs].sort((a, b) => (state.xp[b] || 0) - (state.xp[a] || 0))[0] || null;
+  // Find "continue learning" - active language with most XP
+  const continueLang = activeLangs.length > 0 
+    ? [...activeLangs].sort((a, b) => (state.xp[b] || 0) - (state.xp[a] || 0))[0] 
+    : null;
   const continueConfig = continueLang ? getLangConfig(continueLang) : null;
 
   return (
@@ -84,8 +86,8 @@ export default function HomePage() {
             </button>
           )}
 
-          {/* Active languages */}
-          {activeLangs.length > 1 && (
+          {/* Active languages - only show if more than 1 (the continue one is already shown) */}
+          {activeLangs.filter(c => c !== continueLang).length > 0 && (
             <div className="mb-6">
               <div className="text-[0.68rem] font-bold tracking-widest uppercase text-foreground-muted mb-2">{tt('your_languages')}</div>
               <div className="flex gap-2 flex-wrap">
