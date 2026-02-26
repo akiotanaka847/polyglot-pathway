@@ -85,8 +85,23 @@ export default function LessonPage() {
   }
 
   const steps = lesson.steps;
-  const step = steps[stepIdx] as LessonStep | undefined;
+  const rawStep = steps[stepIdx] as LessonStep | undefined;
   const progress = stepIdx / steps.length * 100;
+
+  // Randomize MC/RD options so repeating lessons tests knowledge, not memory
+  const step = useMemo(() => {
+    if (!rawStep || (rawStep.t !== 'mc' && rawStep.t !== 'rd')) return rawStep;
+    const s = { ...rawStep } as any;
+    const indices = s.opts.map((_: any, i: number) => i);
+    for (let i = indices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+    s.opts = indices.map((i: number) => (rawStep as any).opts[i]);
+    s.ans = indices.indexOf((rawStep as any).ans);
+    return s as LessonStep;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stepIdx]) as LessonStep | undefined;
 
   const handleCheck = () => {
     if (!step) return;
