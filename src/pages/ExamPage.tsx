@@ -1,11 +1,11 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { EXAM_DATA } from '@/data/exams';
 import { getLangConfig } from '@/data/languages';
 import { normalizeAnswer, playCorrectSound, playIncorrectSound, playLevelUpSound, spawnConfetti } from '@/utils/helpers';
+import { translateLessonText, translateExamTitle, translateSectionName, translateOption } from '@/utils/lessonI18n';
 import { MCStep, TextStep, ReadingStep, SpeakingStep } from '@/data/types';
-import { useRef } from 'react';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
 
 type Q = MCStep | TextStep | ReadingStep | SpeakingStep;
@@ -39,7 +39,9 @@ function CircularTimer({ timeLeft, total, size = 56 }: { timeLeft: number; total
 export default function ExamPage() {
   const { lang = 'jp', level = 'N5' } = useParams();
   const navigate = useNavigate();
-  const { tt, addXP } = useApp();
+  const { tt, addXP, state: appState } = useApp();
+  const nativeLang = appState.nativeLang || 'en';
+  const tl = (text: string | undefined) => translateLessonText(text, nativeLang);
   const exam = EXAM_DATA[lang]?.[level];
   const config = getLangConfig(lang);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -135,7 +137,7 @@ export default function ExamPage() {
               style={{ background: `linear-gradient(135deg, hsl(${config.hue}, 80%, 96%), hsl(${config.hue}, 60%, 88%))` }}>
               {config.flag}
             </div>
-            <h1 className="text-2xl font-bold font-serif">{exam.title}</h1>
+            <h1 className="text-2xl font-bold font-serif">{translateExamTitle(exam.title, nativeLang)}</h1>
             <p className="text-sm text-foreground-secondary mt-2">{totalQs} {tt('questions')} · {exam.sections.length} {tt('lessons')}</p>
           </div>
 
@@ -147,7 +149,7 @@ export default function ExamPage() {
                   {i + 1}
                 </div>
                 <div className="flex-1">
-                  <span className="font-semibold text-sm">{s.name}</span>
+                  <span className="font-semibold text-sm">{translateSectionName(s.name, nativeLang)}</span>
                   <div className="text-xs text-foreground-muted">{s.qs.length} {tt('questions')} · {s.time} min</div>
                 </div>
               </div>
@@ -193,7 +195,7 @@ export default function ExamPage() {
           </div>
           
           <h1 className="text-2xl font-bold font-serif mb-1">{passed ? tt('perfect') : tt('keep_practicing')}</h1>
-          <p className="text-foreground-secondary mb-4">{exam.title}</p>
+          <p className="text-foreground-secondary mb-4">{translateExamTitle(exam.title, nativeLang)}</p>
           
           <div className={`inline-block text-6xl font-bold mb-2 ${passed ? 'text-green-500' : 'text-destructive'}`}>
             {pct}%
@@ -211,7 +213,7 @@ export default function ExamPage() {
             <p className="font-semibold text-sm mb-3">{tt('progress')}</p>
             {sectionResults.map((sr, i) => (
               <div key={i} className="flex items-center gap-2 mb-2">
-                <span className="text-sm flex-1">{sr.name}</span>
+                <span className="text-sm flex-1">{translateSectionName(sr.name, nativeLang)}</span>
                 <div className="w-20 h-1.5 bg-border rounded-full overflow-hidden">
                   <div className="h-full rounded-full" style={{ width: `${sr.total > 0 ? (sr.correct / sr.total) * 100 : 0}%`, background: sr.correct / sr.total >= 0.7 ? 'hsl(var(--success))' : 'hsl(var(--destructive))' }} />
                 </div>
@@ -241,7 +243,7 @@ export default function ExamPage() {
         <div className="flex items-center gap-3 mb-4">
           <CircularTimer timeLeft={timeLeft} total={sectionTime} />
           <div className="flex-1">
-            <span className="text-sm font-bold">{section?.name}</span>
+            <span className="text-sm font-bold">{translateSectionName(section?.name || '', nativeLang)}</span>
             <div className="text-xs text-foreground-muted">
               {tt('question_of').replace('{0}', String(qIdx + 1)).replace('{1}', String(section?.qs.length))} · {sectionIdx + 1}/{exam.sections.length}
             </div>
@@ -272,7 +274,7 @@ export default function ExamPage() {
                 <p>{(q as ReadingStep).passage}</p>
               </div>
             )}
-            <p className="font-semibold mb-4 text-base leading-snug" dangerouslySetInnerHTML={{ __html: q.q }} />
+            <p className="font-semibold mb-4 text-base leading-snug" dangerouslySetInnerHTML={{ __html: tl(q.q) }} />
 
             {(q.t === 'mc' || q.t === 'rd') && (
               <div className="space-y-2.5">
@@ -283,7 +285,7 @@ export default function ExamPage() {
                       style={{ background: `hsl(${config.hue}, 80%, 95%)`, color: `hsl(${config.hue}, 70%, 40%)` }}>
                       {['A','B','C','D'][i]}
                     </span>
-                    {o}
+                    {translateOption(o, nativeLang)}
                   </button>
                 ))}
               </div>
@@ -330,11 +332,11 @@ export default function ExamPage() {
                       : 'text-card'
                   }`}
                   style={!speech.isListening ? { background: `hsl(${config.hue}, 70%, 46%)` } : undefined}>
-                  {speech.isListening ? '⏹ Grabando...' : '🎤 Hablar'}
+                  {speech.isListening ? `⏹ ${tt('listen')}...` : `🎤 ${tt('send')}`}
                 </button>
                 {speech.transcript && (
                   <div className="bg-card border border-border rounded-xl p-3">
-                    <p className="text-xs text-foreground-muted mb-1">Tu respuesta:</p>
+                    <p className="text-xs text-foreground-muted mb-1">{tt('write_response')}:</p>
                     <p className="text-sm font-medium">{speech.transcript}</p>
                     <button onClick={() => submit(speech.transcript)}
                       className="mt-2 w-full px-4 py-2.5 rounded-xl text-sm font-bold text-card"
