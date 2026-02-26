@@ -5,6 +5,7 @@ import { GRAMMAR_REF, VOCAB_REF } from '@/data/reference';
 import { getLangConfig, LANGUAGES } from '@/data/languages';
 import { speakText } from '@/utils/helpers';
 import { GrammarEntry } from '@/data/types';
+import { translateLessonTitle, translateExplanation, translateOption } from '@/utils/lessonI18n';
 
 const VALID_LANG_CODES = new Set(LANGUAGES.map(l => l.code));
 
@@ -195,17 +196,17 @@ export default function ReferencePage() {
                                         </div>
                                         <div className="flex-1 min-w-0">
                                           <div className={`font-semibold text-[0.82rem] truncate ${config.fontClass || ''}`} style={{ color: colors.text }}>
-                                            {entry.title}
+                                            {translateLessonTitle(entry.title, state.nativeLang)}
                                           </div>
                                           {!isExpanded && (
-                                            <div className="text-[0.68rem] text-foreground-muted truncate mt-0.5">{entry.explanation.slice(0, 70)}...</div>
+                                            <div className="text-[0.68rem] text-foreground-muted truncate mt-0.5">{translateExplanation(entry.explanation, state.nativeLang).slice(0, 70)}...</div>
                                           )}
                                         </div>
                                       </button>
                                       {isExpanded && (
-                                        <div className="px-3 pb-3 animate-fade-in border-t border-border/40">
+                                          <div className="px-3 pb-3 animate-fade-in border-t border-border/40">
                                           <div className="text-[0.8rem] leading-relaxed text-foreground-secondary my-2.5 pl-8">
-                                            {entry.explanation}
+                                            {translateExplanation(entry.explanation, state.nativeLang)}
                                           </div>
                                           <div className="pl-8">
                                             <div className="text-[0.62rem] font-bold tracking-widest uppercase text-foreground-muted mb-1.5">{tt('examples')}</div>
@@ -215,7 +216,7 @@ export default function ReferencePage() {
                                                   <button onClick={() => speakText(ex.text, lang)} className="shrink-0 mt-0.5 hover:scale-110 transition-transform">🔊</button>
                                                   <div>
                                                     <span className={`font-semibold ${config.fontClass || ''}`} style={{ color: colors.text }}>{ex.text}</span>
-                                                    <div className="text-foreground-muted text-[0.72rem]">→ {ex.translation}</div>
+                                                    <div className="text-foreground-muted text-[0.72rem]">→ {translateOption(ex.translation, state.nativeLang)}</div>
                                                   </div>
                                                 </div>
                                               ))}
@@ -295,7 +296,7 @@ export default function ReferencePage() {
                                   <span className={`font-bold text-[0.82rem] ${config.fontClass || ''}`} style={{ color: colors.text }}>{entry.word}</span>
                                   {entry.reading && <span className="text-[0.68rem] text-foreground-muted">({entry.reading})</span>}
                                 </div>
-                                <div className="text-[0.75rem] text-foreground-secondary">{entry.meaning}</div>
+                                <div className="text-[0.75rem] text-foreground-secondary">{translateOption(entry.meaning, state.nativeLang)}</div>
                                 {entry.example && <div className="text-[0.65rem] text-foreground-muted mt-0.5 italic truncate">{entry.example}</div>}
                               </div>
                             </div>
