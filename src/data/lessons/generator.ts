@@ -266,10 +266,16 @@ function generateCategoryLessons(
     if (batch.length === 0) break;
 
     const steps: LessonStep[] = [];
+    // Theory for each word
     batch.forEach(entry => steps.push(makeTheoryStep(entry, lang, nativeLang)));
+    // MC for each word
     batch.forEach(entry => steps.push(makeMCStep(entry, category, lang, nativeLang)));
+    // Text input for first word
     if (batch[0]) steps.push(makeTextStep(batch[0], lang, nativeLang));
+    // MC meaning for second word
     if (batch.length > 1) steps.push(makeMCMeaningStep(batch[1], category, nativeLang));
+    // Extra text step for third word if exists
+    if (batch.length > 2) steps.push(makeTextStep(batch[2], lang, nativeLang));
 
     const num = startNum + i;
     lessons.push({
@@ -280,6 +286,25 @@ function generateCategoryLessons(
       unit: unitDef,
     });
   }
+
+  // Generate extra practice lessons (reverse direction, harder exercises)
+  const extraCount = Math.min(3, Math.ceil(category.length / 4));
+  for (let e = 0; e < extraCount; e++) {
+    const sample = [...category].sort(() => Math.random() - 0.5).slice(0, 4);
+    const steps: LessonStep[] = [];
+    sample.forEach(entry => steps.push(makeMCMeaningStep(entry, category, nativeLang)));
+    sample.forEach(entry => steps.push(makeTextStep(entry, lang, nativeLang)));
+    if (sample[0]) steps.push(makeMCStep(sample[0], category, lang, nativeLang));
+    const num = startNum + lessonsCount + e;
+    lessons.push({
+      id: `${code}-${level.toLowerCase()}-${num}`,
+      title: `${unitDef.name} — ${getTemplates(nativeLang).review} ${e + 1}`,
+      type: 'reading',
+      steps,
+      unit: unitDef,
+    });
+  }
+
   return lessons;
 }
 
@@ -312,24 +337,24 @@ export function generateLessons(
   const units = getA1Units(nativeLang);
 
   const categories: { key: keyof LevelWordbank; unitIdx: number; count: number; type: 'vocab' | 'grammar' }[] = [
-    { key: 'greetings', unitIdx: 1, count: 6, type: 'vocab' },
-    { key: 'numbers', unitIdx: 2, count: 6, type: 'vocab' },
-    { key: 'family', unitIdx: 3, count: 6, type: 'vocab' },
-    { key: 'colors', unitIdx: 4, count: 5, type: 'vocab' },
-    { key: 'adjectives', unitIdx: 4, count: 5, type: 'vocab' },
-    { key: 'days', unitIdx: 5, count: 5, type: 'vocab' },
-    { key: 'food', unitIdx: 6, count: 7, type: 'vocab' },
-    { key: 'body', unitIdx: 7, count: 5, type: 'vocab' },
-    { key: 'clothes', unitIdx: 8, count: 5, type: 'vocab' },
-    { key: 'house', unitIdx: 9, count: 6, type: 'vocab' },
-    { key: 'transport', unitIdx: 10, count: 5, type: 'vocab' },
-    { key: 'weather', unitIdx: 11, count: 5, type: 'vocab' },
-    { key: 'jobs', unitIdx: 12, count: 5, type: 'vocab' },
-    { key: 'shopping', unitIdx: 13, count: 5, type: 'vocab' },
-    { key: 'verbs', unitIdx: 14, count: 7, type: 'grammar' },
-    { key: 'questions', unitIdx: 15, count: 5, type: 'grammar' },
-    { key: 'survival', unitIdx: 16, count: 5, type: 'vocab' },
-    { key: 'animals', unitIdx: 17, count: 5, type: 'vocab' },
+    { key: 'greetings', unitIdx: 1, count: 8, type: 'vocab' },
+    { key: 'numbers', unitIdx: 2, count: 8, type: 'vocab' },
+    { key: 'family', unitIdx: 3, count: 8, type: 'vocab' },
+    { key: 'colors', unitIdx: 4, count: 7, type: 'vocab' },
+    { key: 'adjectives', unitIdx: 4, count: 7, type: 'vocab' },
+    { key: 'days', unitIdx: 5, count: 7, type: 'vocab' },
+    { key: 'food', unitIdx: 6, count: 9, type: 'vocab' },
+    { key: 'body', unitIdx: 7, count: 7, type: 'vocab' },
+    { key: 'clothes', unitIdx: 8, count: 7, type: 'vocab' },
+    { key: 'house', unitIdx: 9, count: 8, type: 'vocab' },
+    { key: 'transport', unitIdx: 10, count: 7, type: 'vocab' },
+    { key: 'weather', unitIdx: 11, count: 7, type: 'vocab' },
+    { key: 'jobs', unitIdx: 12, count: 7, type: 'vocab' },
+    { key: 'shopping', unitIdx: 13, count: 7, type: 'vocab' },
+    { key: 'verbs', unitIdx: 14, count: 9, type: 'grammar' },
+    { key: 'questions', unitIdx: 15, count: 7, type: 'grammar' },
+    { key: 'survival', unitIdx: 16, count: 7, type: 'vocab' },
+    { key: 'animals', unitIdx: 17, count: 7, type: 'vocab' },
   ];
 
   categories.forEach(cat => {

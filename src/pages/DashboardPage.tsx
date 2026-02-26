@@ -1,22 +1,23 @@
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
-import { LEVELS, LESSON_DATA } from '@/data/lessons/index';
+import { LEVELS, getLessonData } from '@/data/lessons/index';
 import { getLangConfig } from '@/data/languages';
 
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { state, getRank, getRankPct, tt } = useApp();
   const totalXp = Object.values(state.xp).reduce((a, b) => a + b, 0);
-  const activeLangs = state.activeLangs || [];
+  const activeLangs = [...new Set(state.activeLangs || [])];
 
   // Find next lessons across all active languages
+  const lessonData = getLessonData(state.nativeLang || 'en');
   const suggestions: { lang: string; lvl: string; idx: number; title: string }[] = [];
   activeLangs.forEach(lang => {
     const levels = LEVELS[lang] || [];
     const prog = state.prog[lang];
     if (!prog) return;
     levels.forEach(lvl => {
-      const lessons = LESSON_DATA[lang]?.[lvl] || [];
+      const lessons = lessonData[lang]?.[lvl] || [];
       if (!lessons.length) return;
       const done = prog.done[lvl] || {};
       const unlocked = lvl === levels[0] || prog.passed[levels[levels.indexOf(lvl) - 1]];
