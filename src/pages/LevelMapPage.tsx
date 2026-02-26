@@ -1,9 +1,10 @@
 import { useParams, useNavigate } from 'react-router-dom';
+import { useState, useMemo, useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
+import { translateLessonTitle } from '@/utils/lessonI18n';
 import { getLessonData, LEVELS } from '@/data/lessons/index';
 import { QUIZ_DATA } from '@/data/quizzes';
 import { getLangConfig } from '@/data/languages';
-import { useState, useMemo } from 'react';
 import { Lesson } from '@/data/types';
 
 interface UnitGroup {
@@ -37,7 +38,9 @@ export default function LevelMapPage() {
   const prog = state.prog[l] || { cur: levels[0], done: {}, passed: {} };
   const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
 
-  if (!state.activeLangs.includes(l)) addActiveLang(l);
+  useEffect(() => {
+    if (!state.activeLangs.includes(l)) addActiveLang(l);
+  }, [l]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const groupByUnit = (lessons: Lesson[]): UnitGroup[] => {
     const groups: UnitGroup[] = [];

@@ -2,12 +2,13 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { LEVELS, getLessonData } from '@/data/lessons/index';
 import { getLangConfig } from '@/data/languages';
+import { translateLessonTitle } from '@/utils/lessonI18n';
 
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { state, getRank, getRankPct, tt } = useApp();
   const totalXp = Object.values(state.xp).reduce((a, b) => a + b, 0);
-  const activeLangs = [...new Set(state.activeLangs || [])].filter(c => c !== state.nativeLang);
+  const activeLangs = [...new Set(state.activeLangs || [])].filter(c => c && c !== state.nativeLang);
 
   // Find next lessons across all active languages
   const lessonData = getLessonData(state.nativeLang || 'en');
@@ -83,7 +84,7 @@ export default function DashboardPage() {
                     {config.flag}
                   </div>
                   <div>
-                    <div className="text-sm font-medium">{s.title}</div>
+                    <div className="text-sm font-medium">{translateLessonTitle(s.title, state.nativeLang || 'en')}</div>
                     <div className="text-[0.66rem] text-foreground-muted">{config.nativeName} · {s.lvl}</div>
                   </div>
                 </button>

@@ -5,6 +5,7 @@ import { LessonStep } from '@/data/types';
 import { getLangConfig } from '@/data/languages';
 import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { normalizeAnswer, shuffleArray, speakText, playCorrectSound, playIncorrectSound, playLevelUpSound, spawnConfetti } from '@/utils/helpers';
+import { translateLessonText, translateLessonTitle } from '@/utils/lessonI18n';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
 
 // Topic-related emoji illustrations for visual association
@@ -52,13 +53,16 @@ function getLessonIllustration(lesson: { unit?: { id: string; emoji: string }; t
 export default function LessonPage() {
   const { lang, level, index } = useParams();
   const navigate = useNavigate();
-  const { addXP, markLessonDone, checkStreak, earnAchievement, tt } = useApp();
+  const { addXP, markLessonDone, checkStreak, earnAchievement, tt, state: appState } = useApp();
+  const nativeLang = appState.nativeLang || 'en';
+  const tl = (text: string | undefined) => translateLessonText(text, nativeLang);
+  const tlTitle = (title: string) => translateLessonTitle(title, nativeLang);
 
   const l = lang || 'jp';
   const lvl = level || 'N5';
   const idx = parseInt(index || '0');
   const config = getLangConfig(l);
-  const lessonData = getLessonData(useApp().state.nativeLang || 'en');
+  const lessonData = getLessonData(nativeLang);
   const lessons = lessonData[l]?.[lvl] || [];
   const lesson = lessons[idx];
 
@@ -185,7 +189,7 @@ export default function LessonPage() {
           {medal.icon}
         </div>
         <h2 className="font-serif text-3xl font-light mb-1">{medal.label}</h2>
-        <p className="text-sm text-foreground-secondary mb-5">{lesson.title}</p>
+        <p className="text-sm text-foreground-secondary mb-5">{tlTitle(lesson.title)}</p>
 
         <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full font-bold text-lg mb-6 animate-pop-in shadow-md"
           style={{ background: `linear-gradient(135deg, hsl(${config.hue}, 70%, 46%), hsl(${config.hue}, 80%, 56%))`, color: 'white' }}>
@@ -285,10 +289,10 @@ export default function LessonPage() {
             </div>
             <div className="flex-1 min-w-0">
               <div className="font-serif text-sm font-semibold truncate" style={{ color: `hsl(${config.hue}, 70%, 35%)` }}>
-                {lesson.title}
+                {tlTitle(lesson.title)}
               </div>
               {lesson.unit && (
-                <div className="text-[0.65rem] text-foreground-muted">{lesson.unit.emoji} {lesson.unit.name}</div>
+                <div className="text-[0.65rem] text-foreground-muted">{lesson.unit.emoji} {tl(lesson.unit.name)}</div>
               )}
             </div>
           </div>
@@ -302,15 +306,15 @@ export default function LessonPage() {
               <span className={fontClass}>{step.char}</span>
             </div>
             <div className="text-center font-bold text-base mb-0.5">{step.rd}</div>
-            <div className="text-center text-sm text-foreground-secondary mb-3">{step.mn}</div>
+            <div className="text-center text-sm text-foreground-secondary mb-3">{tl(step.mn)}</div>
             <div className="text-sm text-foreground-secondary leading-relaxed bg-background rounded-xl p-3 border-l-4"
-              style={{ borderLeftColor: `hsl(${config.hue}, 70%, 46%)` }}>{step.note}</div>
+              style={{ borderLeftColor: `hsl(${config.hue}, 70%, 46%)` }}>{tl(step.note)}</div>
             {step.ex && (
               <div className="mt-3 flex flex-col gap-1.5">
                 {step.ex.map((e, i) => (
                   <div key={i} className="flex items-baseline gap-2 text-sm">
                     <span className={fontClass} style={{ color: `hsl(${config.hue}, 70%, 40%)` }}>{e.j || e.f || e.w}</span>
-                    <span className="text-foreground-muted">→ {e.m}</span>
+                    <span className="text-foreground-muted">→ {tl(e.m)}</span>
                   </div>
                 ))}
               </div>
@@ -321,7 +325,7 @@ export default function LessonPage() {
         {/* Reading passage */}
         {step.t === 'rd' && (
           <div className="bg-card border border-border rounded-2xl p-4 mb-3 shadow-sm">
-            <div className="font-serif text-sm font-semibold mb-2">{step.title}</div>
+            <div className="font-serif text-sm font-semibold mb-2">{tl(step.title)}</div>
             <div className={`text-sm leading-[2] ${fontClass}`}>{step.passage}</div>
           </div>
         )}
@@ -337,7 +341,7 @@ export default function LessonPage() {
                 {step.t === 'mc' ? tt('multiple_choice') : step.t === 'tx' ? tt('write_response') : step.t === 'or' ? tt('order_words') : tt('reading_comp')}
               </span>
             </div>
-            <div className="font-serif text-lg mb-4 leading-snug" dangerouslySetInnerHTML={{ __html: step.q || '' }} />
+            <div className="font-serif text-lg mb-4 leading-snug" dangerouslySetInnerHTML={{ __html: tl(step.q) }} />
 
             {/* MC options */}
             {(step.t === 'mc' || step.t === 'rd') && step.opts && (
