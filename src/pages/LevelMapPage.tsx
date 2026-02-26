@@ -7,10 +7,24 @@ import { useState, useMemo } from 'react';
 import { Lesson } from '@/data/types';
 
 interface UnitGroup {
-  id: string;
-  name: string;
-  emoji: string;
+  id: string; name: string; emoji: string;
   lessons: { lesson: Lesson; originalIndex: number }[];
+}
+
+function CircleProgress({ pct, size = 64, stroke = 4, hue }: { pct: number; size?: number; stroke?: number; hue: number }) {
+  const r = (size - stroke) / 2;
+  const circ = 2 * Math.PI * r;
+  const offset = circ - (pct / 100) * circ;
+  return (
+    <svg width={size} height={size} className="shrink-0">
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="hsl(var(--border))" strokeWidth={stroke} />
+      <circle cx={size/2} cy={size/2} r={r} fill="none"
+        stroke={`hsl(${hue}, 70%, 46%)`} strokeWidth={stroke}
+        strokeDasharray={circ} strokeDashoffset={offset}
+        strokeLinecap="round" transform={`rotate(-90 ${size/2} ${size/2})`}
+        className="transition-all duration-700" />
+    </svg>
+  );
 }
 
 export default function LevelMapPage() {
@@ -21,31 +35,17 @@ export default function LevelMapPage() {
   const config = getLangConfig(l);
   const levels = LEVELS[l] || config.levels;
   const prog = state.prog[l] || { cur: levels[0], done: {}, passed: {} };
-  const [openLevels, setOpenLevels] = useState<Record<string, boolean>>({ [levels[0]]: true });
-  const [openUnits, setOpenUnits] = useState<Record<string, boolean>>({});
+  const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
 
-  if (!state.activeLangs.includes(l)) {
-    addActiveLang(l);
-  }
+  if (!state.activeLangs.includes(l)) addActiveLang(l);
 
-  const toggleLevel = (lvl: string) => {
-    setOpenLevels(p => ({ ...p, [lvl]: !p[lvl] }));
-  };
-
-  const toggleUnit = (key: string) => {
-    setOpenUnits(p => ({ ...p, [key]: !p[key] }));
-  };
-
-  // Group lessons by unit
   const groupByUnit = (lessons: Lesson[]): UnitGroup[] => {
     const groups: UnitGroup[] = [];
     const map = new Map<string, UnitGroup>();
-
     lessons.forEach((lesson, i) => {
       const unitId = lesson.unit?.id || `auto-${Math.floor(i / 6)}`;
-      const unitName = lesson.unit?.name || `Unidad ${Math.floor(i / 6) + 1}`;
+      const unitName = lesson.unit?.name || `Unit ${Math.floor(i / 6) + 1}`;
       const unitEmoji = lesson.unit?.emoji || '📦';
-
       if (!map.has(unitId)) {
         const group: UnitGroup = { id: unitId, name: unitName, emoji: unitEmoji, lessons: [] };
         map.set(unitId, group);
@@ -53,169 +53,157 @@ export default function LevelMapPage() {
       }
       map.get(unitId)!.lessons.push({ lesson, originalIndex: i });
     });
-
     return groups;
   };
 
-  const icons: Record<string, string> = { vocab: '📝', grammar: '📖', reading: '📚', writing: '✍️' };
+  const levelData = useMemo(() => {
+    const lessonData = getLessonData(state.nativeLang || 'en');
+    return levels.map((lvl, idx) => {
+      const unlocked = idx === 0 || prog.passed[levels[idx - 1]];
+      const lessons = lessonData[l]?.[lvl] || [];
+      const doneLessons = prog.done[lvl] || {};
+      const doneCount = Object.keys(doneLessons).length;
+      const pct = lessons.length > 0 ? Math.round((doneCount / lessons.length) * 100) : 0;
+      const quizAvail = (QUIZ_DATA[l]?.[lvl] || []).length > 0;
+      const quizPassed = prog.passed[lvl];
+      const allDone = lessons.length > 0 && lessons.every(les => doneLessons[les.id]);
+      const isCurrent = unlocked && !quizPassed && idx <= levels.findIndex((_, i2) => i2 === 0 || !prog.passed[levels[i2 - 1]]) + 1;
+      return { lvl, idx, unlocked, lessons, doneLessons, doneCount, pct, quizAvail, quizPassed, allDone, isCurrent };
+    });
+  }, [levels, state, l, prog]);
 
   return (
     <div className="animate-fade-in flex-1 overflow-y-auto">
-      <div className="max-w-[740px] mx-auto p-5 lg:p-7">
-        <div
-          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[0.71rem] font-semibold mb-3"
-          style={{ background: `hsl(${config.hue}, 80%, 96%)`, color: `hsl(${config.hue}, 70%, 40%)` }}
-        >
-          {config.flag} {config.nativeName}
+      <div className="max-w-[540px] mx-auto px-4 py-6">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold mb-3"
+            style={{ background: `hsl(${config.hue}, 80%, 96%)`, color: `hsl(${config.hue}, 70%, 35%)` }}>
+            {config.flag} {config.nativeName}
+          </div>
+          <h1 className="font-serif text-3xl font-light mb-1">{tt('learning_path')}</h1>
+          <p className="text-sm text-foreground-muted">{tt('complete_lessons')} {tt('unlock_quiz')}</p>
         </div>
-        <h2 className="font-serif text-3xl font-light mb-1">{tt('learning_path')}</h2>
-        <p className="text-sm text-foreground-muted leading-relaxed mb-5">
-          {tt('complete_lessons')} {tt('unlock_quiz')}
-        </p>
 
-        <div className="flex flex-col gap-2">
-          {levels.map((lvl, idx) => {
-            const unlocked = idx === 0 || prog.passed[levels[idx - 1]];
-            const lessonData = getLessonData(state.nativeLang || 'en');
-            const lessons = lessonData[l]?.[lvl] || [];
-            const doneLessons = prog.done[lvl] || {};
-            const doneCount = Object.keys(doneLessons).length;
-            const pct = lessons.length > 0 ? Math.round((doneCount / lessons.length) * 100) : 0;
-            const quizAvail = (QUIZ_DATA[l]?.[lvl] || []).length > 0;
-            const quizPassed = prog.passed[lvl];
-            const allDone = lessons.length > 0 && lessons.every(les => doneLessons[les.id]);
-            const units = groupByUnit(lessons);
+        {/* Skill Tree Path */}
+        <div className="relative">
+          {/* Vertical connector line */}
+          <div className="absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2"
+            style={{ background: `linear-gradient(to bottom, hsl(${config.hue}, 70%, 85%), hsl(${config.hue}, 30%, 92%))` }} />
+
+          {levelData.map((d, nodeIdx) => {
+            const isLeft = nodeIdx % 2 === 0;
+            const isSelected = selectedLevel === d.lvl;
+            const isCurrentNode = d.unlocked && !d.quizPassed && (nodeIdx === 0 || prog.passed[levels[nodeIdx - 1]]);
 
             return (
-              <div key={lvl} className={`border-[1.5px] rounded-[16px] overflow-hidden ${unlocked ? '' : 'border-border opacity-55'}`}
-                style={unlocked ? { borderColor: `hsl(${config.hue}, 60%, 60%)` } : undefined}
-              >
-                <button
-                  onClick={() => unlocked && toggleLevel(lvl)}
-                  className="w-full flex items-center gap-3 px-4 py-3.5 bg-background hover:bg-card transition-colors text-left"
-                >
-                  <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center font-serif text-base font-bold"
-                    style={unlocked ? { background: `hsl(${config.hue}, 80%, 96%)`, color: `hsl(${config.hue}, 70%, 40%)` } : undefined}
+              <div key={d.lvl} className="relative mb-2">
+                {/* Node row */}
+                <div className={`flex items-center gap-3 ${isLeft ? 'flex-row' : 'flex-row-reverse'}`}>
+                  <div className="flex-1" />
+                  
+                  {/* Circle node */}
+                  <button
+                    onClick={() => d.unlocked && setSelectedLevel(isSelected ? null : d.lvl)}
+                    disabled={!d.unlocked}
+                    className={`relative z-10 flex items-center justify-center transition-all duration-300 ${
+                      d.unlocked ? 'cursor-pointer hover:scale-110' : 'cursor-not-allowed'
+                    } ${isCurrentNode ? 'animate-pulse-glow' : ''}`}
                   >
-                    {lvl}
-                  </div>
-                  <div className="flex-1">
-                    <div className="font-semibold text-sm">{lvl} — {lessons.length} {tt('lessons')}</div>
-                    <div className="text-[0.7rem] text-foreground-muted">{doneCount}/{lessons.length} {tt('completed')}</div>
-                  </div>
-                  <div className="flex flex-col items-end gap-1">
-                    <div className="text-[0.68rem] text-foreground-muted">{pct}%</div>
-                    <div className="w-[68px] h-1 bg-border rounded-full overflow-hidden">
-                      <div className="h-full rounded-full" style={{ width: `${pct}%`, background: `hsl(${config.hue}, 70%, 46%)` }} />
+                    <CircleProgress pct={d.pct} size={72} stroke={5} hue={config.hue} />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      {!d.unlocked ? (
+                        <span className="text-xl opacity-40">🔒</span>
+                      ) : d.quizPassed ? (
+                        <span className="text-2xl">✅</span>
+                      ) : (
+                        <span className="text-xl font-bold" style={{ color: `hsl(${config.hue}, 70%, 40%)` }}>{d.lvl}</span>
+                      )}
+                    </div>
+                  </button>
+
+                  {/* Label */}
+                  <div className={`flex-1 ${isLeft ? 'text-left' : 'text-right'}`}>
+                    <div className={`inline-block px-3 py-1.5 rounded-xl transition-all ${
+                      isCurrentNode ? 'bg-card border border-foreground/20 shadow-sm' : 'bg-transparent'
+                    }`}>
+                      <div className="text-sm font-semibold">{d.lvl}</div>
+                      <div className="text-[0.65rem] text-foreground-muted">
+                        {d.doneCount}/{d.lessons.length} · {d.pct}%
+                      </div>
                     </div>
                   </div>
-                </button>
+                </div>
 
-                {openLevels[lvl] && unlocked && (
-                  <div className="px-3 pb-3">
-                    {lessons.length === 0 ? (
-                      <p className="text-sm text-foreground-muted px-3 py-2">📅 {tt('coming_soon')}</p>
-                    ) : units.length > 1 ? (
-                      // Unit-based view
-                      units.map((unit, unitIdx) => {
-                        const unitKey = `${lvl}-${unit.id}`;
-                        const unitDoneCount = unit.lessons.filter(({ lesson }) => doneLessons[lesson.id]).length;
-                        const unitPct = Math.round((unitDoneCount / unit.lessons.length) * 100);
-                        // Unlock: first unit always open, others need 80% of previous
-                        const prevUnit = unitIdx > 0 ? units[unitIdx - 1] : null;
-                        const prevDone = prevUnit ? prevUnit.lessons.filter(({ lesson }) => doneLessons[lesson.id]).length : 0;
-                        const prevTotal = prevUnit ? prevUnit.lessons.length : 0;
-                        const unitUnlocked = unitIdx === 0 || (prevTotal > 0 && prevDone / prevTotal >= 0.8);
-                        const isOpen = openUnits[unitKey] ?? (unitIdx === 0 && unitDoneCount < unit.lessons.length);
+                {/* Expanded unit panel */}
+                {isSelected && d.unlocked && (
+                  <div className="mt-3 mb-4 mx-4 bg-card border border-border rounded-2xl p-4 animate-scale-in relative z-10 shadow-lg">
+                    <div className="flex items-center gap-2 mb-3 pb-2 border-b border-border">
+                      <span className="text-lg font-bold" style={{ color: `hsl(${config.hue}, 70%, 40%)` }}>{d.lvl}</span>
+                      <span className="text-sm text-foreground-muted flex-1">{d.lessons.length} {tt('lessons')}</span>
+                      <div className="h-1.5 w-20 bg-border rounded-full overflow-hidden">
+                        <div className="h-full rounded-full transition-all" style={{ width: `${d.pct}%`, background: `hsl(${config.hue}, 70%, 46%)` }} />
+                      </div>
+                    </div>
 
-                        return (
-                          <div key={unit.id} className={`mb-1.5 ${!unitUnlocked ? 'opacity-40' : ''}`}>
-                            <button
-                              onClick={() => unitUnlocked && toggleUnit(unitKey)}
-                              className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl hover:bg-background transition-all text-left"
-                            >
-                              <span className="text-base">{unitUnlocked ? unit.emoji : '🔒'}</span>
-                              <div className="flex-1">
-                                <div className="text-[0.78rem] font-semibold">{unit.name}</div>
-                                <div className="text-[0.65rem] text-foreground-muted">
-                                  {unitDoneCount}/{unit.lessons.length} {tt('completed')} · {unitPct}%
-                                </div>
-                              </div>
-                              <div className="w-[50px] h-1 bg-border rounded-full overflow-hidden">
-                                <div className="h-full rounded-full transition-all" style={{ width: `${unitPct}%`, background: `hsl(${config.hue}, 70%, 46%)` }} />
-                              </div>
-                              <span className={`text-[0.65rem] text-foreground-muted transition-transform ${isOpen ? 'rotate-90' : ''}`}>▶</span>
-                            </button>
-
-                            {isOpen && unitUnlocked && (
-                              <div className="pl-4 mt-0.5">
-                                {unit.lessons.map(({ lesson: les, originalIndex: i }) => {
-                                  const isDone = doneLessons[les.id];
-                                  return (
-                                    <button
-                                      key={les.id}
-                                      onClick={() => navigate(`/lesson/${l}/${lvl}/${i}`)}
-                                      className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl hover:bg-background border border-transparent hover:border-border transition-all text-left mb-0.5"
-                                    >
-                                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs ${isDone ? 'bg-success-light' : 'bg-background'}`}>
-                                        {isDone ? '✅' : icons[les.type] || '📝'}
-                                      </div>
-                                      <div className="flex-1 min-w-0">
-                                        <div className="text-[0.78rem] font-medium truncate">{les.title}</div>
-                                        <div className="text-[0.63rem] text-foreground-muted">{les.steps.length} {tt('steps')}</div>
-                                      </div>
-                                      <div className={`text-[0.65rem] shrink-0 ${isDone ? 'text-success' : 'text-foreground-muted'}`}>
-                                        {isDone ? '✓' : tt('start')}
-                                      </div>
-                                    </button>
-                                  );
-                                })}
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })
+                    {d.lessons.length === 0 ? (
+                      <p className="text-sm text-foreground-muted py-2">📅 {tt('coming_soon')}</p>
                     ) : (
-                      // Flat view for few lessons
-                      lessons.map((les, i) => {
-                        const isDone = doneLessons[les.id];
-                        return (
+                      <>
+                        {groupByUnit(d.lessons).map((unit, unitIdx, arr) => {
+                          const unitDone = unit.lessons.filter(({ lesson }) => d.doneLessons[lesson.id]).length;
+                          const prevUnit = unitIdx > 0 ? arr[unitIdx - 1] : null;
+                          const prevDone = prevUnit ? prevUnit.lessons.filter(({ lesson }) => d.doneLessons[lesson.id]).length : 0;
+                          const unitUnlocked = unitIdx === 0 || (prevUnit && prevDone / prevUnit.lessons.length >= 0.8);
+                          
+                          return (
+                            <div key={unit.id} className={`mb-2 ${!unitUnlocked ? 'opacity-40' : ''}`}>
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-base">{unitUnlocked ? unit.emoji : '🔒'}</span>
+                                <span className="text-[0.78rem] font-semibold flex-1">{unit.name}</span>
+                                <span className="text-[0.65rem] text-foreground-muted">{unitDone}/{unit.lessons.length}</span>
+                              </div>
+                              {unitUnlocked && (
+                                <div className="grid grid-cols-6 gap-1 pl-6">
+                                  {unit.lessons.map(({ lesson: les, originalIndex: i }) => {
+                                    const isDone = d.doneLessons[les.id];
+                                    return (
+                                      <button key={les.id} onClick={() => navigate(`/lesson/${l}/${d.lvl}/${i}`)}
+                                        title={les.title}
+                                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-[0.65rem] font-bold transition-all hover:scale-110 ${
+                                          isDone ? 'text-card' : 'bg-card border border-border hover:border-foreground/30'
+                                        }`}
+                                        style={isDone ? { background: `hsl(${config.hue}, 60%, 50%)` } : undefined}
+                                      >
+                                        {isDone ? '✓' : i + 1}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+
+                        {d.quizAvail && (
                           <button
-                            key={les.id}
-                            onClick={() => navigate(`/lesson/${l}/${lvl}/${i}`)}
-                            className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl hover:bg-background border border-transparent hover:border-border transition-all text-left mb-1"
+                            onClick={() => d.allDone && navigate(`/quiz/${l}/${d.lvl}`)}
+                            disabled={!d.allDone}
+                            className={`w-full flex items-center gap-2 p-3 rounded-xl border-2 border-dashed mt-3 transition-all ${
+                              !d.allDone ? 'opacity-40 cursor-not-allowed' : 'hover:shadow-md cursor-pointer'
+                            }`}
+                            style={{ borderColor: `hsl(${config.hue}, 50%, 75%)`, background: `hsl(${config.hue}, 80%, 98%)` }}
                           >
-                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm ${isDone ? 'bg-success-light' : 'bg-background'}`}>
-                              {isDone ? '✅' : icons[les.type] || '📝'}
-                            </div>
-                            <div className="flex-1">
-                              <div className="text-[0.83rem] font-medium">{les.title}</div>
-                              <div className="text-[0.68rem] text-foreground-muted">{les.steps.length} {tt('steps')}</div>
-                            </div>
-                            <div className={`text-[0.7rem] ${isDone ? 'text-success' : 'text-foreground-muted'}`}>
-                              {isDone ? `${tt('completed')} ✓` : tt('start')}
+                            <span className="text-xl">{d.quizPassed ? '🏆' : d.allDone ? '📝' : '🔒'}</span>
+                            <div className="flex-1 text-left">
+                              <div className="font-semibold text-sm">{tt('final_quiz')} {d.quizPassed ? '✅' : ''}</div>
+                              <div className="text-[0.65rem] text-foreground-muted">
+                                {d.quizPassed ? tt('passed') : !d.allDone ? `${tt('complete_all')} ${d.lessons.length} ${tt('lessons')}` : `15 ${tt('questions')} · 70%`}
+                              </div>
                             </div>
                           </button>
-                        );
-                      })
-                    )}
-
-                    {quizAvail && (
-                      <button
-                        onClick={() => allDone && navigate(`/quiz/${l}/${lvl}`)}
-                        disabled={!allDone}
-                        className={`w-full flex items-center gap-2.5 p-2.5 rounded-xl border-[1.5px] border-dashed mt-2 transition-all ${!allDone ? 'opacity-45 cursor-not-allowed' : 'hover:bg-card cursor-pointer'}`}
-                        style={{ borderColor: `hsl(${config.hue}, 50%, 75%)`, background: `hsl(${config.hue}, 80%, 98%)` }}
-                      >
-                        <div className="text-xl">{quizPassed ? '🏆' : allDone ? '📝' : '🔒'}</div>
-                        <div className="flex-1 text-left">
-                          <div className="font-semibold text-[0.82rem]">{tt('final_quiz')} — {lvl} {quizPassed ? '✅' : ''}</div>
-                          <div className="text-[0.68rem] text-foreground-muted">
-                            {quizPassed ? tt('passed') : !allDone ? `${tt('complete_all')} ${lessons.length} ${tt('lessons')}` : `15 ${tt('questions')} · 60s · 70%`}
-                          </div>
-                        </div>
-                      </button>
+                        )}
+                      </>
                     )}
                   </div>
                 )}
@@ -224,15 +212,13 @@ export default function LevelMapPage() {
           })}
         </div>
 
-        <div className="flex gap-2 mt-4">
-          <button onClick={() => navigate('/')} className="px-3 py-1.5 rounded-full border border-border text-sm text-foreground-secondary hover:border-foreground transition-colors">
+        {/* Bottom nav */}
+        <div className="flex gap-2 mt-6 justify-center">
+          <button onClick={() => navigate('/')} className="px-4 py-2 rounded-full border border-border text-sm hover:bg-card transition-colors">
             ← {tt('go_home')}
           </button>
-          <button onClick={() => navigate('/dashboard')} className="px-3 py-1.5 rounded-full border border-border text-sm text-foreground-secondary hover:border-foreground transition-colors">
+          <button onClick={() => navigate('/dashboard')} className="px-4 py-2 rounded-full border border-border text-sm hover:bg-card transition-colors">
             📊 {tt('progress')}
-          </button>
-          <button onClick={() => navigate('/reference')} className="px-3 py-1.5 rounded-full border border-border text-sm text-foreground-secondary hover:border-foreground transition-colors">
-            📚 {tt('reference')}
           </button>
         </div>
       </div>
