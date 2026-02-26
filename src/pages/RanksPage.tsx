@@ -7,7 +7,7 @@ export default function RanksPage() {
   const navigate = useNavigate();
   const { state, getRank, getRankPct, tt } = useApp();
   const totalXp = Object.values(state.xp).reduce((a, b) => a + b, 0);
-  const activeLangs = state.activeLangs || [];
+  const activeLangs = [...new Set(state.activeLangs || [])].filter((c, i, arr) => c && c !== state.nativeLang && arr.indexOf(c) === i);
 
   return (
     <div className="animate-fade-in flex-1 overflow-y-auto">
