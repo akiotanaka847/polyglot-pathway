@@ -42,21 +42,6 @@ export const QUIZ_DATA: Record<string, Record<string, QuizQuestion[]>> = {
       { t: 'mc', q: '¿Qué significa 我?', opts: ['Tú', 'Yo', 'Él', 'Nosotros'], ans: 1 },
     ],
   },
-  de: {
-    A1: [
-      { t: 'mc', q: '¿Cómo se dice "gracias" en alemán?', opts: ['Bitte', 'Danke', 'Hallo', 'Tschüss'], ans: 1 },
-      { t: 'tx', q: '¿Cómo saludas en alemán?', ans: 'guten tag' },
-      { t: 'mc', q: '¿Cómo dices "Me llamo" en alemán?', opts: ['Ich bin', 'Ich heiße', 'Ich spreche', 'Ich komme'], ans: 1 },
-      { t: 'mc', q: '¿Qué número es "fünf"?', opts: ['3', '4', '5', '6'], ans: 2 },
-    ],
-  },
-  it: {
-    A1: [
-      { t: 'mc', q: '¿Cuál es el saludo informal italiano?', opts: ['Buongiorno', 'Arrivederci', 'Ciao', 'Grazie'], ans: 2 },
-      { t: 'tx', q: '¿Cómo se dice "gracias" en italiano?', ans: 'grazie' },
-      { t: 'mc', q: '¿Cómo dices "Me llamo" en italiano?', opts: ['Io sono', 'Mi chiamo', 'Io parlo', 'Io vivo'], ans: 1 },
-    ],
-  },
   pt: {
     A1: [
       { t: 'mc', q: '¿Cómo se dice "hola" en portugués?', opts: ['Tchau', 'Olá', 'Obrigado', 'Bom dia'], ans: 1 },

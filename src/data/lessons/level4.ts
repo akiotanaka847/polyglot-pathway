@@ -85,22 +85,6 @@ export const frC1Lessons = makeL4('fr', 'C1', 'French', {
   v: v('Diplomatie','diplomasi','Inconscient','enkonsiyan','Bâtiment','batiman','Chirurgie','shiryrji','Roman','roman','Chronique','kronik','Bourse','burs','Ingénierie','enjeniori','Étoile','etwal','Communauté','komyunote','Morale','moral','Syntaxe','sentaks','Biodiversité','biodiversite','Tribu','triby','Innovation','inovasyon','Cinéaste','sineast','Arbitre','arbitr','Gastronomie','gastronomi','Itinéraire','itinerer','Patrimoine','patrimwan','Bilan','bilan'),
 });
 
-export const deB2Lessons = makeL4('de', 'B2', 'German', {
-  g1: 'Konjunktiv II Vergangenheit', g1Rd: 'konjunktiv zwei vergangenheit', g1Ex: 'Hätte ich gewusst', g1ExM: 'Had I known',
-  g2: 'Partizipialkonstruktion', g2Rd: 'partitsipialkontruktsion', g2Ex: 'Der lesende Schüler', g2ExM: 'The reading student',
-  g3: 'Nominalstil', g3Rd: 'nominalshtil', g3Ex: 'Die Durchführung des Plans', g3ExM: 'The execution of the plan',
-  g4: 'Erweitertes Attribut', g4Rd: 'erveitertes attribut', g4Ex: 'Der in Berlin lebende Mann', g4ExM: 'The man living in Berlin',
-  v: v('Diplomatie','diplomati','Psychologie','psychologi','Architektur','architektur','Medizin','medizin','Literatur','literatur','Journalismus','journalismus','Finanzen','finanzen','Ingenieurwesen','ingenierveezen','Astronomie','astronomi','Soziologie','sozioloji','Ethik','etik','Sprachwissenschaft','sprachvissenschaft','Ökologie','oekologi','Anthropologie','antropologi','Technologie','technologi','Filmkunst','filmkunst','Schiedsrichter','shiedsrichter','Gastronomie','gastronomi','Reiseroute','reizeroute','Kulturerbe','kulturerbe','Bilanz','bilants'),
-});
-
-export const itB2Lessons = makeL4('it', 'B2', 'Italian', {
-  g1: 'Congiuntivo trapassato', g1Rd: 'congiuntivo trapassato', g1Ex: 'Se avessi saputo', g1ExM: 'If I had known',
-  g2: 'Periodo ipotetico III', g2Rd: 'periodo ipotetico terzo', g2Ex: 'Se fosse venuto', g2ExM: 'If he had come',
-  g3: 'Passato remoto', g3Rd: 'passato remoto', g3Ex: 'Egli parlò', g3ExM: 'He spoke',
-  g4: 'Gerundio composto', g4Rd: 'gerundio composto', g4Ex: 'Avendo finito', g4ExM: 'Having finished',
-  v: v('Diplomazia','diplomazia','Psicologia','psicologia','Architettura','architettura','Medicina','medicina','Letteratura','letteratura','Giornalismo','giornalismo','Finanza','finanza','Ingegneria','ingegneria','Astronomia','astronomia','Sociologia','sociologia','Etica','etica','Linguistica','linguistica','Ecologia','ecologia','Antropologia','antropologia','Tecnologia','tecnologia','Cinematografia','cinematografia','Arbitro','arbitro','Gastronomia','gastronomia','Itinerario','itinerario','Patrimonio','patrimonio','Bilancio','bilancio'),
-});
-
 export const ptB2Lessons = makeL4('pt', 'B2', 'Portuguese', {
   g1: 'Futuro do subjuntivo', g1Rd: 'futuro do subjuntivo', g1Ex: 'Quando eu souber', g1ExM: 'When I know',
   g2: 'Infinitivo pessoal', g2Rd: 'infinitivo pessoal', g2Ex: 'Para nós irmos', g2ExM: 'For us to go',
@@ -157,45 +141,7 @@ export const hiB2Lessons = makeL4('hi', 'B2', 'Hindi', {
   v: v('कूटनीति','kutniti','मनोविज्ञान','manovigyan','वास्तुकला','vastukala','चिकित्सा','chikitsa','साहित्य','sahitya','पत्रकारिता','patrakarita','वित्त','vitt','अभियांत्रिकी','abhiyantrik','खगोल विज्ञान','khagol vigyan','समाजशास्त्र','samajshastra','नैतिकता','naitikta','भाषाविज्ञान','bhashavigyaan','पारिस्थितिकी','paristhitiki','मानवशास्त्र','manavshastra','प्रौद्योगिकी','praudyogiki','सिनेमा','sinema','रेफरी','refari','पाक कला','pak kala','यात्रा मार्ग','yatra marg','विरासत','virasat','तुलन पत्र','tulan patra'),
 });
 
-export const trB2Lessons = makeL4('tr', 'B2', 'Turkish', {
-  g1: 'Sıfat fiil', g1Rd: 'sifat fiil', g1Ex: 'Okuyan öğrenci', g1ExM: 'The reading student',
-  g2: 'Zarf fiil', g2Rd: 'zarf fiil', g2Ex: 'Okuyarak öğrendi', g2ExM: 'Learned by reading',
-  g3: 'İsim tamlaması', g3Rd: 'isim tamlamasi', g3Ex: 'Öğretmenin kitabı', g3ExM: 'The teacher\'s book',
-  g4: 'Dolaylı anlatım ileri', g4Rd: 'dolayli anlatim ileri', g4Ex: 'Geldiğini söyledi', g4ExM: 'Said that he came',
-  v: v('Diplomasi','diplomasi','Psikoloji','psikoloji','Mimarlık','mimarlik','Tıp','tip','Edebiyat','edebiyat','Gazetecilik','gazetecilik','Finans','finans','Mühendislik','muhendislik','Astronomi','astronomi','Sosyoloji','sosyoloji','Etik','etik','Dilbilim','dilbilim','Ekoloji','ekoloji','Antropoloji','antropoloji','Teknoloji','teknoloji','Sinema','sinema','Hakem','hakem','Gastronomi','gastronomi','Güzergah','guzergah','Miras','miras','Bilanço','bilancho'),
-});
-
-export const viB2Lessons = makeL4('vi', 'B2', 'Vietnamese', {
-  g1: 'Câu bị động nâng cao', g1Rd: 'cau bi dong nang cao', g1Ex: 'Bài viết được đánh giá cao', g1ExM: 'The article was highly rated',
-  g2: 'Liên từ phức', g2Rd: 'lien tu phuc', g2Ex: 'Mặc dù...nhưng', g2ExM: 'Although...but',
-  g3: 'Câu ghép', g3Rd: 'cau ghep', g3Ex: 'Không những...mà còn', g3ExM: 'Not only...but also',
-  g4: 'Trích dẫn', g4Rd: 'trich dan', g4Ex: 'Anh ấy nói rằng...', g4ExM: 'He said that...',
-  v: v('Ngoại giao','ngoai giao','Tâm lý học','tam ly hoc','Kiến trúc','kien truc','Y học','y hoc','Văn học','van hoc','Báo chí','bao chi','Tài chính','tai chinh','Kỹ thuật','ky thuat','Thiên văn học','thien van hoc','Xã hội học','xa hoi hoc','Đạo đức','dao duc','Ngôn ngữ học','ngon ngu hoc','Sinh thái học','sinh thai hoc','Nhân học','nhan hoc','Công nghệ','cong nghe','Điện ảnh','dien anh','Trọng tài','trong tai','Ẩm thực','am thuc','Lộ trình','lo trinh','Di sản','di san','Quyết toán','quyet toan'),
-});
-
-export const thB2Lessons = makeL4('th', 'B2', 'Thai', {
-  g1: 'ประโยคซับซ้อน', g1Rd: 'prayok sap son', g1Ex: 'แม้ว่า...แต่ก็', g1ExM: 'Although...but',
-  g2: 'คำเชื่อมขั้นสูง', g2Rd: 'kham cheueam khan sung', g2Ex: 'ไม่เพียงแต่...แต่ยัง', g2ExM: 'Not only...but also',
-  g3: 'กรรมวาจก', g3Rd: 'kamma wajok', g3Ex: 'บทความถูกตีพิมพ์', g3ExM: 'The article was published',
-  g4: 'อ้างอิง', g4Rd: 'ang ing', g4Ex: 'เขาบอกว่า...', g4ExM: 'He said that...',
-  v: v('การทูต','kan thut','จิตวิทยา','jit witthaya','สถาปัตยกรรม','sathapattayakam','แพทยศาสตร์','phaettayasat','วรรณกรรม','wannakam','สื่อสารมวลชน','sue san muan chon','การเงิน','kan ngoen','วิศวกรรม','witsawakam','ดาราศาสตร์','darasaat','สังคมวิทยา','sangkhom witthaya','จริยธรรม','jariyatham','ภาษาศาสตร์','phasasat','นิเวศวิทยา','niwet witthaya','มานุษยวิทยา','manutwitthaya','เทคโนโลยี','thekhonoloji','ภาพยนตร์','phapphayon','กรรมการ','kammakan','อาหารชั้นสูง','ahan chan sung','เส้นทาง','sen thang','มรดก','moradok','งบดุล','ngop dun'),
-});
-
-export const nlB2Lessons = makeL4('nl', 'B2', 'Dutch', {
-  g1: 'Voltooid deelwoord', g1Rd: 'voltooid deelwoord', g1Ex: 'Het gelezen boek', g1ExM: 'The read book',
-  g2: 'Conjunctief', g2Rd: 'konjunktief', g2Ex: 'Het zij zo', g2ExM: 'So be it',
-  g3: 'Passieve constructies', g3Rd: 'passieve konstrukties', g3Ex: 'Er wordt gewerkt', g3ExM: 'Work is being done',
-  g4: 'Indirecte rede formeel', g4Rd: 'indirekte rede formeel', g4Ex: 'Hij beweerde dat...', g4ExM: 'He claimed that...',
-  v: v('Diplomatie','diplomati','Psychologie','psygologi','Architectuur','arshitektuur','Geneeskunde','geneeskunde','Literatuur','literatuur','Journalistiek','journalistiek','Financiën','finansien','Techniek','techniek','Sterrenkunde','sterrenkunde','Sociologie','sosiologi','Ethiek','ethiek','Taalkunde','taalkunde','Ecologie','ekologi','Antropologie','antropologi','Technologie','technologi','Filmkunst','filmkunst','Scheidsrechter','sgheidsreghter','Gastronomie','gastronomi','Reisroute','reisroute','Erfgoed','erfgoed','Balans','balans'),
-});
-
-export const plB2Lessons = makeL4('pl', 'B2', 'Polish', {
-  g1: 'Imiesłów przymiotnikowy', g1Rd: 'imiesluw pshymiotnikovy', g1Ex: 'Czytający uczeń', g1ExM: 'The reading student',
-  g2: 'Imiesłów przysłówkowy', g2Rd: 'imiesluw pshysluvkovy', g2Ex: 'Czytając książkę', g2ExM: 'While reading a book',
-  g3: 'Strona bierna rozszerzona', g3Rd: 'strona bierna rozshirzona', g3Ex: 'Artykuł został opublikowany', g3ExM: 'The article was published',
-  g4: 'Zdanie złożone', g4Rd: 'zdanie zlozhone', g4Ex: 'Pomimo że...', g4ExM: 'Despite the fact that...',
-  v: v('Dyplomacja','dyplomatsya','Psychologia','psykhologia','Architektura','arkhitektura','Medycyna','medytsyna','Literatura','literatura','Dziennikarstwo','dzhennikartstvo','Finanse','finanse','Inżynieria','inzhynieria','Astronomia','astronomia','Socjologia','sotsyologia','Etyka','etyka','Językoznawstwo','yenzykoznavstvo','Ekologia','ekologia','Antropologia','antropologia','Technologia','tekhnologia','Kinematografia','kinematografia','Sędzia','sendzia','Gastronomia','gastronomia','Trasa','trasa','Dziedzictwo','dzhedzitstfo','Bilans','bilans'),
-});
+// Removed tr, vi, th, nl, pl B2 lessons (consolidated to top 10)
 
 export const enB2Lessons = makeL4('en', 'B2', 'English', {
   g1: 'Mixed conditionals', g1Rd: 'mixed conditionals', g1Ex: 'If I had studied, I would know', g1ExM: 'Si hubiera estudiado, sabría',

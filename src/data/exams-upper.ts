@@ -187,53 +187,30 @@ function makeC2(title: string): Exam {
   };
 }
 
-export const B1_EXTRA_EXAMS: Record<string, Record<string, Exam>> = {
-  vi: { B1: makeB1('vi', 'CEFR B1 Vietnamita — Simulacro', ['Từ vựng', 'Ngữ pháp']) },
-  th: { B1: makeB1('th', 'CEFR B1 Tailandés — Simulacro', ['คำศัพท์', 'ไวยากรณ์']) },
-  nl: { B1: makeB1('nl', 'CEFR B1 Neerlandés — Simulacro', ['Woordenschat', 'Grammatica']) },
-  pl: { B1: makeB1('pl', 'CEFR B1 Polaco — Simulacro', ['Słownictwo', 'Gramatyka']) },
-};
+export const B1_EXTRA_EXAMS: Record<string, Record<string, Exam>> = {};
 
 export const B2_EXTRA_EXAMS: Record<string, Record<string, Exam>> = {
   pt: { B2: makeB2('CELPE-Bras B2 — Simulacro') },
   ru: { B2: makeB2('ТРКИ B2 — Simulacro') },
   ar: { B2: makeB2('Árabe B2 — Simulacro') },
   hi: { B2: makeB2('Hindi B2 — Simulacro') },
-  tr: { B2: makeB2('TYS B2 — Simulacro') },
   es: { B2: makeB2('DELE B2 — Simulacro') },
-  vi: { B2: makeB2('CEFR B2 Vietnamita — Simulacro') },
-  th: { B2: makeB2('CEFR B2 Tailandés — Simulacro') },
-  nl: { B2: makeB2('CEFR B2 Neerlandés — Simulacro') },
-  pl: { B2: makeB2('CEFR B2 Polaco — Simulacro') },
 };
 
 export const C1_EXTRA_EXAMS: Record<string, Record<string, Exam>> = {
-  it: { C1: makeC1('CILS C1 — Simulacro') },
   pt: { C1: makeC1('CELPE-Bras C1 — Simulacro') },
   ru: { C1: makeC1('ТРКИ C1 — Simulacro') },
   ar: { C1: makeC1('Árabe C1 — Simulacro') },
   hi: { C1: makeC1('Hindi C1 — Simulacro') },
-  tr: { C1: makeC1('TYS C1 — Simulacro') },
   es: { C1: makeC1('DELE C1 — Simulacro') },
-  vi: { C1: makeC1('CEFR C1 Vietnamita — Simulacro') },
-  th: { C1: makeC1('CEFR C1 Tailandés — Simulacro') },
-  nl: { C1: makeC1('CEFR C1 Neerlandés — Simulacro') },
-  pl: { C1: makeC1('CEFR C1 Polaco — Simulacro') },
 };
 
 export const C2_EXTRA_EXAMS: Record<string, Record<string, Exam>> = {
   fr: { C2: makeC2('DALF C2 — Simulacro') },
-  de: { C2: makeC2('Goethe C2 — Simulacro') },
   en: { C2: makeC2('Cambridge C2 (CPE) — Simulacro') },
-  it: { C2: makeC2('CILS C2 — Simulacro') },
   pt: { C2: makeC2('CELPE-Bras C2 — Simulacro') },
   ru: { C2: makeC2('ТРКИ C2 — Simulacro') },
   ar: { C2: makeC2('Árabe C2 — Simulacro') },
   hi: { C2: makeC2('Hindi C2 — Simulacro') },
-  tr: { C2: makeC2('TYS C2 — Simulacro') },
   es: { C2: makeC2('DELE C2 — Simulacro') },
-  vi: { C2: makeC2('CEFR C2 Vietnamita — Simulacro') },
-  th: { C2: makeC2('CEFR C2 Tailandés — Simulacro') },
-  nl: { C2: makeC2('CEFR C2 Neerlandés — Simulacro') },
-  pl: { C2: makeC2('CEFR C2 Polaco — Simulacro') },
 };

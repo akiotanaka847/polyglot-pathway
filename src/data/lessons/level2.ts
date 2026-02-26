@@ -275,31 +275,6 @@ export const zhHSK2Lessons = makeL2Lessons('zh', 'HSK2', 'Chino', {
   city1: '银行', city1Rd: 'yinhang', city2: '药店', city2Rd: 'yaodian',
 });
 
-export const deA2Lessons = makeL2Lessons('de', 'A2', 'Alemán', {
-  pastTense: 'Perfekt', pastRd: 'per-FEKT', pastEx: 'Ich habe gegessen', pastExM: 'Yo comí',
-  futureTense: 'Futur I', futureRd: 'fu-TOOR', futureEx: 'Ich werde essen', futureExM: 'Yo comeré',
-  negation: 'nicht/kein', negRd: 'nikht kain', negEx: 'Ich esse nicht', negExM: 'No como',
-  conjunction: 'jedoch', conjRd: 'ye-DOKH', conjEx: 'Jedoch regnet es', conjExM: 'Sin embargo llueve',
-  comparison: 'als/wie', compRd: 'als vee', compEx: 'Er ist größer als ich', compExM: 'Él es más alto que yo',
-  modal: 'müssen/können', modalRd: 'MEW-sen KUH-nen', modalEx: 'Du musst lernen', modalExM: 'Debes estudiar',
-  weather1: 'Es regnet', weather1Rd: 'es REG-net', weather2: 'Es ist bewölkt', weather2Rd: 'es ist be-VULKT',
-  hobby1: 'Lesen', hobby1Rd: 'LAY-zen', hobby2: 'Reisen', hobby2Rd: 'RYE-zen',
-  travel1: 'der Flughafen', travel1Rd: 'dehr FLOOG-hah-fen', travel2: 'das Hotel', travel2Rd: 'das ho-TEL',
-  emotion1: 'glücklich', emotion1Rd: 'GLEWK-likh', emotion2: 'traurig', emotion2Rd: 'TROW-rikh',
-  food1: 'das Fleisch', food1Rd: 'das flysh', food2: 'das Gemüse', food2Rd: 'das geh-MEW-zeh',
-  health1: 'Ich bin krank', health1Rd: 'ikh bin krank', health2: 'Kopfschmerzen', health2Rd: 'KOPF-shmer-tsen',
-  work1: 'das Büro', work1Rd: 'das bew-ROH', work2: 'die Besprechung', work2Rd: 'dee beh-SHPRE-khoong',
-  tech1: 'das Handy', tech1Rd: 'das HEN-dee', tech2: 'der Computer', tech2Rd: 'dehr kom-PYOO-ter',
-  nature1: 'der Berg', nature1Rd: 'dehr behrk', nature2: 'der Fluss', nature2Rd: 'dehr floos',
-  polite1: 'Bitte schön', polite1Rd: 'BIT-teh shurn', polite1M: 'De nada/Por favor',
-  polite2: 'Entschuldigung', polite2Rd: 'ent-SHOOL-dee-goong', polite2M: 'Disculpe',
-  describe1: 'schön', describe1Rd: 'shurn', describe2: 'hässlich', describe2Rd: 'HES-likh',
-  sport1: 'Fußball', sport1Rd: 'FOOS-bal', sport2: 'Schwimmen', sport2Rd: 'SHVIM-men',
-  animal1: 'der Hund', animal1Rd: 'dehr hoont', animal2: 'die Katze', animal2Rd: 'dee KAT-tseh',
-  shop1: 'die Größe', shop1Rd: 'dee GRUH-seh', shop2: 'der Rabatt', shop2Rd: 'dehr ra-BAT',
-  city1: 'die Bank', city1Rd: 'dee bank', city2: 'die Apotheke', city2Rd: 'dee ah-po-TAY-keh',
-});
-
 export const enA2Lessons = makeL2Lessons('en', 'A2', 'Inglés', {
   pastTense: 'Past Simple', pastRd: 'past simple', pastEx: 'I ate', pastExM: 'Yo comí',
   futureTense: 'Will + verb', futureRd: 'will', futureEx: 'I will eat', futureExM: 'Yo comeré',
@@ -323,31 +298,6 @@ export const enA2Lessons = makeL2Lessons('en', 'A2', 'Inglés', {
   animal1: 'Dog', animal1Rd: 'dog', animal2: 'Cat', animal2Rd: 'cat',
   shop1: 'Size', shop1Rd: 'size', shop2: 'Discount', shop2Rd: 'discount',
   city1: 'Bank', city1Rd: 'bank', city2: 'Pharmacy', city2Rd: 'pharmacy',
-});
-
-export const itA2Lessons = makeL2Lessons('it', 'A2', 'Italiano', {
-  pastTense: 'Passato prossimo', pastRd: 'pas-SA-to PROS-si-mo', pastEx: 'Ho mangiato', pastExM: 'Yo comí',
-  futureTense: 'Futuro semplice', futureRd: 'fu-TU-ro SEM-pli-che', futureEx: 'Mangerò', futureExM: 'Yo comeré',
-  negation: 'non', negRd: 'non', negEx: 'Non mangio', negExM: 'No como',
-  conjunction: 'però', conjRd: 'pe-RO', conjEx: 'Però piove', conjExM: 'Pero llueve',
-  comparison: 'più di', compRd: 'pyoo dee', compEx: 'Lui è più alto di me', compExM: 'Él es más alto que yo',
-  modal: 'dovere/potere', modalRd: 'do-VEH-re po-TEH-re', modalEx: 'Devi studiare', modalExM: 'Debes estudiar',
-  weather1: 'Piove', weather1Rd: 'PYO-veh', weather2: 'È nuvoloso', weather2Rd: 'eh nu-vo-LO-so',
-  hobby1: 'Leggere', hobby1Rd: 'LED-jeh-reh', hobby2: 'Viaggiare', hobby2Rd: 'vyad-JAH-reh',
-  travel1: "L'aeroporto", travel1Rd: 'la-eh-ro-POR-to', travel2: "L'albergo", travel2Rd: 'lal-BEHR-go',
-  emotion1: 'Felice', emotion1Rd: 'feh-LEE-che', emotion2: 'Triste', emotion2Rd: 'TREES-teh',
-  food1: 'La carne', food1Rd: 'la KAR-neh', food2: 'Le verdure', food2Rd: 'leh ver-DOO-reh',
-  health1: 'Sono malato', health1Rd: 'SO-no ma-LA-to', health2: 'Ho mal di testa', health2Rd: 'oh mal dee TES-ta',
-  work1: "L'ufficio", work1Rd: 'loof-FEE-cho', work2: 'La riunione', work2Rd: 'la ree-oo-NYO-neh',
-  tech1: 'Il telefono', tech1Rd: 'eel teh-LEH-fo-no', tech2: 'Il computer', tech2Rd: 'eel kom-PYOO-ter',
-  nature1: 'La montagna', nature1Rd: 'la mon-TA-nya', nature2: 'Il fiume', nature2Rd: 'eel FYOO-meh',
-  polite1: 'Per favore', polite1Rd: 'per fa-VO-reh', polite1M: 'Por favor',
-  polite2: 'Prego', polite2Rd: 'PREH-go', polite2M: 'De nada',
-  describe1: 'Bello', describe1Rd: 'BEL-lo', describe2: 'Brutto', describe2Rd: 'BROO-toh',
-  sport1: 'Il calcio', sport1Rd: 'eel KAL-cho', sport2: 'Il nuoto', sport2Rd: 'eel NWO-toh',
-  animal1: 'Il cane', animal1Rd: 'eel KA-neh', animal2: 'Il gatto', animal2Rd: 'eel GAT-toh',
-  shop1: 'La taglia', shop1Rd: 'la TA-lya', shop2: 'Lo sconto', shop2Rd: 'lo SKON-toh',
-  city1: 'La banca', city1Rd: 'la BAN-ka', city2: 'La farmacia', city2Rd: 'la far-ma-CHEE-a',
 });
 
 export const ptA2Lessons = makeL2Lessons('pt', 'A2', 'Portugués', {
