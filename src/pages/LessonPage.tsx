@@ -128,8 +128,11 @@ export default function LessonPage() {
       correct = selectedChoice === step.ans;
       correctAns = tl(step.opts[step.ans]);
     } else if (step.t === 'tx') {
-      correct = normalizeAnswer(textInput) === normalizeAnswer(step.ans);
-      correctAns = step.ans;
+      // Accept answer in Spanish (original) OR in the user's native language
+      const translatedAns = tl(step.ans);
+      const normalizedInput = normalizeAnswer(textInput);
+      correct = normalizedInput === normalizeAnswer(step.ans) || normalizedInput === normalizeAnswer(translatedAns);
+      correctAns = translatedAns;
     } else if (step.t === 'or') {
       const expected = step.ans.map(i => step.words[i]);
       const got = orderPlaced.map(i => shuffledWords[i]);
