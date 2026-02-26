@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
+import { LANGUAGES } from '@/data/languages';
 import { STORIES } from '@/data/stories';
 import { STORY_I18N_EN } from '@/data/storyI18n';
 import { getLangConfig } from '@/data/languages';
@@ -23,8 +24,9 @@ function useStoryI18n(storyLang: string, nativeLang: string) {
 export default function StoryPage() {
   const navigate = useNavigate();
   const { state, addXP, markStoryDone, earnAchievement, tt } = useApp();
-  const activeLangs = state.activeLangs || [];
-  const storyLangs = [...new Set([...activeLangs, ...Object.keys(STORIES)])].filter(l => STORIES[l]);
+  const activeLangs = [...new Set(state.activeLangs || [])];
+  const validLangs = new Set(LANGUAGES.filter(l => l.code !== state.nativeLang).map(l => l.code));
+  const storyLangs = [...new Set([...activeLangs, ...Object.keys(STORIES)])].filter(l => STORIES[l] && validLangs.has(l));
   const [lang, setLang] = useState<string>(storyLangs[0] || 'jp');
   const [activeScene, setActiveScene] = useState<{ ci: number; si: number } | null>(null);
   const [quizFb, setQuizFb] = useState<string | null>(null);
