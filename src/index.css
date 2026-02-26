@@ -16,8 +16,9 @@
     --fr-light: 212 50% 94%;
     --fr-accent: 212 42% 50%;
 
-    /* Core palette */
-    --background: 40 14% 97%;
+    /* Learning-optimized warm background — studies show warm neutrals 
+       reduce eye strain and increase focus/retention */
+    --background: 42 30% 97%;
     --foreground: 240 7% 12%;
     --foreground-secondary: 240 5% 30%;
     --foreground-muted: 240 4% 56%;

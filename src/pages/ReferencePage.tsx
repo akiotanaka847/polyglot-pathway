@@ -46,7 +46,7 @@ export default function ReferencePage() {
   const grammarCategories = filteredGrammar.reduce((acc, entry, idx) => {
     const isVerb = /verb|conjugat|conjug|спряж|تصريف|動詞|동사/i.test(entry.title);
     const isParticle = /partícula|particle|助詞|조사/i.test(entry.title);
-    const cat = isVerb ? '🔄 Verbos' : isParticle ? '🔗 Partículas' : '📐 Gramática';
+    const cat = isVerb ? `🔄 ${tt('vocabulary')}` : isParticle ? `🔗 ${tt('grammar')}` : `📐 ${tt('grammar')}`;
     if (!acc[cat]) acc[cat] = [];
     acc[cat].push({ ...entry, originalIdx: idx });
     return acc;
@@ -173,7 +173,7 @@ export default function ReferencePage() {
                   onClick={() => setVocabLevel('all')}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${vocabLevel === 'all' ? 'bg-foreground text-background' : 'bg-card border border-border'}`}
                 >
-                  Todos
+                  {tt('complete_all')}
                 </button>
                 {availableVocabLevels.map(lvl => (
                   <button
@@ -192,7 +192,7 @@ export default function ReferencePage() {
               <p className="text-sm text-foreground-muted text-center py-8">{tt('coming_soon')}</p>
             ) : (
               <>
-                <div className="text-xs text-foreground-muted mb-2 px-1">{filteredVocab.length} palabras</div>
+                <div className="text-xs text-foreground-muted mb-2 px-1">{filteredVocab.length} {tt('vocabulary')}</div>
                 <div className="border-2 border-border rounded-2xl overflow-hidden bg-card">
                   <div className="divide-y divide-border">
                     {filteredVocab.map((entry, i) => (

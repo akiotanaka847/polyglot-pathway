@@ -32,7 +32,7 @@ function TopNav() {
     <nav className="fixed top-0 left-0 right-0 z-[300] flex items-center justify-between px-4 lg:px-7 h-[54px] bg-background/95 backdrop-blur-xl border-b border-border">
       <div className="font-serif text-xl font-semibold cursor-pointer flex items-center gap-1.5" onClick={() => navigate('/')}>
         <span>🌍</span>
-        <span className="text-foreground">Polyglot</span>
+        <span className="text-foreground">{tt('polyglot_app')}</span>
       </div>
       <div className="flex items-center gap-2">
         {totalXp > 0 && (
@@ -52,12 +52,18 @@ function TopNav() {
 function BottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { tt } = useApp();
+  const { state, tt } = useApp();
   const path = location.pathname;
+
+  // Dynamic lessons path: go to most recent active language, or first active
+  const activeLangs = [...new Set(state.activeLangs || [])].filter(c => c !== state.nativeLang);
+  const lessonsLang = activeLangs.length > 0 
+    ? [...activeLangs].sort((a, b) => (state.xp[b] || 0) - (state.xp[a] || 0))[0]
+    : 'jp';
 
   const tabs = [
     { id: 'home', icon: '🏠', label: tt('home'), path: '/' },
-    { id: 'lessons', icon: '📚', label: tt('lessons'), path: '/levels/jp' },
+    { id: 'lessons', icon: '📚', label: tt('lessons'), path: `/levels/${lessonsLang}` },
     { id: 'progress', icon: '📊', label: tt('progress'), path: '/dashboard' },
     { id: 'practice', icon: '🎯', label: tt('practice'), path: '/practice' },
     { id: 'reference', icon: '📖', label: tt('reference'), path: '/reference' },

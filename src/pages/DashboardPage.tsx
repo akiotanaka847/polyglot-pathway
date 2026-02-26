@@ -7,7 +7,7 @@ export default function DashboardPage() {
   const navigate = useNavigate();
   const { state, getRank, getRankPct, tt } = useApp();
   const totalXp = Object.values(state.xp).reduce((a, b) => a + b, 0);
-  const activeLangs = [...new Set(state.activeLangs || [])];
+  const activeLangs = [...new Set(state.activeLangs || [])].filter(c => c !== state.nativeLang);
 
   // Find next lessons across all active languages
   const lessonData = getLessonData(state.nativeLang || 'en');
