@@ -35,7 +35,7 @@ export const SLANG_DATA: Record<string, SlangEntry[]> = {
     { id: 'fr-s9', word: 'Chanmé', meaning: 'Genial / Increíble (verlan de "méchant")', example: 'La soirée était chanmé — La fiesta fue increíble', literal: 'Verlan: méchant → chanmé' },
     { id: 'fr-s10', word: 'Péter un câble', meaning: 'Perder los nervios / Flipar', example: 'Il a pété un câble — Se volvió loco', literal: 'Reventar un cable' },
     { id: 'fr-s11', word: 'Trop stylé', meaning: 'Muy molón / Con mucho estilo', example: 'Ton sac est trop stylé — Tu bolso es muy molón', literal: 'Demasiado estiloso' },
-    { id: 'fr-s12', word: 'MDR', meaning: 'jajaja (Mort de Rire)', example: 'MDR t'es trop drôle — jajaja eres graciosísimo', literal: 'Muerto de risa' },
+    { id: 'fr-s12', word: 'MDR', meaning: 'jajaja (Mort de Rire)', example: "MDR t'es trop drôle — jajaja eres graciosísimo", literal: 'Muerto de risa' },
   ],
   zh: [
     { id: 'zh-s1', word: '666 (liùliùliù)', meaning: 'Genial / Hábil / Impresionante', example: '你打游戏真666 — Juegas increíblemente bien', literal: '6 suena como 溜 (liù = hábil)' },
