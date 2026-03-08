@@ -128,7 +128,6 @@ export default function LessonPage() {
       correct = selectedChoice === step.ans;
       correctAns = tl(step.opts[step.ans]);
     } else if (step.t === 'tx') {
-      // Accept answer in Spanish (original) OR in the user's native language
       const translatedAns = tl(step.ans);
       const normalizedInput = normalizeAnswer(textInput);
       correct = normalizedInput === normalizeAnswer(step.ans) || normalizedInput === normalizeAnswer(translatedAns);
@@ -138,6 +137,16 @@ export default function LessonPage() {
       const got = orderPlaced.map(i => shuffledWords[i]);
       correct = JSON.stringify(got) === JSON.stringify(expected);
       correctAns = expected.join(' ');
+    } else if (step.t === 'la') {
+      // Listen & answer: user types what the audio means
+      const normalizedInput = normalizeAnswer(textInput);
+      correct = normalizedInput === normalizeAnswer(step.ans);
+      correctAns = step.ans;
+    } else if (step.t === 'sp') {
+      // Speak: compare spoken transcript to expected
+      const normalizedInput = normalizeAnswer(textInput);
+      correct = normalizedInput.includes(normalizeAnswer(step.expected)) || normalizeAnswer(step.expected).includes(normalizedInput);
+      correctAns = step.expected;
     }
     setFeedback({ correct, answer: correctAns });
     setLocked(true);
