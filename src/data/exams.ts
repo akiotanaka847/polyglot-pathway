@@ -458,13 +458,24 @@ const BASE_EXAMS: Record<string, Record<string, Exam>> = {
   },
 };
 
-// Merge all exam sources — filter out removed languages
+import { enhanceExam } from './exams-enhance';
+
+// Merge all exam sources — filter out removed languages, then enhance with listening/writing/speaking
 const VALID_LANGS = new Set(['jp', 'fr', 'zh', 'pt', 'ko', 'ru', 'ar', 'hi', 'en', 'es', 'ro']);
 const ALL_SOURCES = [BASE_EXAMS, ADVANCED_EXAMS, A2_EXAMS, B1_EXTRA_EXAMS, B2_EXTRA_EXAMS, C1_EXTRA_EXAMS, C2_EXTRA_EXAMS];
-export const EXAM_DATA: Record<string, Record<string, Exam>> = {};
+const RAW_DATA: Record<string, Record<string, Exam>> = {};
 ALL_SOURCES.forEach(source => {
   Object.keys(source).forEach(lang => {
     if (!VALID_LANGS.has(lang)) return;
-    EXAM_DATA[lang] = { ...(EXAM_DATA[lang] || {}), ...source[lang] };
+    RAW_DATA[lang] = { ...(RAW_DATA[lang] || {}), ...source[lang] };
+  });
+});
+
+// Enhance every exam with listening, writing, and speaking sections
+export const EXAM_DATA: Record<string, Record<string, Exam>> = {};
+Object.keys(RAW_DATA).forEach(lang => {
+  EXAM_DATA[lang] = {};
+  Object.keys(RAW_DATA[lang]).forEach(level => {
+    EXAM_DATA[lang][level] = enhanceExam(lang, RAW_DATA[lang][level]);
   });
 });
