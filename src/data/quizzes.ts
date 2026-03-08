@@ -68,6 +68,7 @@ export const QUIZ_DATA: Record<string, Record<string, QuizQuestion[]>> = {
       { t: 'tx', q: '¿Cómo se dice "gracias" en inglés?', ans: 'thank you' },
       { t: 'mc', q: '¿Cómo dices "Yo soy" en inglés?', opts: ['I am', 'I have', 'I do', 'I go'], ans: 0 },
     ],
+  },
   es: {
     A1: [
       { t: 'mc', q: '¿Cómo se dice "hello"?', opts: ['Adiós', 'Hola', 'Gracias', 'Perdón'], ans: 1 },
