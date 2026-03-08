@@ -63,10 +63,10 @@ export default function InstallPrompt() {
         <div className="bg-card border-[1.5px] border-border rounded-2xl p-4 shadow-xl flex items-center gap-3">
           <span className="text-3xl">📲</span>
           <div className="flex-1 min-w-0">
-            <div className="font-serif text-sm font-semibold">Lingora</div>
+            <div className="font-serif text-sm font-semibold">Voxia</div>
             <div className="text-[0.72rem] text-foreground-muted">
               {isIOS
-                ? 'Añade Lingora a tu pantalla de inicio'
+                ? 'Añade Voxia a tu pantalla de inicio'
                 : 'Instala la app en tu teléfono'}
             </div>
           </div>
@@ -95,7 +95,7 @@ export default function InstallPrompt() {
           <div className="bg-card rounded-t-3xl p-6 pb-10 w-full max-w-md" onClick={e => e.stopPropagation()}>
             <div className="text-center mb-4">
               <span className="text-4xl">📲</span>
-              <h2 className="font-serif text-lg font-semibold mt-2">Instalar Lingora en iPhone</h2>
+              <h2 className="font-serif text-lg font-semibold mt-2">Instalar Voxia en iPhone</h2>
             </div>
             <ol className="space-y-3 text-sm text-foreground-secondary">
               <li className="flex gap-3"><span className="font-bold text-foreground">1.</span> Toca el botón <span className="inline-flex items-center gap-1 font-semibold text-foreground">Compartir <span>⬆️</span></span> en Safari</li>
