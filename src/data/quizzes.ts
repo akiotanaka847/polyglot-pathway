@@ -68,5 +68,23 @@ export const QUIZ_DATA: Record<string, Record<string, QuizQuestion[]>> = {
       { t: 'tx', q: '¿Cómo se dice "gracias" en inglés?', ans: 'thank you' },
       { t: 'mc', q: '¿Cómo dices "Yo soy" en inglés?', opts: ['I am', 'I have', 'I do', 'I go'], ans: 0 },
     ],
+  es: {
+    A1: [
+      { t: 'mc', q: '¿Cómo se dice "hello"?', opts: ['Adiós', 'Hola', 'Gracias', 'Perdón'], ans: 1 },
+      { t: 'mc', q: '¿Qué significa "gracias"?', opts: ['Goodbye', 'Hello', 'Thank you', 'Sorry'], ans: 2 },
+      { t: 'mc', q: '¿Cuál es el artículo de "casa"?', opts: ['El', 'La', 'Los', 'Un'], ans: 1 },
+      { t: 'tx', q: '¿Cómo se dice "thank you" en español?', ans: 'gracias' },
+      { t: 'mc', q: '¿Qué verbo se usa en "Yo ___ estudiante"?', opts: ['estar', 'ser', 'haber', 'tener'], ans: 1 },
+      { t: 'mc', q: '¿Plural de "libro"?', opts: ['Libros', 'Libroes', 'Libro', 'Libras'], ans: 0 },
+      { t: 'tx', q: '¿Cómo se dice "water" en español?', ans: 'agua' },
+      { t: 'mc', q: '¿Qué número es "siete"?', opts: ['5', '6', '7', '8'], ans: 2 },
+      { t: 'mc', q: '¿"Buenas noches" se usa para?', opts: ['Morning', 'Afternoon', 'Night', 'Anytime'], ans: 2 },
+      { t: 'mc', q: '¿Conjugación de "hablar" (yo)?', opts: ['Hablas', 'Hablo', 'Habla', 'Hablan'], ans: 1 },
+    ],
+    A2: [
+      { t: 'mc', q: '¿Pretérito de "ir" (yo)?', opts: ['Voy', 'Iba', 'Fui', 'Iré'], ans: 2 },
+      { t: 'tx', q: '¿Cómo se dice "yesterday" en español?', ans: 'ayer' },
+      { t: 'mc', q: '¿"Me gusta" se usa con qué pronombre?', opts: ['Yo', 'Me', 'Mi', 'Mí'], ans: 1 },
+    ],
   },
 };
