@@ -81,19 +81,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AppState>(() => {
     try {
       const saved = localStorage.getItem('kotoba_state');
-      if (saved) return migrateState(JSON.parse(saved));
+      if (saved) {
+        const migrated = migrateState(JSON.parse(saved));
+        // Force-clean duplicates from corrupted data
+        migrated.activeLangs = [...new Set(migrated.activeLangs)].filter(Boolean);
+        // Also clean localStorage immediately
+        localStorage.setItem('kotoba_state', JSON.stringify(migrated));
+        return migrated;
+      }
     } catch {}
     return defaultState;
   });
 
   useEffect(() => {
-    // Always deduplicate activeLangs before persisting
-    const deduped = [...new Set(state.activeLangs)];
-    if (deduped.length !== state.activeLangs.length) {
-      setState(s => ({ ...s, activeLangs: [...new Set(s.activeLangs)] }));
-      return;
-    }
-    try { localStorage.setItem('kotoba_state', JSON.stringify(state)); } catch {}
+    try { localStorage.setItem('kotoba_state', JSON.stringify({ ...state, activeLangs: [...new Set(state.activeLangs)] })); } catch {}
   }, [state]);
 
   // Import t from languages lazily to avoid circular deps
