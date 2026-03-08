@@ -39,7 +39,21 @@ export interface ReadingStep {
   ans: number;
 }
 
-export type LessonStep = TheoryStep | MCStep | TextStep | OrderStep | ReadingStep;
+export interface ListenAnswerStep {
+  t: 'la';
+  audio: string;   // text to be spoken as audio
+  ans: string;     // expected typed answer
+  hint?: string;
+}
+
+export interface SpeakStep {
+  t: 'sp';
+  q: string;        // prompt to speak
+  expected: string;  // expected answer (for comparison)
+  hint?: string;
+}
+
+export type LessonStep = TheoryStep | MCStep | TextStep | OrderStep | ReadingStep | ListenAnswerStep | SpeakStep;
 
 export interface Lesson {
   id: string;
@@ -63,17 +77,10 @@ export interface FlashCard {
   ex?: string;
 }
 
-export interface SpeakingStep {
-  t: 'sp';
-  q: string;        // prompt to speak
-  expected: string;  // expected answer (for comparison)
-  hint?: string;
-}
-
 export interface ExamSection {
   name: string;
   time: number;
-  qs: (MCStep | TextStep | ReadingStep | SpeakingStep)[];
+  qs: (MCStep | TextStep | ReadingStep | ListenAnswerStep | SpeakStep)[];
 }
 
 export interface Exam {
