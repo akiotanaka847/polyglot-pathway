@@ -280,14 +280,14 @@ function generateCategoryLessons(
     batch.forEach(entry => steps.push(makeTheoryStep(entry, lang, nativeLang)));
     // MC for each word
     batch.forEach(entry => steps.push(makeMCStep(entry, category, lang, nativeLang)));
+    // Listen & answer for EVERY word in batch
+    batch.forEach(entry => steps.push(makeListenAnswerStep(entry, lang, nativeLang)));
     // Text input for first word
     if (batch[0]) steps.push(makeTextStep(batch[0], lang, nativeLang));
-    // Listen & answer for a word
-    if (batch.length > 0) steps.push(makeListenAnswerStep(batch[batch.length > 1 ? 1 : 0], lang, nativeLang));
     // MC meaning for second word
     if (batch.length > 1) steps.push(makeMCMeaningStep(batch[1], category, nativeLang));
-    // Speak step for a word
-    if (batch.length > 0) steps.push(makeSpeakStep(batch[0], lang, nativeLang));
+    // Speak step for EVERY word in batch
+    batch.forEach(entry => steps.push(makeSpeakStep(entry, lang, nativeLang)));
     // Extra text step for third word if exists
     if (batch.length > 2) steps.push(makeTextStep(batch[2], lang, nativeLang));
 
@@ -307,13 +307,38 @@ function generateCategoryLessons(
     const sample = [...category].sort(() => Math.random() - 0.5).slice(0, 4);
     const steps: LessonStep[] = [];
     sample.forEach(entry => steps.push(makeMCMeaningStep(entry, category, nativeLang)));
+    sample.forEach(entry => steps.push(makeListenAnswerStep(entry, lang, nativeLang)));
     sample.forEach(entry => steps.push(makeTextStep(entry, lang, nativeLang)));
+    sample.forEach(entry => steps.push(makeSpeakStep(entry, lang, nativeLang)));
     if (sample[0]) steps.push(makeMCStep(sample[0], category, lang, nativeLang));
     const num = startNum + lessonsCount + e;
     lessons.push({
       id: `${code}-${level.toLowerCase()}-${num}`,
       title: `${unitDef.name} — ${getTemplates(nativeLang).review} ${e + 1}`,
       type: 'reading',
+      steps,
+      unit: unitDef,
+    });
+  }
+
+  // Generate dedicated listening & speaking practice lessons
+  const oralCount = Math.min(2, Math.ceil(category.length / 6));
+  for (let o = 0; o < oralCount; o++) {
+    const sample = [...category].sort(() => Math.random() - 0.5).slice(0, 5);
+    const steps: LessonStep[] = [];
+    // Alternate listen and speak for variety
+    sample.forEach(entry => {
+      steps.push(makeListenAnswerStep(entry, lang, nativeLang));
+      steps.push(makeSpeakStep(entry, lang, nativeLang));
+    });
+    // Add a couple MC to break monotony
+    if (sample[0]) steps.push(makeMCStep(sample[0], category, lang, nativeLang));
+    if (sample.length > 2) steps.push(makeMCMeaningStep(sample[2], category, nativeLang));
+    const num = startNum + lessonsCount + extraCount + o;
+    lessons.push({
+      id: `${code}-${level.toLowerCase()}-${num}`,
+      title: `${unitDef.name} — 🎧🎤 ${o + 1}`,
+      type: 'vocab',
       steps,
       unit: unitDef,
     });
