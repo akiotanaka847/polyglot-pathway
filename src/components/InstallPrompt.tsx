@@ -14,28 +14,15 @@ export default function InstallPrompt() {
   const { tt } = useApp();
 
   useEffect(() => {
-    // Check if already dismissed this session
-    if (sessionStorage.getItem('pwa-dismissed')) {
-      setDismissed(true);
-      return;
-    }
+    if (sessionStorage.getItem('pwa-dismissed')) { setDismissed(true); return; }
+    if (window.matchMedia('(display-mode: standalone)').matches) { setDismissed(true); return; }
 
-    // Check if already installed
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-      setDismissed(true);
-      return;
-    }
-
-    // Detect iOS
     const ua = navigator.userAgent;
     const isiOS = /iPad|iPhone|iPod/.test(ua) && !(window as any).MSStream;
     setIsIOS(isiOS);
-    if (isiOS) return; // Show iOS banner directly
+    if (isiOS) return;
 
-    const handler = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
-    };
+    const handler = (e: Event) => { e.preventDefault(); setDeferredPrompt(e as BeforeInstallPromptEvent); };
     window.addEventListener('beforeinstallprompt', handler);
     return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
@@ -49,13 +36,9 @@ export default function InstallPrompt() {
     }
   };
 
-  const handleDismiss = () => {
-    setDismissed(true);
-    sessionStorage.setItem('pwa-dismissed', '1');
-  };
+  const handleDismiss = () => { setDismissed(true); sessionStorage.setItem('pwa-dismissed', '1'); };
 
-  if (dismissed) return null;
-  if (!deferredPrompt && !isIOS) return null;
+  if (dismissed || (!deferredPrompt && !isIOS)) return null;
 
   return (
     <>
@@ -63,50 +46,41 @@ export default function InstallPrompt() {
         <div className="bg-card border-[1.5px] border-border rounded-2xl p-4 shadow-xl flex items-center gap-3">
           <span className="text-3xl">📲</span>
           <div className="flex-1 min-w-0">
-            <div className="font-serif text-sm font-semibold">Voxia</div>
-            <div className="text-[0.72rem] text-foreground-muted">
-              {isIOS
-                ? 'Añade Voxia a tu pantalla de inicio'
-                : 'Instala la app en tu teléfono'}
+            <div className="font-display text-sm font-semibold">Voxia</div>
+            <div className="text-[0.72rem] text-muted-foreground">
+              {isIOS ? tt('install_ios_desc') : tt('install_desc')}
             </div>
           </div>
           {isIOS ? (
-            <button
-              onClick={() => setShowIOSGuide(true)}
-              className="px-4 py-2 rounded-full bg-foreground text-background text-[0.78rem] font-bold whitespace-nowrap"
-            >
-              Cómo instalar
+            <button onClick={() => setShowIOSGuide(true)} className="px-4 py-2 rounded-full bg-primary text-primary-foreground text-[0.78rem] font-bold whitespace-nowrap">
+              {tt('how_install')}
             </button>
           ) : (
-            <button
-              onClick={handleInstall}
-              className="px-4 py-2 rounded-full bg-foreground text-background text-[0.78rem] font-bold whitespace-nowrap"
-            >
-              Instalar
+            <button onClick={handleInstall} className="px-4 py-2 rounded-full bg-primary text-primary-foreground text-[0.78rem] font-bold whitespace-nowrap">
+              {tt('install_app')}
             </button>
           )}
-          <button onClick={handleDismiss} className="text-foreground-muted text-lg leading-none p-1">✕</button>
+          <button onClick={handleDismiss} className="text-muted-foreground text-lg leading-none p-1">✕</button>
         </div>
       </div>
 
-      {/* iOS instruction modal */}
       {showIOSGuide && (
         <div className="fixed inset-0 z-[500] flex items-end justify-center bg-black/40 animate-fade-in" onClick={() => setShowIOSGuide(false)}>
           <div className="bg-card rounded-t-3xl p-6 pb-10 w-full max-w-md" onClick={e => e.stopPropagation()}>
             <div className="text-center mb-4">
               <span className="text-4xl">📲</span>
-              <h2 className="font-serif text-lg font-semibold mt-2">Instalar Voxia en iPhone</h2>
+              <h2 className="font-display text-lg font-semibold mt-2">{tt('install_ios_title')}</h2>
             </div>
-            <ol className="space-y-3 text-sm text-foreground-secondary">
-              <li className="flex gap-3"><span className="font-bold text-foreground">1.</span> Toca el botón <span className="inline-flex items-center gap-1 font-semibold text-foreground">Compartir <span>⬆️</span></span> en Safari</li>
-              <li className="flex gap-3"><span className="font-bold text-foreground">2.</span> Desplázate y selecciona <span className="font-semibold text-foreground">"Añadir a pantalla de inicio"</span></li>
-              <li className="flex gap-3"><span className="font-bold text-foreground">3.</span> Toca <span className="font-semibold text-foreground">"Añadir"</span> para confirmar</li>
+            <ol className="space-y-3 text-sm text-muted-foreground">
+              <li className="flex gap-3"><span className="font-bold text-foreground">1.</span> {tt('install_ios_1')}</li>
+              <li className="flex gap-3"><span className="font-bold text-foreground">2.</span> {tt('install_ios_2')}</li>
+              <li className="flex gap-3"><span className="font-bold text-foreground">3.</span> {tt('install_ios_3')}</li>
             </ol>
             <button
               onClick={() => { setShowIOSGuide(false); handleDismiss(); }}
-              className="mt-6 w-full py-3 rounded-xl bg-foreground text-background font-bold text-sm"
+              className="mt-6 w-full py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm"
             >
-              Entendido
+              {tt('understood')}
             </button>
           </div>
         </div>

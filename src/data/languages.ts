@@ -101,6 +101,9 @@ export const UI: Record<string, Record<string, string>> = {
     polyglot_app: 'Voxia', learn: 'Aprende', and: 'y', more_langs: 'más idiomas',
     change_language: 'Cambiar idioma',
     examples: 'Ejemplos', native_lang_question: '¿Cuál es tu idioma nativo?', select_exam_desc: 'Selecciona un idioma y nivel para iniciar un simulacro de certificación',
+    install_app: 'Instalar app', install_desc: 'Instala la app en tu teléfono', install_ios_desc: 'Añade Voxia a tu pantalla de inicio',
+    how_install: 'Cómo instalar', install_ios_title: 'Instalar Voxia en iPhone',
+    install_ios_1: 'Toca el botón Compartir ⬆️ en Safari', install_ios_2: 'Selecciona "Añadir a pantalla de inicio"', install_ios_3: 'Toca "Añadir" para confirmar', understood: 'Entendido',
   },
   en: {
     home: 'Home', lessons: 'Lessons', progress: 'Progress', practice: 'Practice', achievements: 'Achievements',
@@ -153,6 +156,9 @@ export const UI: Record<string, Record<string, string>> = {
     polyglot_app: 'Voxia', learn: 'Learn', and: 'and', more_langs: 'more languages',
     change_language: 'Change language',
     examples: 'Examples', native_lang_question: 'What is your native language?', select_exam_desc: 'Select a language and level to start a certification mock exam',
+    install_app: 'Install app', install_desc: 'Install the app on your phone', install_ios_desc: 'Add Voxia to your home screen',
+    how_install: 'How to install', install_ios_title: 'Install Voxia on iPhone',
+    install_ios_1: 'Tap the Share button ⬆️ in Safari', install_ios_2: 'Select "Add to Home Screen"', install_ios_3: 'Tap "Add" to confirm', understood: 'Got it',
   },
   pt: {
     home: 'Início', lessons: 'Lições', progress: 'Progresso', practice: 'Prática', achievements: 'Conquistas',
@@ -205,6 +211,9 @@ export const UI: Record<string, Record<string, string>> = {
     polyglot_app: 'Voxia', learn: 'Aprenda', and: 'e', more_langs: 'mais idiomas',
     change_language: 'Mudar idioma',
     examples: 'Exemplos', native_lang_question: 'Qual é o seu idioma nativo?', select_exam_desc: 'Selecione um idioma e nível para iniciar um simulado de certificação',
+    install_app: 'Instalar app', install_desc: 'Instale o app no seu celular', install_ios_desc: 'Adicione Voxia à tela inicial',
+    how_install: 'Como instalar', install_ios_title: 'Instalar Voxia no iPhone',
+    install_ios_1: 'Toque no botão Compartilhar ⬆️ no Safari', install_ios_2: 'Selecione "Adicionar à Tela de Início"', install_ios_3: 'Toque em "Adicionar" para confirmar', understood: 'Entendi',
   },
   fr: {
     home: 'Accueil', lessons: 'Leçons', progress: 'Progrès', practice: 'Pratique', achievements: 'Succès',
@@ -257,6 +266,9 @@ export const UI: Record<string, Record<string, string>> = {
     polyglot_app: 'Voxia', learn: 'Apprenez', and: 'et', more_langs: 'langues supplémentaires',
     change_language: 'Changer de langue',
     examples: 'Exemples', native_lang_question: 'Quelle est votre langue maternelle ?', select_exam_desc: 'Sélectionnez une langue et un niveau pour un examen blanc',
+    install_app: "Installer l'app", install_desc: "Installez l'app sur votre téléphone", install_ios_desc: "Ajoutez Voxia à l'écran d'accueil",
+    how_install: 'Comment installer', install_ios_title: 'Installer Voxia sur iPhone',
+    install_ios_1: 'Appuyez sur le bouton Partager ⬆️ dans Safari', install_ios_2: "Sélectionnez \"Ajouter à l'écran d'accueil\"", install_ios_3: 'Appuyez sur "Ajouter" pour confirmer', understood: 'Compris',
   },
   jp: {
     home: 'ホーム', lessons: 'レッスン', progress: '進捗', practice: '練習', achievements: '実績',
@@ -309,6 +321,9 @@ export const UI: Record<string, Record<string, string>> = {
     polyglot_app: 'Voxia', learn: '学ぶ', and: 'と', more_langs: 'その他の言語',
     change_language: '言語を変更',
     examples: '例文', native_lang_question: 'あなたの母語は何ですか？', select_exam_desc: '言語とレベルを選んで模擬試験を開始',
+    install_app: 'アプリをインストール', install_desc: 'スマホにアプリをインストール', install_ios_desc: 'Voxiaをホーム画面に追加',
+    how_install: 'インストール方法', install_ios_title: 'iPhoneにVoxiaをインストール',
+    install_ios_1: 'Safariで共有ボタン ⬆️ をタップ', install_ios_2: '「ホーム画面に追加」を選択', install_ios_3: '「追加」をタップして確認', understood: 'わかりました',
   },
   zh: {
     home: '首页', lessons: '课程', progress: '进度', practice: '练习', achievements: '成就',
@@ -361,8 +376,10 @@ export const UI: Record<string, Record<string, string>> = {
     polyglot_app: 'Voxia', learn: '学习', and: '和', more_langs: '更多语言',
     change_language: '更改语言',
     examples: '例句', native_lang_question: '你的母语是什么？', select_exam_desc: '选择语言和级别开始模拟考试',
+    install_app: '安装应用', install_desc: '在手机上安装应用', install_ios_desc: '将Voxia添加到主屏幕',
+    how_install: '如何安装', install_ios_title: '在iPhone上安装Voxia',
+    install_ios_1: '在Safari中点击分享按钮 ⬆️', install_ios_2: '选择"添加到主屏幕"', install_ios_3: '点击"添加"确认', understood: '知道了',
   },
-  // de, it removed (consolidated to top 10)
   ko: {
     home: '홈', lessons: '수업', progress: '진행', practice: '연습', achievements: '업적',
     start: '시작', continue: '계속', next: '다음', check: '확인', skip: '건너뛰기',
@@ -414,6 +431,9 @@ export const UI: Record<string, Record<string, string>> = {
     polyglot_app: 'Voxia', learn: '배우기', and: '와', more_langs: '더 많은 언어',
     change_language: '언어 변경',
     examples: '예문', native_lang_question: '모국어가 무엇인가요?', select_exam_desc: '언어와 레벨을 선택하여 모의고사 시작',
+    install_app: '앱 설치', install_desc: '휴대폰에 앱 설치', install_ios_desc: 'Voxia를 홈 화면에 추가',
+    how_install: '설치 방법', install_ios_title: 'iPhone에 Voxia 설치',
+    install_ios_1: 'Safari에서 공유 버튼 ⬆️ 탭', install_ios_2: '"홈 화면에 추가" 선택', install_ios_3: '"추가"를 탭하여 확인', understood: '알겠습니다',
   },
   ru: {
     home: 'Главная', lessons: 'Уроки', progress: 'Прогресс', practice: 'Практика', achievements: 'Достижения',
@@ -466,6 +486,9 @@ export const UI: Record<string, Record<string, string>> = {
     polyglot_app: 'Voxia', learn: 'Учить', and: 'и', more_langs: 'другие языки',
     change_language: 'Сменить язык',
     examples: 'Примеры', native_lang_question: 'Какой ваш родной язык?', select_exam_desc: 'Выберите язык и уровень для пробного экзамена',
+    install_app: 'Установить', install_desc: 'Установите приложение на телефон', install_ios_desc: 'Добавьте Voxia на главный экран',
+    how_install: 'Как установить', install_ios_title: 'Установить Voxia на iPhone',
+    install_ios_1: 'Нажмите кнопку «Поделиться» ⬆️ в Safari', install_ios_2: 'Выберите «На экран Домой»', install_ios_3: 'Нажмите «Добавить» для подтверждения', understood: 'Понятно',
   },
   ar: {
     home: 'الرئيسية', lessons: 'الدروس', progress: 'التقدم', practice: 'تمرين', achievements: 'الإنجازات',
@@ -518,6 +541,9 @@ export const UI: Record<string, Record<string, string>> = {
     polyglot_app: 'Voxia', learn: 'تعلّم', and: 'و', more_langs: 'لغات أخرى',
     change_language: 'تغيير اللغة',
     examples: 'أمثلة', native_lang_question: 'ما هي لغتك الأم؟', select_exam_desc: 'اختر لغة ومستوى لبدء اختبار تجريبي',
+    install_app: 'تثبيت التطبيق', install_desc: 'ثبّت التطبيق على هاتفك', install_ios_desc: 'أضف Voxia إلى الشاشة الرئيسية',
+    how_install: 'كيفية التثبيت', install_ios_title: 'تثبيت Voxia على iPhone',
+    install_ios_1: 'اضغط على زر المشاركة ⬆️ في Safari', install_ios_2: 'اختر "إضافة إلى الشاشة الرئيسية"', install_ios_3: 'اضغط "إضافة" للتأكيد', understood: 'فهمت',
   },
   hi: {
     home: 'होम', lessons: 'पाठ', progress: 'प्रगति', practice: 'अभ्यास', achievements: 'उपलब्धियाँ',
@@ -570,6 +596,9 @@ export const UI: Record<string, Record<string, string>> = {
     polyglot_app: 'Voxia', learn: 'सीखें', and: 'और', more_langs: 'और भाषाएँ',
     change_language: 'भाषा बदलें',
     examples: 'उदाहरण', native_lang_question: 'आपकी मातृभाषा क्या है?', select_exam_desc: 'प्रमाणन परीक्षा के लिए भाषा और स्तर चुनें',
+    install_app: 'ऐप इंस्टॉल करें', install_desc: 'अपने फ़ोन पर ऐप इंस्टॉल करें', install_ios_desc: 'Voxia को होम स्क्रीन पर जोड़ें',
+    how_install: 'कैसे इंस्टॉल करें', install_ios_title: 'iPhone पर Voxia इंस्टॉल करें',
+    install_ios_1: 'Safari में शेयर बटन ⬆️ टैप करें', install_ios_2: '"होम स्क्रीन पर जोड़ें" चुनें', install_ios_3: 'पुष्टि के लिए "जोड़ें" टैप करें', understood: 'समझ गया',
   },
   // tr, vi, th, nl, pl removed (consolidated to top 10)
 };
