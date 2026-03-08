@@ -444,6 +444,70 @@ export default function LessonPage() {
               </>
             )}
 
+            {/* Listen & Answer */}
+            {step.t === 'la' && (
+              <div className="space-y-3">
+                <div className="text-center p-5 rounded-xl mb-2"
+                  style={{ background: `linear-gradient(135deg, hsl(${config.hue}, 80%, 96%), hsl(${config.hue}, 60%, 90%))` }}>
+                  <button onClick={() => speakText(step.audio, l)}
+                    className="w-16 h-16 rounded-full flex items-center justify-center text-3xl mx-auto mb-2 shadow-md transition-transform hover:scale-110 active:scale-95 bg-card border border-border">
+                    🔊
+                  </button>
+                  <p className="text-sm font-medium" style={{ color: `hsl(${config.hue}, 70%, 35%)` }}>{tt('what_did_you_hear')}</p>
+                </div>
+                <div className="relative">
+                  <input value={textInput} onChange={e => setTextInput(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && canCheck && nextAction()} disabled={locked}
+                    placeholder={tt('write_answer')}
+                    className={`w-full p-3.5 border-2 rounded-xl text-sm bg-background outline-none transition-all ${
+                      locked ? (feedback?.correct ? 'border-green-400 bg-green-50' : 'border-red-400 bg-red-50 animate-shake') : 'border-border focus:border-foreground/40'
+                    }`} />
+                </div>
+                {step.hint && <div className="text-[0.7rem] text-foreground-muted">💡 {tt('hint')}: {step.hint}</div>}
+              </div>
+            )}
+
+            {/* Speak step */}
+            {step.t === 'sp' && (
+              <div className="space-y-3">
+                <div className="text-center p-5 rounded-xl mb-2"
+                  style={{ background: `linear-gradient(135deg, hsl(${config.hue}, 80%, 96%), hsl(${config.hue}, 60%, 90%))` }}>
+                  <p className="text-sm mb-1 text-foreground-muted">{tt('say_word')}</p>
+                  <p className={`text-2xl font-bold ${fontClass}`} style={{ color: `hsl(${config.hue}, 70%, 35%)` }}>{step.hint}</p>
+                  <button onClick={() => speakText(step.hint || step.expected, l)}
+                    className="mt-2 px-3 py-1 rounded-full border border-border bg-card text-xs hover:bg-background transition-colors">
+                    🔊 {tt('listen')}
+                  </button>
+                </div>
+                {speech.isSupported ? (
+                  <>
+                    <button onClick={() => speech.isListening ? speech.stop() : speech.start()} disabled={locked}
+                      className={`w-full py-4 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 ${
+                        speech.isListening ? 'bg-destructive/10 text-destructive border-2 border-destructive/30 animate-pulse' : 'text-card shadow-md'
+                      }`}
+                      style={!speech.isListening ? { background: `hsl(${config.hue}, 70%, 46%)` } : undefined}>
+                      {speech.isListening ? `⏹ ${tt('recording')}` : `🎤 ${tt('tap_to_speak')}`}
+                    </button>
+                    {textInput && (
+                      <div className="p-3 rounded-xl bg-background border border-border text-sm">
+                        <span className="text-foreground-muted text-xs">{tt('write_answer')}:</span>
+                        <p className="font-medium mt-1">{textInput}</p>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="relative">
+                    <input value={textInput} onChange={e => setTextInput(e.target.value)}
+                      onKeyDown={e => e.key === 'Enter' && canCheck && nextAction()} disabled={locked}
+                      placeholder={tt('write_answer')}
+                      className={`w-full p-3.5 border-2 rounded-xl text-sm bg-background outline-none transition-all ${
+                        locked ? (feedback?.correct ? 'border-green-400 bg-green-50' : 'border-red-400 bg-red-50 animate-shake') : 'border-border focus:border-foreground/40'
+                      }`} />
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Feedback */}
             {feedback && (
               <div className={`p-4 rounded-xl text-sm mt-4 animate-scale-in border ${
