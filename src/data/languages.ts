@@ -567,7 +567,7 @@ export const UI: Record<string, Record<string, string>> = {
     front_tap: 'सामने — उत्तर देखने के लिए टैप करें', back_did_know: 'पीछे — क्या आप जानते थे?',
     chapter: 'अध्याय', grammar_ref: 'व्याकरण संदर्भ',
     vocab_ref: 'शब्दावली सूची', search: 'खोजें...',
-    polyglot_app: 'बहुभाषी ऐप', learn: 'सीखें', and: 'और', more_langs: 'और भाषाएँ',
+    polyglot_app: 'Voxia', learn: 'सीखें', and: 'और', more_langs: 'और भाषाएँ',
     change_language: 'भाषा बदलें',
     examples: 'उदाहरण', native_lang_question: 'आपकी मातृभाषा क्या है?', select_exam_desc: 'प्रमाणन परीक्षा के लिए भाषा और स्तर चुनें',
   },
