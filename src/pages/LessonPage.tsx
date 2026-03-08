@@ -275,7 +275,7 @@ export default function LessonPage() {
             {tt('step_of').replace('{0}', String(stepIdx + 1)).replace('{1}', String(steps.length))}
           </span>
           <span className="flex-1" />
-          <button onClick={() => speakText(step.t === 'th' ? step.char : (step.q || ''), l)}
+          <button onClick={() => speakText(step.t === 'th' ? step.char : step.t === 'la' ? step.audio : (step as any).q || '', l)}
             className="px-2.5 py-1 rounded-full border border-border bg-card text-[0.65rem] hover:bg-background transition-colors">
             🔊 {tt('listen')}
           </button>
@@ -344,7 +344,7 @@ export default function LessonPage() {
                 {step.t === 'mc' ? tt('multiple_choice') : step.t === 'tx' ? tt('write_response') : step.t === 'or' ? tt('order_words') : tt('reading_comp')}
               </span>
             </div>
-            <div className="font-serif text-lg mb-4 leading-snug" dangerouslySetInnerHTML={{ __html: tl(step.q) }} />
+            <div className="font-serif text-lg mb-4 leading-snug" dangerouslySetInnerHTML={{ __html: tl(step.t === 'la' ? '' : step.t === 'sp' ? step.q : (step as any).q || '') }} />
 
             {/* MC options */}
             {(step.t === 'mc' || step.t === 'rd') && step.opts && (

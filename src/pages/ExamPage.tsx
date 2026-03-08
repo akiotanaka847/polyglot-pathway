@@ -5,10 +5,10 @@ import { EXAM_DATA } from '@/data/exams';
 import { getLangConfig } from '@/data/languages';
 import { normalizeAnswer, playCorrectSound, playIncorrectSound, playLevelUpSound, spawnConfetti } from '@/utils/helpers';
 import { translateLessonText, translateExamTitle, translateSectionName, translateOption } from '@/utils/lessonI18n';
-import { MCStep, TextStep, ReadingStep, SpeakingStep } from '@/data/types';
+import { MCStep, TextStep, ReadingStep, SpeakStep } from '@/data/types';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
 
-type Q = MCStep | TextStep | ReadingStep | SpeakingStep;
+type Q = MCStep | TextStep | ReadingStep | SpeakStep;
 
 function CircularTimer({ timeLeft, total, size = 56 }: { timeLeft: number; total: number; size?: number }) {
   const r = (size - 6) / 2;
