@@ -140,6 +140,18 @@ function makeB2(title: string): Exam {
         { t: 'mc', q: '¿"Cuanto más...más..." es estructura?', opts: ['Concesiva', 'Comparativa correlativa', 'Temporal', 'Causal'], ans: 1 },
         { t: 'mc', q: '¿"Es más" introduce?', opts: ['Contraste', 'Adición enfática', 'Causa', 'Conclusión'], ans: 1 },
         { t: 'mc', q: '¿Registro formal usa?', opts: ['Contracciones', 'Vocabulario preciso y conectores elaborados', 'Emojis', 'Jerga'], ans: 1 },
+        { t: 'mc', q: '¿Qué es una perífrasis verbal?', opts: ['Verbo simple', 'Verbo auxiliar + principal', 'Sustantivo verbal', 'Adverbio'], ans: 1 },
+        { t: 'mc', q: '¿"Pese a que" expresa?', opts: ['Causa', 'Concesión', 'Finalidad', 'Condición'], ans: 1 },
+        { t: 'tx', q: '¿Sinónimo formal de "sin embargo"?', ans: 'no obstante' },
+        { t: 'mc', q: '¿Oraciones subordinadas sustantivas funcionan como?', opts: ['Adverbio', 'Adjetivo', 'Sustantivo/nombre', 'Verbo'], ans: 2 },
+        { t: 'mc', q: '¿"Habida cuenta de" expresa?', opts: ['Oposición', 'Teniendo en cuenta', 'Finalidad', 'Condición'], ans: 1 },
+      ]},
+      { name: 'Comprensión lectora avanzada', time: 25, qs: [
+        { t: 'rd', title: 'Artículo', passage: 'La globalización ha transformado las dinámicas económicas y culturales del siglo XXI. Si bien ha facilitado el intercambio comercial y la difusión de ideas, también ha exacerbado las desigualdades entre naciones desarrolladas y en vías de desarrollo. Los críticos señalan que los beneficios se concentran en las élites, mientras que las comunidades más vulnerables enfrentan la erosión de sus tradiciones y medios de vida.', q: '¿Cuál es la crítica principal a la globalización?', opts: ['Es demasiado lenta', 'Beneficia a las élites y perjudica a los vulnerables', 'No facilita el comercio', 'Unifica las culturas positivamente'], ans: 1 },
+        { t: 'rd', title: 'Artículo', passage: 'La globalización ha transformado las dinámicas económicas y culturales del siglo XXI. Si bien ha facilitado el intercambio comercial y la difusión de ideas, también ha exacerbado las desigualdades entre naciones desarrolladas y en vías de desarrollo.', q: '¿Qué ha facilitado la globalización?', opts: ['Solo conflictos', 'Intercambio comercial y difusión de ideas', 'Aislamiento', 'Proteccionismo'], ans: 1 },
+        { t: 'rd', title: 'Ensayo', passage: 'La inteligencia artificial plantea un dilema ético fundamental: ¿hasta qué punto debemos delegar decisiones cruciales —médicas, judiciales, militares— a algoritmos? La eficiencia computacional no puede sustituir el juicio moral humano, especialmente en situaciones donde los valores culturales y la empatía son determinantes.', q: '¿Cuál es el dilema ético central?', opts: ['El costo de la IA', 'Delegar decisiones cruciales a algoritmos', 'La velocidad de procesamiento', 'La falta de internet'], ans: 1 },
+        { t: 'mc', q: '¿"A raíz de" expresa?', opts: ['Oposición', 'A partir de/Como consecuencia de', 'Finalidad', 'Condición'], ans: 1 },
+        { t: 'mc', q: '¿"Cabe destacar" es registro?', opts: ['Coloquial', 'Formal/Académico', 'Infantil', 'Dialecto'], ans: 1 },
       ]},
     ]
   };
@@ -161,6 +173,18 @@ function makeC1(title: string): Exam {
         { t: 'mc', q: '¿Anacoluto es?', opts: ['Estructura correcta', 'Ruptura sintáctica', 'Repetición elegante', 'Paralelismo'], ans: 1 },
         { t: 'mc', q: '¿"Mutatis mutandis" significa?', opts: ['Sin cambios', 'Con los cambios necesarios', 'Al contrario', 'Por ejemplo'], ans: 1 },
         { t: 'mc', q: '¿Argumentación por analogía?', opts: ['Compara casos similares', 'Niega la premisa', 'Repite la conclusión', 'Usa estadísticas'], ans: 0 },
+        { t: 'mc', q: '¿"Metonimia" es?', opts: ['Parte por el todo', 'Sustitución por contigüidad', 'Comparación directa', 'Contradicción'], ans: 1 },
+        { t: 'mc', q: '¿Qué es la "deixis"?', opts: ['Gramática prescriptiva', 'Referencia contextual (yo, aquí, ahora)', 'Regla fonética', 'Tipo de verbo'], ans: 1 },
+        { t: 'tx', q: '¿Figura retórica que repite el inicio de frases?', ans: 'anáfora' },
+        { t: 'mc', q: '¿"Stricto sensu" significa?', opts: ['En sentido amplio', 'En sentido estricto', 'Sin sentido', 'Con doble sentido'], ans: 1 },
+        { t: 'mc', q: '¿Marcador discursivo de reformulación?', opts: ['Es decir', 'Sin embargo', 'Además', 'Por consiguiente'], ans: 0 },
+      ]},
+      { name: 'Comprensión lectora académica', time: 30, qs: [
+        { t: 'rd', title: 'Ensayo filosófico', passage: 'La tensión entre libertad individual y responsabilidad colectiva ha sido un tema central en la filosofía política desde la Ilustración. Mientras el liberalismo clásico defiende la primacía del individuo, el comunitarismo argumenta que los derechos solo cobran sentido dentro de un marco social compartido. Esta dialéctica se manifiesta hoy en debates sobre privacidad digital, salud pública y cambio climático.', q: '¿Qué defiende el liberalismo clásico?', opts: ['La primacía del Estado', 'La primacía del individuo', 'El colectivismo', 'La anarquía'], ans: 1 },
+        { t: 'rd', title: 'Ensayo filosófico', passage: 'La tensión entre libertad individual y responsabilidad colectiva ha sido un tema central en la filosofía política desde la Ilustración. Esta dialéctica se manifiesta hoy en debates sobre privacidad digital, salud pública y cambio climático.', q: '¿En qué debates actuales se manifiesta?', opts: ['Solo economía', 'Privacidad digital, salud y clima', 'Solo educación', 'Solo transporte'], ans: 1 },
+        { t: 'rd', title: 'Artículo científico', passage: 'Los avances en neurociencia han revelado que la plasticidad cerebral persiste a lo largo de toda la vida adulta, desafiando la concepción tradicional de un cerebro estático tras la adolescencia. Esta neuroplasticidad tiene implicaciones profundas para la rehabilitación neurológica, el aprendizaje de idiomas en la edad adulta y la prevención del deterioro cognitivo.', q: '¿Qué concepto desafían los nuevos hallazgos?', opts: ['El cerebro es plástico solo en la infancia', 'El cerebro es estático tras la adolescencia', 'La memoria no existe', 'El lenguaje es innato'], ans: 1 },
+        { t: 'mc', q: '¿"Coadyuvar" significa?', opts: ['Obstaculizar', 'Contribuir/Ayudar', 'Impedir', 'Destruir'], ans: 1 },
+        { t: 'mc', q: '¿"Habida cuenta de que" introduce?', opts: ['Oposición', 'Circunstancia considerada', 'Finalidad', 'Condición irreal'], ans: 1 },
       ]},
     ]
   };
@@ -182,6 +206,18 @@ function makeC2(title: string): Exam {
         { t: 'mc', q: '¿"Ab initio" significa?', opts: ['Al final', 'Desde el inicio', 'En medio', 'Sin razón'], ans: 1 },
         { t: 'mc', q: '¿Falacia ad hominem ataca?', opts: ['El argumento', 'La persona', 'La evidencia', 'La lógica'], ans: 1 },
         { t: 'mc', q: '¿"Sine qua non" significa?', opts: ['Opcional', 'Indispensable', 'Temporal', 'Probable'], ans: 1 },
+        { t: 'mc', q: '¿Qué es la "aporía"?', opts: ['Solución clara', 'Dificultad lógica sin solución', 'Evidencia', 'Tautología'], ans: 1 },
+        { t: 'mc', q: '¿"Motu proprio" significa?', opts: ['Por orden ajena', 'Por propia iniciativa', 'Sin razón', 'Con ayuda'], ans: 1 },
+        { t: 'tx', q: '¿Figura que dice lo contrario de lo que significa?', ans: 'ironía' },
+        { t: 'mc', q: '¿"In extenso" significa?', opts: ['Resumido', 'En su totalidad', 'Parcialmente', 'Brevemente'], ans: 1 },
+        { t: 'mc', q: '¿Función fática del lenguaje mantiene?', opts: ['El significado', 'El canal de comunicación', 'La gramática', 'La lógica'], ans: 1 },
+      ]},
+      { name: 'Análisis textual avanzado', time: 35, qs: [
+        { t: 'rd', title: 'Texto académico', passage: 'La epistemología contemporánea ha cuestionado la noción de objetividad científica pura. Thomas Kuhn demostró que los paradigmas científicos no se suceden por acumulación lineal de conocimiento, sino por revoluciones que implican una reconfiguración radical de las premisas fundamentales. Esta perspectiva relativista fue matizada por Lakatos, quien propuso los programas de investigación como unidad de análisis más adecuada.', q: '¿Qué demostró Kuhn?', opts: ['La ciencia avanza linealmente', 'Los paradigmas cambian por revoluciones', 'La objetividad es absoluta', 'No hay progreso científico'], ans: 1 },
+        { t: 'rd', title: 'Texto académico', passage: 'La epistemología contemporánea ha cuestionado la noción de objetividad científica pura. Esta perspectiva relativista fue matizada por Lakatos, quien propuso los programas de investigación como unidad de análisis más adecuada.', q: '¿Qué propuso Lakatos?', opts: ['Rechazar a Kuhn totalmente', 'Programas de investigación como unidad de análisis', 'Volver al positivismo', 'Abandonar la ciencia'], ans: 1 },
+        { t: 'rd', title: 'Ensayo literario', passage: 'El realismo mágico latinoamericano no es simplemente la inserción de elementos fantásticos en la narrativa realista. Constituye una cosmovisión en la que lo sobrenatural y lo cotidiano coexisten sin tensión, reflejando una realidad cultural donde el mito y la historia se entrelazan. García Márquez no inventó lo mágico; lo descubrió en la realidad misma del continente.', q: '¿Cuál es la tesis principal?', opts: ['El realismo mágico es fantasía pura', 'Lo mágico ya estaba en la realidad latinoamericana', 'García Márquez inventó el género', 'Es un estilo europeo'], ans: 1 },
+        { t: 'mc', q: '¿"Exégesis" se refiere a?', opts: ['Traducción literal', 'Interpretación crítica de un texto', 'Resumen breve', 'Copia exacta'], ans: 1 },
+        { t: 'mc', q: '¿"Heurístico" se refiere a?', opts: ['Exacto', 'Método de descubrimiento', 'Aleatorio', 'Determinista'], ans: 1 },
       ]},
     ]
   };
