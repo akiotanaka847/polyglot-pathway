@@ -1,4 +1,5 @@
 import { GrammarEntry, VocabEntry } from './types';
+import { GRAMMAR_EXPAND, VOCAB_EXPAND } from './reference-expand';
 
 // Grammar organized with level tags for folder-based display
 export const GRAMMAR_REF: Record<string, GrammarEntry[]> = {
