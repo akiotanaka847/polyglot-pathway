@@ -282,7 +282,7 @@ export const hiA1Lessons = makeLessons('hi', 'A1', 'Hindi', {
   help: 'मदद!', helpRd: 'madad', dontUnderstand: 'मुझे समझ नहीं आया', dontUnderstandRd: 'mujhe samajh nahi aaya',
 });
 
-// Removed tr, vi, th, nl, pl (consolidated to top 10 languages)
+// Removed tr, vi, th, nl, pl (consolidated to top 10 languages + Romanian)
 
 export const esA1Lessons = makeLessons('es', 'A1', 'Español', {
   hello: 'Hola', helloRd: 'OH-lah', thanks: 'Gracias', thanksRd: 'GRAH-see-ahs', goodbye: 'Adiós', goodbyeRd: 'ah-dee-OHS',
@@ -305,4 +305,27 @@ export const esA1Lessons = makeLessons('es', 'A1', 'Español', {
   big: 'grande', bigRd: 'GRAHN-deh', small: 'pequeño', smallRd: 'peh-KEH-nyoh',
   what: '¿Qué?', where: '¿Dónde?', who: '¿Quién?',
   help: '¡Socorro!', helpRd: 'soh-KOH-roh', dontUnderstand: 'No entiendo', dontUnderstandRd: 'noh en-tee-EN-doh',
+});
+
+export const roA1Lessons = makeLessons('ro', 'A1', 'Română', {
+  hello: 'Bună ziua', helloRd: 'BOO-nah ZEE-wah', thanks: 'Mulțumesc', thanksRd: 'mool-tsoo-MESK', goodbye: 'La revedere', goodbyeRd: 'lah reh-veh-DEH-reh',
+  n123: 'unu, doi, trei', n123rd: 'OO-noo, doy, tray', n456: 'patru, cinci, șase', n456rd: 'PAH-troo, CHEENCH, SHAH-seh',
+  iAm: 'Eu sunt', iAmRd: 'yew soont', myNameIs: 'Mă numesc', myNameIsRd: 'mah noo-MESK',
+  father: 'tată', fatherRd: 'TAH-tah', mother: 'mamă', motherRd: 'MAH-mah', brother: 'frate', brotherRd: 'FRAH-teh',
+  red: 'roșu', redRd: 'ROH-shoo', blue: 'albastru', blueRd: 'ahl-BAH-stroo', green: 'verde', greenRd: 'VEHR-deh',
+  mon: 'luni', tue: 'marți', wed: 'miercuri', monRd: 'LOONY',
+  water: 'apă', waterRd: 'AH-pah', bread: 'pâine', breadRd: 'PUH-ee-neh', tea: 'ceai', teaRd: 'chay',
+  head: 'cap', headRd: 'kahp', hand: 'mână', handRd: 'MUH-nah',
+  shirt: 'cămașă', shirtRd: 'kah-MAH-shah', shoes: 'pantofi', shoesRd: 'pahn-TOHF',
+  house: 'casă', houseRd: 'KAH-sah', kitchen: 'bucătărie', kitchenRd: 'boo-kah-tah-REE-eh',
+  left: 'stânga', leftRd: 'STUHN-gah', right: 'dreapta', rightRd: 'DREHP-tah',
+  bus: 'autobuz', busRd: 'OW-toh-booz', train: 'tren', trainRd: 'trehn',
+  hot: 'cald', hotRd: 'kahld', cold: 'rece', coldRd: 'REH-cheh',
+  teacher: 'profesor', teacherRd: 'proh-feh-SOR', doctor: 'doctor', doctorRd: 'DOK-tor',
+  whatTime: 'Cât e ceasul?', whatTimeRd: 'kuht eh CHAH-sool',
+  howMuch: 'Cât costă?', howMuchRd: 'kuht KOS-tah', expensive: 'scump', cheap: 'ieftin',
+  eat: 'a mânca', eatRd: 'ah muhn-KAH', drink: 'a bea', drinkRd: 'ah beh-AH', go: 'a merge', goRd: 'ah MEHR-jeh',
+  big: 'mare', bigRd: 'MAH-reh', small: 'mic', smallRd: 'meek',
+  what: 'Ce?', where: 'Unde?', who: 'Cine?',
+  help: 'Ajutor!', helpRd: 'ah-zhoo-TOR', dontUnderstand: 'Nu înțeleg', dontUnderstandRd: 'noo uhn-TSEH-leg',
 });

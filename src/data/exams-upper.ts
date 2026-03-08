@@ -231,6 +231,7 @@ export const B2_EXTRA_EXAMS: Record<string, Record<string, Exam>> = {
   ar: { B2: makeB2('Árabe B2 — Simulacro') },
   hi: { B2: makeB2('Hindi B2 — Simulacro') },
   es: { B2: makeB2('DELE B2 — Simulacro') },
+  ro: { B2: makeB2('Română B2 — Simulacro') },
 };
 
 export const C1_EXTRA_EXAMS: Record<string, Record<string, Exam>> = {
@@ -239,6 +240,7 @@ export const C1_EXTRA_EXAMS: Record<string, Record<string, Exam>> = {
   ar: { C1: makeC1('Árabe C1 — Simulacro') },
   hi: { C1: makeC1('Hindi C1 — Simulacro') },
   es: { C1: makeC1('DELE C1 — Simulacro') },
+  ro: { C1: makeC1('Română C1 — Simulacro') },
 };
 
 export const C2_EXTRA_EXAMS: Record<string, Record<string, Exam>> = {
@@ -249,4 +251,5 @@ export const C2_EXTRA_EXAMS: Record<string, Record<string, Exam>> = {
   ar: { C2: makeC2('Árabe C2 — Simulacro') },
   hi: { C2: makeC2('Hindi C2 — Simulacro') },
   es: { C2: makeC2('DELE C2 — Simulacro') },
+  ro: { C2: makeC2('Română C2 — Simulacro') },
 };

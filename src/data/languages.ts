@@ -23,6 +23,7 @@ export const LANGUAGES: LangConfig[] = [
   { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी', flag: '🇮🇳', hue: 30, ttsCode: 'hi-IN', levels: ['A1','A2','B1','B2','C1','C2'], levelSystem: 'CEFR', script: 'Devanagari', culturalEmojis: ['🕉️','🏛️','🌺','🐘','🪷'] },
   { code: 'en', name: 'English', nativeName: 'English', flag: '🇺🇸', hue: 200, ttsCode: 'en-US', levels: ['A1','A2','B1','B2','C1','C2'], levelSystem: 'CEFR', culturalEmojis: ['🗽','🏰','☕','🎭','🦁'] },
   { code: 'es', name: 'Spanish', nativeName: 'Español', flag: '🇪🇸', hue: 38, ttsCode: 'es-ES', levels: ['A1','A2','B1','B2','C1','C2'], levelSystem: 'CEFR', culturalEmojis: ['💃','🏟️','🌻','🎸','🐂'] },
+  { code: 'ro', name: 'Romanian', nativeName: 'Română', flag: '🇷🇴', hue: 210, ttsCode: 'ro-RO', levels: ['A1','A2','B1','B2','C1','C2'], levelSystem: 'CEFR', culturalEmojis: ['🏰','🧛','🌲','🎻','🏔️'] },
 ];
 
 // Languages that can be used as native (for instructions/tips)
