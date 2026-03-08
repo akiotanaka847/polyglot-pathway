@@ -87,6 +87,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   });
 
   useEffect(() => {
+    // Always deduplicate activeLangs before persisting
+    const deduped = [...new Set(state.activeLangs)];
+    if (deduped.length !== state.activeLangs.length) {
+      setState(s => ({ ...s, activeLangs: [...new Set(s.activeLangs)] }));
+      return;
+    }
     try { localStorage.setItem('kotoba_state', JSON.stringify(state)); } catch {}
   }, [state]);
 
