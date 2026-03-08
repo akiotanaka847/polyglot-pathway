@@ -401,10 +401,65 @@ const BASE_EXAMS: Record<string, Record<string, Exam>> = {
       ]
     },
   },
+  ro: {
+    A1: {
+      title: 'Examen Română A1 — Simulacro',
+      sections: [
+        { name: 'Vocabular', time: 15, qs: [
+          { t: 'mc', q: '¿Qué significa "Bună ziua"?', opts: ['Adiós', 'Hola/Buenos días', 'Gracias', 'Perdón'], ans: 1 },
+          { t: 'mc', q: '¿Cómo se dice "agua" en rumano?', opts: ['lapte', 'apă', 'vin', 'suc'], ans: 1 },
+          { t: 'mc', q: '¿Qué número es "șapte"?', opts: ['5', '6', '7', '8'], ans: 2 },
+          { t: 'mc', q: '¿"Fratele" significa?', opts: ['Padre', 'Hermano', 'Hermana', 'Madre'], ans: 1 },
+          { t: 'mc', q: '¿Qué color es "albastru"?', opts: ['Rojo', 'Azul', 'Verde', 'Negro'], ans: 1 },
+          { t: 'tx', q: '¿"Gracias" en rumano?', ans: 'multumesc' },
+          { t: 'mc', q: '¿Qué día es "miercuri"?', opts: ['Lunes', 'Martes', 'Miércoles', 'Jueves'], ans: 2 },
+          { t: 'mc', q: '¿"Pâinea" significa?', opts: ['Queso', 'Pan', 'Carne', 'Leche'], ans: 1 },
+          { t: 'mc', q: '¿Qué es "bucătăria"?', opts: ['Dormitorio', 'Cocina', 'Baño', 'Sala'], ans: 1 },
+          { t: 'mc', q: '¿"Profesor" en rumano?', opts: ['Doctor', 'Profesor', 'Avocat', 'Inginer'], ans: 1 },
+          { t: 'tx', q: '¿"Adiós" en rumano?', ans: 'la revedere' },
+          { t: 'mc', q: '¿"Scump" significa?', opts: ['Barato', 'Caro', 'Gratis', 'Bonito'], ans: 1 },
+          { t: 'mc', q: '¿Qué estación es "vara"?', opts: ['Primavera', 'Verano', 'Otoño', 'Invierno'], ans: 1 },
+          { t: 'mc', q: '¿"Stânga" significa?', opts: ['Derecha', 'Izquierda', 'Arriba', 'Abajo'], ans: 1 },
+          { t: 'mc', q: '¿"Trenul" significa?', opts: ['Autobús', 'Tren', 'Taxi', 'Avión'], ans: 1 },
+        ]},
+        { name: 'Gramatică', time: 15, qs: [
+          { t: 'mc', q: '¿"Eu sunt" significa?', opts: ['Yo tengo', 'Yo soy', 'Yo voy', 'Yo hago'], ans: 1 },
+          { t: 'mc', q: '¿"Eu am" significa?', opts: ['Yo soy', 'Yo tengo', 'Yo voy', 'Yo hago'], ans: 1 },
+          { t: 'mc', q: '¿Artículo para "casă" (femenino)?', opts: ['Un', 'O', 'Cele', 'Niște'], ans: 1 },
+          { t: 'mc', q: '¿Negación correcta?', opts: ['Nu vorbesc', 'Vorbesc nu', 'Nu eu vorbesc', 'Vorbesc nu eu'], ans: 0 },
+          { t: 'mc', q: '¿Conjugación de "a merge" (eu)?', opts: ['Merge', 'Merg', 'Mergi', 'Mergem'], ans: 1 },
+          { t: 'tx', q: '¿"Nosotros somos" en rumano?', ans: 'noi suntem' },
+          { t: 'mc', q: '¿Perfectul compus de "a mânca" (eu)?', opts: ['Am mâncat', 'Am mâncând', 'Sunt mâncat', 'Am mâncare'], ans: 0 },
+          { t: 'mc', q: '¿Posesivo "mi" (masc)?', opts: ['Mea', 'Meu', 'Mei', 'Tale'], ans: 1 },
+          { t: 'mc', q: '¿Cuál es irregular?', opts: ['A mânca', 'A vorbi', 'A fi', 'A lucra'], ans: 2 },
+          { t: 'mc', q: '¿Pronombre "ellos"?', opts: ['Noi', 'Voi', 'Ei', 'Ele'], ans: 2 },
+          { t: 'mc', q: 'Azi ___ frumos afară. (está)', opts: ['este', 'face', 'are', 'merge'], ans: 0 },
+          { t: 'mc', q: '¿"Unde" significa?', opts: ['Quién', 'Qué', 'Dónde', 'Cuándo'], ans: 2 },
+          { t: 'tx', q: '¿Conjugación de "a fi" para "tu"?', ans: 'esti' },
+          { t: 'mc', q: 'Eu ___ în București. (vivir)', opts: ['sunt', 'am', 'locuiesc', 'vorbesc'], ans: 2 },
+          { t: 'mc', q: '¿Futuro próximo con "a"? "O să mănânc"', opts: ['Como', 'Voy a comer', 'He comido', 'Comeré'], ans: 1 },
+        ]},
+        { name: 'Înțelegere scrisă', time: 20, qs: [
+          { t: 'rd', title: 'Text 1', passage: 'Bună! Mă numesc Maria. Am 25 de ani. Locuiesc în București. Sunt profesoară de engleză. Îmi place să citesc și să călătoresc. În weekend, merg în parc cu câinele meu.', q: '¿Cuántos años tiene Maria?', opts: ['20', '23', '25', '28'], ans: 2 },
+          { t: 'rd', title: 'Text 1', passage: 'Bună! Mă numesc Maria. Am 25 de ani. Locuiesc în București. Sunt profesoară de engleză. Îmi place să citesc și să călătoresc. În weekend, merg în parc cu câinele meu.', q: '¿Con quién va al parque?', opts: ['Su gato', 'Su perro', 'Su hijo', 'Sola'], ans: 1 },
+          { t: 'rd', title: 'Text 2', passage: 'Azi este marți. Este frig și ninge. Stau acasă. Beau un ciocolat cald și citesc o carte. Este foarte plăcut!', q: '¿Qué tiempo hace?', opts: ['Sol', 'Lluvia', 'Nieve', 'Viento'], ans: 2 },
+          { t: 'rd', title: 'Text 2', passage: 'Azi este marți. Este frig și ninge. Stau acasă. Beau un ciocolat cald și citesc o carte. Este foarte plăcut!', q: '¿Qué bebe?', opts: ['Café', 'Té', 'Chocolate caliente', 'Jugo'], ans: 2 },
+          { t: 'rd', title: 'Text 3', passage: 'La restaurant, comand o salată și un steak. Prietenul meu comandă pește și orez. Bem apă. Nota de plată este 150 de lei.', q: '¿Cuánto cuesta la cuenta?', opts: ['100 lei', '120 lei', '150 lei', '200 lei'], ans: 2 },
+        ]},
+        { name: 'Expresie orală', time: 10, qs: [
+          { t: 'sp', q: 'Spune "Bună ziua, ce mai faceți?"', expected: 'buna ziua ce mai faceti', hint: 'Bună ziua, ce mai faceți?' },
+          { t: 'sp', q: 'Prezintă-te: "Mă numesc..."', expected: 'ma numesc', hint: 'Mă numesc [numele tău]' },
+          { t: 'sp', q: 'Spune "Scuzați, unde este metroul?"', expected: 'scuzati unde este metroul', hint: 'Scuzați, unde este metroul?' },
+          { t: 'sp', q: 'Comandă: "O cafea, vă rog"', expected: 'o cafea va rog', hint: 'O cafea, vă rog' },
+          { t: 'sp', q: 'Întreabă prețul: "Cât costă?"', expected: 'cat costa', hint: 'Cât costă?' },
+        ]},
+      ]
+    },
+  },
 };
 
 // Merge all exam sources — filter out removed languages
-const VALID_LANGS = new Set(['jp', 'fr', 'zh', 'pt', 'ko', 'ru', 'ar', 'hi', 'en', 'es']);
+const VALID_LANGS = new Set(['jp', 'fr', 'zh', 'pt', 'ko', 'ru', 'ar', 'hi', 'en', 'es', 'ro']);
 const ALL_SOURCES = [BASE_EXAMS, ADVANCED_EXAMS, A2_EXAMS, B1_EXTRA_EXAMS, B2_EXTRA_EXAMS, C1_EXTRA_EXAMS, C2_EXTRA_EXAMS];
 export const EXAM_DATA: Record<string, Record<string, Exam>> = {};
 ALL_SOURCES.forEach(source => {
