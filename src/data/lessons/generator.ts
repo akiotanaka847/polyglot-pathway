@@ -252,6 +252,16 @@ function makeMCMeaningStep(entry: WordEntry, pool: WordEntry[], nativeLang: stri
   return { t: 'mc', q: t.whatMeans.replace('$1', entry.w), opts, ans: opts.indexOf(mn) };
 }
 
+function makeListenAnswerStep(entry: WordEntry, lang: string, nativeLang: string): LessonStep {
+  const mn = translateMeaning(entry.mn, nativeLang);
+  return { t: 'la', audio: entry.w, ans: mn, hint: entry.rd };
+}
+
+function makeSpeakStep(entry: WordEntry, lang: string, nativeLang: string): LessonStep {
+  const mn = translateMeaning(entry.mn, nativeLang);
+  return { t: 'sp', q: mn, expected: entry.rd || entry.w, hint: entry.w };
+}
+
 function generateCategoryLessons(
   code: string, level: string, lang: string, nativeLang: string,
   category: WordEntry[], unitDef: UnitDef,
