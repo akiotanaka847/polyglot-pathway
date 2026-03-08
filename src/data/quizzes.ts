@@ -88,4 +88,18 @@ export const QUIZ_DATA: Record<string, Record<string, QuizQuestion[]>> = {
       { t: 'mc', q: '¿"Me gusta" se usa con qué pronombre?', opts: ['Yo', 'Me', 'Mi', 'Mí'], ans: 1 },
     ],
   },
+  ro: {
+    A1: [
+      { t: 'mc', q: '¿Cómo se dice "hola" en rumano?', opts: ['La revedere', 'Bună ziua', 'Mulțumesc', 'Scuzați'], ans: 1 },
+      { t: 'mc', q: '¿Qué significa "mulțumesc"?', opts: ['Hola', 'Adiós', 'Gracias', 'Perdón'], ans: 2 },
+      { t: 'tx', q: '¿Cómo se dice "adiós" en rumano?', ans: 'la revedere' },
+      { t: 'mc', q: '¿"Eu sunt" significa?', opts: ['Yo tengo', 'Yo soy', 'Yo voy', 'Yo hago'], ans: 1 },
+      { t: 'mc', q: '¿Qué número es "cinci"?', opts: ['3', '4', '5', '6'], ans: 2 },
+      { t: 'mc', q: '¿"Apă" significa?', opts: ['Pan', 'Agua', 'Leche', 'Café'], ans: 1 },
+      { t: 'tx', q: '¿Cómo se dice "gracias" en rumano?', ans: 'multumesc' },
+      { t: 'mc', q: '¿"Casă" significa?', opts: ['Calle', 'Casa', 'Ciudad', 'País'], ans: 1 },
+      { t: 'mc', q: '¿"Mare" significa?', opts: ['Pequeño', 'Grande', 'Rojo', 'Bueno'], ans: 1 },
+      { t: 'mc', q: '¿"Doctor" en rumano es?', opts: ['Profesor', 'Doctor', 'Inginer', 'Avocat'], ans: 1 },
+    ],
+  },
 };
