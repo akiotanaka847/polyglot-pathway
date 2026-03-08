@@ -128,7 +128,6 @@ export default function LessonPage() {
       correct = selectedChoice === step.ans;
       correctAns = tl(step.opts[step.ans]);
     } else if (step.t === 'tx') {
-      // Accept answer in Spanish (original) OR in the user's native language
       const translatedAns = tl(step.ans);
       const normalizedInput = normalizeAnswer(textInput);
       correct = normalizedInput === normalizeAnswer(step.ans) || normalizedInput === normalizeAnswer(translatedAns);
@@ -138,6 +137,16 @@ export default function LessonPage() {
       const got = orderPlaced.map(i => shuffledWords[i]);
       correct = JSON.stringify(got) === JSON.stringify(expected);
       correctAns = expected.join(' ');
+    } else if (step.t === 'la') {
+      // Listen & answer: user types what the audio means
+      const normalizedInput = normalizeAnswer(textInput);
+      correct = normalizedInput === normalizeAnswer(step.ans);
+      correctAns = step.ans;
+    } else if (step.t === 'sp') {
+      // Speak: compare spoken transcript to expected
+      const normalizedInput = normalizeAnswer(textInput);
+      correct = normalizedInput.includes(normalizeAnswer(step.expected)) || normalizeAnswer(step.expected).includes(normalizedInput);
+      correctAns = step.expected;
     }
     setFeedback({ correct, answer: correctAns });
     setLocked(true);
@@ -275,7 +284,7 @@ export default function LessonPage() {
             {tt('step_of').replace('{0}', String(stepIdx + 1)).replace('{1}', String(steps.length))}
           </span>
           <span className="flex-1" />
-          <button onClick={() => speakText(step.t === 'th' ? step.char : (step.q || ''), l)}
+          <button onClick={() => speakText(step.t === 'th' ? step.char : step.t === 'la' ? step.audio : (step as any).q || '', l)}
             className="px-2.5 py-1 rounded-full border border-border bg-card text-[0.65rem] hover:bg-background transition-colors">
             🔊 {tt('listen')}
           </button>
@@ -341,10 +350,12 @@ export default function LessonPage() {
               <span className="text-lg">{lesson.unit?.emoji || getLessonIllustration(lesson)[0]}</span>
               <span className="text-[0.6rem] font-bold tracking-widest uppercase"
                 style={{ color: `hsl(${config.hue}, 60%, 50%)` }}>
-                {step.t === 'mc' ? tt('multiple_choice') : step.t === 'tx' ? tt('write_response') : step.t === 'or' ? tt('order_words') : tt('reading_comp')}
+                {step.t === 'mc' ? tt('multiple_choice') : step.t === 'tx' ? tt('write_response') : step.t === 'or' ? tt('order_words') : step.t === 'la' ? tt('listen_respond') : step.t === 'sp' ? tt('speak_respond') : tt('reading_comp')}
               </span>
             </div>
-            <div className="font-serif text-lg mb-4 leading-snug" dangerouslySetInnerHTML={{ __html: tl(step.q) }} />
+            {step.t !== 'la' && (
+              <div className="font-serif text-lg mb-4 leading-snug" dangerouslySetInnerHTML={{ __html: tl(step.t === 'sp' ? step.q : (step as any).q || '') }} />
+            )}
 
             {/* MC options */}
             {(step.t === 'mc' || step.t === 'rd') && step.opts && (
@@ -431,6 +442,70 @@ export default function LessonPage() {
                   })}
                 </div>
               </>
+            )}
+
+            {/* Listen & Answer */}
+            {step.t === 'la' && (
+              <div className="space-y-3">
+                <div className="text-center p-5 rounded-xl mb-2"
+                  style={{ background: `linear-gradient(135deg, hsl(${config.hue}, 80%, 96%), hsl(${config.hue}, 60%, 90%))` }}>
+                  <button onClick={() => speakText(step.audio, l)}
+                    className="w-16 h-16 rounded-full flex items-center justify-center text-3xl mx-auto mb-2 shadow-md transition-transform hover:scale-110 active:scale-95 bg-card border border-border">
+                    🔊
+                  </button>
+                  <p className="text-sm font-medium" style={{ color: `hsl(${config.hue}, 70%, 35%)` }}>{tt('what_did_you_hear')}</p>
+                </div>
+                <div className="relative">
+                  <input value={textInput} onChange={e => setTextInput(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && canCheck && nextAction()} disabled={locked}
+                    placeholder={tt('write_answer')}
+                    className={`w-full p-3.5 border-2 rounded-xl text-sm bg-background outline-none transition-all ${
+                      locked ? (feedback?.correct ? 'border-green-400 bg-green-50' : 'border-red-400 bg-red-50 animate-shake') : 'border-border focus:border-foreground/40'
+                    }`} />
+                </div>
+                {step.hint && <div className="text-[0.7rem] text-foreground-muted">💡 {tt('hint')}: {step.hint}</div>}
+              </div>
+            )}
+
+            {/* Speak step */}
+            {step.t === 'sp' && (
+              <div className="space-y-3">
+                <div className="text-center p-5 rounded-xl mb-2"
+                  style={{ background: `linear-gradient(135deg, hsl(${config.hue}, 80%, 96%), hsl(${config.hue}, 60%, 90%))` }}>
+                  <p className="text-sm mb-1 text-foreground-muted">{tt('say_word')}</p>
+                  <p className={`text-2xl font-bold ${fontClass}`} style={{ color: `hsl(${config.hue}, 70%, 35%)` }}>{step.hint}</p>
+                  <button onClick={() => speakText(step.hint || step.expected, l)}
+                    className="mt-2 px-3 py-1 rounded-full border border-border bg-card text-xs hover:bg-background transition-colors">
+                    🔊 {tt('listen')}
+                  </button>
+                </div>
+                {speech.isSupported ? (
+                  <>
+                    <button onClick={() => speech.isListening ? speech.stop() : speech.start()} disabled={locked}
+                      className={`w-full py-4 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 ${
+                        speech.isListening ? 'bg-destructive/10 text-destructive border-2 border-destructive/30 animate-pulse' : 'text-card shadow-md'
+                      }`}
+                      style={!speech.isListening ? { background: `hsl(${config.hue}, 70%, 46%)` } : undefined}>
+                      {speech.isListening ? `⏹ ${tt('recording')}` : `🎤 ${tt('tap_to_speak')}`}
+                    </button>
+                    {textInput && (
+                      <div className="p-3 rounded-xl bg-background border border-border text-sm">
+                        <span className="text-foreground-muted text-xs">{tt('write_answer')}:</span>
+                        <p className="font-medium mt-1">{textInput}</p>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="relative">
+                    <input value={textInput} onChange={e => setTextInput(e.target.value)}
+                      onKeyDown={e => e.key === 'Enter' && canCheck && nextAction()} disabled={locked}
+                      placeholder={tt('write_answer')}
+                      className={`w-full p-3.5 border-2 rounded-xl text-sm bg-background outline-none transition-all ${
+                        locked ? (feedback?.correct ? 'border-green-400 bg-green-50' : 'border-red-400 bg-red-50 animate-shake') : 'border-border focus:border-foreground/40'
+                      }`} />
+                  </div>
+                )}
+              </div>
             )}
 
             {/* Feedback */}

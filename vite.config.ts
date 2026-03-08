@@ -20,8 +20,8 @@ export default defineConfig(({ mode }) => ({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "icon-192.svg", "icon-512.svg"],
       manifest: {
-        name: "Lingora — Aprende idiomas gratis",
-        short_name: "Lingora",
+        name: "Voxia — Aprende idiomas gratis",
+        short_name: "Voxia",
         description: "Aprende 17 idiomas gratis con lecciones interactivas",
         theme_color: "#6366F1",
         background_color: "#ffffff",

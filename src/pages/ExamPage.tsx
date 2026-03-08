@@ -5,10 +5,10 @@ import { EXAM_DATA } from '@/data/exams';
 import { getLangConfig } from '@/data/languages';
 import { normalizeAnswer, playCorrectSound, playIncorrectSound, playLevelUpSound, spawnConfetti } from '@/utils/helpers';
 import { translateLessonText, translateExamTitle, translateSectionName, translateOption } from '@/utils/lessonI18n';
-import { MCStep, TextStep, ReadingStep, SpeakingStep } from '@/data/types';
+import { MCStep, TextStep, ReadingStep, SpeakStep } from '@/data/types';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
 
-type Q = MCStep | TextStep | ReadingStep | SpeakingStep;
+type Q = MCStep | TextStep | ReadingStep | SpeakStep;
 
 function CircularTimer({ timeLeft, total, size = 56 }: { timeLeft: number; total: number; size?: number }) {
   const r = (size - 6) / 2;
@@ -56,7 +56,7 @@ export default function ExamPage() {
   const [sectionTime, setSectionTime] = useState(0);
 
   const section = exam?.sections[sectionIdx];
-  const q: Q | undefined = section?.qs[qIdx];
+  const q = section?.qs[qIdx] as Q | undefined;
   const totalQs = exam?.sections.reduce((a, s) => a + s.qs.length, 0) || 0;
   const answeredCount = Object.keys(answers).length;
 
@@ -86,7 +86,7 @@ export default function ExamPage() {
       let isCorrect = false;
       if (q.t === 'mc' || q.t === 'rd') isCorrect = ans === q.ans;
       else if (q.t === 'tx') isCorrect = normalizeAnswer(String(ans)) === normalizeAnswer(String(q.ans));
-      else if (q.t === 'sp') isCorrect = normalizeAnswer(String(ans)).includes(normalizeAnswer((q as SpeakingStep).expected));
+      else if (q.t === 'sp') isCorrect = normalizeAnswer(String(ans)).includes(normalizeAnswer((q as SpeakStep).expected));
       if (isCorrect) playCorrectSound(); else playIncorrectSound();
     }
     setAnswers(prev => ({ ...prev, [key]: ans }));
@@ -111,7 +111,7 @@ export default function ExamPage() {
         if (a === undefined) return;
         if (qq.t === 'mc' || qq.t === 'rd') { if (a === qq.ans) { correct++; sc++; } }
         else if (qq.t === 'tx') { if (normalizeAnswer(String(a)) === normalizeAnswer(String(qq.ans))) { correct++; sc++; } }
-        else if (qq.t === 'sp') { if (normalizeAnswer(String(a)).includes(normalizeAnswer((qq as SpeakingStep).expected))) { correct++; sc++; } }
+        else if (qq.t === 'sp') { if (normalizeAnswer(String(a)).includes(normalizeAnswer((qq as SpeakStep).expected))) { correct++; sc++; } }
       });
       sectionResults.push({ name: s.name, correct: sc, total: s.qs.length });
     });
@@ -321,8 +321,8 @@ export default function ExamPage() {
                 <div className="bg-background rounded-xl p-4 border border-border text-center">
                   <div className="text-4xl mb-2">🎤</div>
                   <p className="text-sm text-foreground-muted mb-1">{tt('listen')} & {tt('repeat')}</p>
-                  {(q as SpeakingStep).hint && (
-                    <p className="text-xs text-foreground-muted italic">💡 {(q as SpeakingStep).hint}</p>
+                  {(q as SpeakStep).hint && (
+                    <p className="text-xs text-foreground-muted italic">💡 {(q as SpeakStep).hint}</p>
                   )}
                 </div>
                 <button onClick={() => speech.isListening ? speech.stop() : speech.start()}
