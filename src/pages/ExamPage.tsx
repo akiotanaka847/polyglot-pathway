@@ -5,10 +5,10 @@ import { EXAM_DATA } from '@/data/exams';
 import { getLangConfig } from '@/data/languages';
 import { normalizeAnswer, playCorrectSound, playIncorrectSound, playLevelUpSound, spawnConfetti } from '@/utils/helpers';
 import { translateLessonText, translateExamTitle, translateSectionName, translateOption } from '@/utils/lessonI18n';
-import { MCStep, TextStep, ReadingStep, SpeakStep } from '@/data/types';
+import { MCStep, TextStep, ReadingStep, SpeakStep, ListenAnswerStep } from '@/data/types';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
 
-type Q = MCStep | TextStep | ReadingStep | SpeakStep;
+type Q = MCStep | TextStep | ReadingStep | SpeakStep | ListenAnswerStep;
 
 function CircularTimer({ timeLeft, total, size = 56 }: { timeLeft: number; total: number; size?: number }) {
   const r = (size - 6) / 2;
@@ -85,7 +85,7 @@ export default function ExamPage() {
     if (q) {
       let isCorrect = false;
       if (q.t === 'mc' || q.t === 'rd') isCorrect = ans === q.ans;
-      else if (q.t === 'tx') isCorrect = normalizeAnswer(String(ans)) === normalizeAnswer(String(q.ans));
+      else if (q.t === 'tx' || q.t === 'la') isCorrect = normalizeAnswer(String(ans)) === normalizeAnswer(String(q.ans));
       else if (q.t === 'sp') isCorrect = normalizeAnswer(String(ans)).includes(normalizeAnswer((q as SpeakStep).expected));
       if (isCorrect) playCorrectSound(); else playIncorrectSound();
     }
@@ -110,7 +110,7 @@ export default function ExamPage() {
         const a = answers[k];
         if (a === undefined) return;
         if (qq.t === 'mc' || qq.t === 'rd') { if (a === qq.ans) { correct++; sc++; } }
-        else if (qq.t === 'tx') { if (normalizeAnswer(String(a)) === normalizeAnswer(String(qq.ans))) { correct++; sc++; } }
+        else if (qq.t === 'tx' || qq.t === 'la') { if (normalizeAnswer(String(a)) === normalizeAnswer(String(qq.ans))) { correct++; sc++; } }
         else if (qq.t === 'sp') { if (normalizeAnswer(String(a)).includes(normalizeAnswer((qq as SpeakStep).expected))) { correct++; sc++; } }
       });
       sectionResults.push({ name: s.name, correct: sc, total: s.qs.length });
@@ -161,7 +161,7 @@ export default function ExamPage() {
             <ul className="space-y-1.5 text-foreground-secondary">
               <li className="flex items-center gap-2">⏱️ {tt('time')}</li>
               <li className="flex items-center gap-2">✅ 70% {tt('need_70')}</li>
-              <li className="flex items-center gap-2">🎤 {tt('listen')}</li>
+              <li className="flex items-center gap-2">🔊 {tt('listen')} · 🎤 {tt('send')} · ✏️ {tt('write_answer')}</li>
             </ul>
           </div>
 
@@ -268,14 +268,44 @@ export default function ExamPage() {
         {/* Question card */}
         {q && (
           <div className="border border-border rounded-2xl p-5 bg-card shadow-sm animate-fade-in">
+            {/* Reading passage */}
             {q.t === 'rd' && (
               <div className="bg-background rounded-xl p-4 mb-4 text-sm leading-relaxed border border-border">
                 <p className="font-bold text-xs mb-1.5" style={{ color: `hsl(${config.hue}, 70%, 40%)` }}>{(q as ReadingStep).title}</p>
                 <p>{(q as ReadingStep).passage}</p>
               </div>
             )}
-            <p className="font-semibold mb-4 text-base leading-snug" dangerouslySetInnerHTML={{ __html: tl(q.q) }} />
 
+            {/* Listen & Answer: audio player */}
+            {q.t === 'la' && (
+              <div className="bg-background rounded-xl p-4 mb-4 border border-border text-center">
+                <div className="text-4xl mb-2">🔊</div>
+                <p className="text-sm font-semibold mb-2">{tt('listen')}</p>
+                <button onClick={() => {
+                  const u = new SpeechSynthesisUtterance((q as ListenAnswerStep).audio);
+                  u.lang = config.ttsCode;
+                  u.rate = 0.85;
+                  speechSynthesis.speak(u);
+                }}
+                  className="px-5 py-2.5 rounded-xl text-sm font-bold text-card"
+                  style={{ background: `hsl(${config.hue}, 70%, 46%)` }}>
+                  ▶ {tt('listen')}
+                </button>
+                {(q as ListenAnswerStep).hint && (
+                  <p className="text-xs text-foreground-muted mt-2 italic">💡 {(q as ListenAnswerStep).hint}</p>
+                )}
+              </div>
+            )}
+
+            {/* Question text */}
+            {q.t !== 'la' && (
+              <p className="font-semibold mb-4 text-base leading-snug" dangerouslySetInnerHTML={{ __html: tl((q as MCStep | TextStep | ReadingStep | SpeakStep).q) }} />
+            )}
+            {q.t === 'la' && (
+              <p className="font-semibold mb-4 text-base leading-snug">{tt('write_answer')}</p>
+            )}
+
+            {/* MC / Reading options */}
             {(q.t === 'mc' || q.t === 'rd') && (
               <div className="space-y-2.5">
                 {(q as MCStep).opts.map((o, i) => (
@@ -291,7 +321,8 @@ export default function ExamPage() {
               </div>
             )}
 
-            {q.t === 'tx' && (
+            {/* Text input / Listen & Answer input */}
+            {(q.t === 'tx' || q.t === 'la') && (
               <div className="space-y-3">
                 <div className="relative">
                   <input type="text" value={input} onChange={e => setInput(e.target.value)}
@@ -316,6 +347,7 @@ export default function ExamPage() {
               </div>
             )}
 
+            {/* Speaking */}
             {q.t === 'sp' && (
               <div className="space-y-3">
                 <div className="bg-background rounded-xl p-4 border border-border text-center">
