@@ -646,3 +646,17 @@ export const VOCAB_REF: Record<string, Record<string, VocabEntry[]>> = {
     ],
   },
 };
+
+// Merge expanded data
+Object.keys(GRAMMAR_EXPAND).forEach(lang => {
+  if (!GRAMMAR_REF[lang]) GRAMMAR_REF[lang] = [];
+  GRAMMAR_REF[lang] = [...GRAMMAR_REF[lang], ...GRAMMAR_EXPAND[lang]];
+});
+
+Object.keys(VOCAB_EXPAND).forEach(lang => {
+  if (!VOCAB_REF[lang]) VOCAB_REF[lang] = {};
+  Object.keys(VOCAB_EXPAND[lang]).forEach(level => {
+    if (!VOCAB_REF[lang][level]) VOCAB_REF[lang][level] = [];
+    VOCAB_REF[lang][level] = [...VOCAB_REF[lang][level], ...VOCAB_EXPAND[lang][level]];
+  });
+});
