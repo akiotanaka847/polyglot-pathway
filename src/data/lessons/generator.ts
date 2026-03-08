@@ -282,8 +282,12 @@ function generateCategoryLessons(
     batch.forEach(entry => steps.push(makeMCStep(entry, category, lang, nativeLang)));
     // Text input for first word
     if (batch[0]) steps.push(makeTextStep(batch[0], lang, nativeLang));
+    // Listen & answer for a word
+    if (batch.length > 0) steps.push(makeListenAnswerStep(batch[batch.length > 1 ? 1 : 0], lang, nativeLang));
     // MC meaning for second word
     if (batch.length > 1) steps.push(makeMCMeaningStep(batch[1], category, nativeLang));
+    // Speak step for a word
+    if (batch.length > 0) steps.push(makeSpeakStep(batch[0], lang, nativeLang));
     // Extra text step for third word if exists
     if (batch.length > 2) steps.push(makeTextStep(batch[2], lang, nativeLang));
 
