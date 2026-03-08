@@ -350,10 +350,12 @@ export default function LessonPage() {
               <span className="text-lg">{lesson.unit?.emoji || getLessonIllustration(lesson)[0]}</span>
               <span className="text-[0.6rem] font-bold tracking-widest uppercase"
                 style={{ color: `hsl(${config.hue}, 60%, 50%)` }}>
-                {step.t === 'mc' ? tt('multiple_choice') : step.t === 'tx' ? tt('write_response') : step.t === 'or' ? tt('order_words') : tt('reading_comp')}
+                {step.t === 'mc' ? tt('multiple_choice') : step.t === 'tx' ? tt('write_response') : step.t === 'or' ? tt('order_words') : step.t === 'la' ? tt('listen_respond') : step.t === 'sp' ? tt('speak_respond') : tt('reading_comp')}
               </span>
             </div>
-            <div className="font-serif text-lg mb-4 leading-snug" dangerouslySetInnerHTML={{ __html: tl(step.t === 'la' ? '' : step.t === 'sp' ? step.q : (step as any).q || '') }} />
+            {step.t !== 'la' && (
+              <div className="font-serif text-lg mb-4 leading-snug" dangerouslySetInnerHTML={{ __html: tl(step.t === 'sp' ? step.q : (step as any).q || '') }} />
+            )}
 
             {/* MC options */}
             {(step.t === 'mc' || step.t === 'rd') && step.opts && (
