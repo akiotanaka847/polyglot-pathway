@@ -4,7 +4,7 @@ import { jpN5Lessons, jpN4Lessons } from './jp';
 import { frA1Lessons, frA2Lessons } from './fr';
 import { zhHSK1Lessons } from './zh';
 import { enA1Lessons } from './en';
-import { ptA1Lessons, koTOPIK1Lessons, ruA1Lessons, arA1Lessons, hiA1Lessons, esA1Lessons } from './remaining';
+import { ptA1Lessons, koTOPIK1Lessons, ruA1Lessons, arA1Lessons, hiA1Lessons, esA1Lessons, roA1Lessons } from './remaining';
 import {
   jpN3Lessons, frB1Lessons, zhHSK2Lessons, enA2Lessons,
   ptA2Lessons, koTOPIK2Lessons, ruA2Lessons, arA2Lessons,
@@ -158,6 +158,14 @@ export function getLessonData(nativeLang: string): Record<string, Record<string,
       B2: boost(esB2Lessons, 'es', 'B2', 'Español', esA1Bank),
       C1: boost(esC1Lessons, 'es', 'C1', 'Español', esA1Bank),
       C2: boost(esC2Lessons, 'es', 'C2', 'Español', esA1Bank),
+    },
+    ro: {
+      A1: boost(roA1Lessons, 'ro', 'A1', 'Română', esA1Bank),
+      A2: boost([], 'ro', 'A2', 'Română', esA1Bank),
+      B1: boost([], 'ro', 'B1', 'Română', esA1Bank),
+      B2: boost([], 'ro', 'B2', 'Română', esA1Bank),
+      C1: boost([], 'ro', 'C1', 'Română', esA1Bank),
+      C2: boost([], 'ro', 'C2', 'Română', esA1Bank),
     },
   };
 
