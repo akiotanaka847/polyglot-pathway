@@ -123,6 +123,7 @@ export interface CultureCard {
 
 export interface ConvTurn {
   npc: string;
+  npcMn?: string;
   hint: string;
   expected: string;
   accept: string[];
@@ -134,6 +135,7 @@ export interface Conversation {
   title: string;
   scenario: string;
   level: string;
+  theme?: string;
   turns: ConvTurn[];
 }
 
