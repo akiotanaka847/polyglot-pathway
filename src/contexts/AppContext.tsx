@@ -40,6 +40,8 @@ function migrateState(parsed: any): AppState {
   if (!s.activeLangs) s.activeLangs = [];
   // Always deduplicate activeLangs
   s.activeLangs = [...new Set(s.activeLangs)];
+  if (!s.recall) s.recall = {};
+  if (!s.ability) s.ability = {};
   return s;
 }
 
