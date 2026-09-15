@@ -123,6 +123,7 @@ export interface CultureCard {
 
 export interface ConvTurn {
   npc: string;
+  npcMn?: string;
   hint: string;
   expected: string;
   accept: string[];
@@ -134,6 +135,7 @@ export interface Conversation {
   title: string;
   scenario: string;
   level: string;
+  theme?: string;
   turns: ConvTurn[];
 }
 
@@ -184,4 +186,14 @@ export interface AppState {
   storyDone: string[];
   convDone: string[];
   dailyXp: number;
+  // Recall evidence per language: word -> distinct days it was recalled
+  recall: Record<string, Record<string, { days: string[]; hits: number; misses: number }>>;
+  // Provisional ability estimate per language (0..1), drives adaptive difficulty
+  ability: Record<string, number>;
+}
+
+export interface RecallInfo {
+  bars: 0 | 1 | 2 | 3;
+  hits: number;
+  days: number;
 }
