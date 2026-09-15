@@ -77,6 +77,10 @@ interface AppContextType {
   getRank: (lang: Lang) => { icon: string; title: string; meaning: string; romaji?: string };
   getRankPct: (lang: Lang) => number;
   tt: (key: string) => string;
+  recordRecall: (lang: Lang, word: string, ok: boolean) => void;
+  getRecall: (lang: Lang, word: string) => RecallInfo;
+  recordAnswer: (lang: Lang, ok: boolean) => void;
+  getAbility: (lang: Lang) => number;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -285,6 +289,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       addXP, markLessonDone, markQuizPassed, unlockNextLevel,
       checkStreak, earnAchievement, markStoryDone,
       markCultureRead, markConvDone, getRank, getRankPct, tt,
+      recordRecall, getRecall, recordAnswer, getAbility,
     }}>
       {children}
     </AppContext.Provider>
