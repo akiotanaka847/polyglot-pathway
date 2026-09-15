@@ -223,6 +223,45 @@ export function AppProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  // ---- Recall evidence (1-3 bars, spaced across different days) ----
+  const recordRecall = useCallback((lang: Lang, word: string, ok: boolean) => {
+    const key = (word || '').trim().slice(0, 60);
+    if (!key) return;
+    const today = new Date().toDateString();
+    setState(s => {
+      const langRecall = s.recall[lang] || {};
+      const cur = langRecall[key] || { days: [], hits: 0, misses: 0 };
+      const days = ok && !cur.days.includes(today) ? [...cur.days, today].slice(-8) : cur.days;
+      const next = {
+        days,
+        hits: cur.hits + (ok ? 1 : 0),
+        misses: cur.misses + (ok ? 0 : 1),
+      };
+      // Wrong answers lose the most recent spaced evidence
+      if (!ok && next.days.length > 1) next.days = next.days.slice(0, -1);
+      return { ...s, recall: { ...s.recall, [lang]: { ...langRecall, [key]: next } } };
+    });
+  }, []);
+
+  const getRecall = useCallback((lang: Lang, word: string): RecallInfo => {
+    const cur = state.recall[lang]?.[(word || '').trim().slice(0, 60)];
+    if (!cur) return { bars: 0, hits: 0, days: 0 };
+    const days = cur.days.length;
+    const bars: 0 | 1 | 2 | 3 = days >= 3 && cur.hits >= 4 ? 3 : days >= 2 ? 2 : cur.hits >= 1 ? 1 : 0;
+    return { bars, hits: cur.hits, days };
+  }, [state.recall]);
+
+  // ---- Adaptive difficulty: provisional ability estimate per language ----
+  const recordAnswer = useCallback((lang: Lang, ok: boolean) => {
+    setState(s => {
+      const cur = s.ability[lang] ?? 0.35;
+      const next = Math.max(0.05, Math.min(0.98, cur + (ok ? 0.045 : -0.07)));
+      return { ...s, ability: { ...s.ability, [lang]: next } };
+    });
+  }, []);
+
+  const getAbility = useCallback((lang: Lang) => state.ability[lang] ?? 0.35, [state.ability]);
+
 
   const getRank = useCallback((lang: Lang) => {
     const xp = state.xp[lang] || 0;
