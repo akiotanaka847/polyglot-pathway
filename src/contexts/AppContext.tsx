@@ -18,6 +18,8 @@ const defaultState: AppState = {
   storyDone: [],
   convDone: [],
   dailyXp: 0,
+  recall: {},
+  ability: {},
 };
 
 function migrateState(parsed: any): AppState {
