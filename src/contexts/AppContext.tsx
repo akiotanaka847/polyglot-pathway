@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
-import { AppState, Lang } from '@/data/types';
+import { AppState, Lang, RecallInfo } from '@/data/types';
 import { RANKS } from '@/data/achievements';
 import { getLangConfig, t } from '@/data/languages';
 
