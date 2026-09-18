@@ -4,13 +4,14 @@ import { QUIZ_DATA } from '@/data/quizzes';
 import { LEVELS } from '@/data/lessons/index';
 import { QuizQuestion } from '@/data/types';
 import { getLangConfig } from '@/data/languages';
+import { translateLessonText, translateOption } from '@/utils/lessonI18n';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { normalizeAnswer, shuffleArray, playCorrectSound, playIncorrectSound } from '@/utils/helpers';
 
 export default function QuizPage() {
   const { lang, level } = useParams();
   const navigate = useNavigate();
-  const { addXP, markQuizPassed, unlockNextLevel, tt } = useApp();
+  const { state, addXP, markQuizPassed, unlockNextLevel, tt } = useApp();
   const l = lang || 'jp';
   const lvl = level || 'N5';
   const config = getLangConfig(l);
@@ -27,14 +28,15 @@ export default function QuizPage() {
   const timer = useRef<ReturnType<typeof setInterval>>();
 
   useEffect(() => {
+    if (locked) return; // stop the clock once the answer is checked
     timer.current = setInterval(() => {
       setTimeLeft(t => {
-        if (t <= 1) { handleCheck(); return 60; }
+        if (t <= 1) { handleCheck(); return 0; }
         return t - 1;
       });
     }, 1000);
     return () => clearInterval(timer.current);
-  }, [qIdx]);
+  }, [qIdx, locked]);
 
   const q = questions[qIdx] as QuizQuestion | undefined;
 
@@ -46,13 +48,23 @@ export default function QuizPage() {
       correct = selected === q.ans;
       correctAns = q.opts?.[q.ans as number] || '';
     } else if (q.t === 'tx') {
-      correct = normalizeAnswer(textInput) === normalizeAnswer(q.ans as string);
-      correctAns = q.ans as string;
+      const base = q.ans as string;
+      // Accept the Spanish base answer, its translation into the learner's
+      // native language, and any extra accepted variants.
+      const accepted = [
+        base,
+        translateLessonText(base, state.nativeLang),
+        translateOption(base, state.nativeLang),
+        ...((q as unknown as { accept?: string[] }).accept || []),
+      ].filter(Boolean);
+      const given = normalizeAnswer(textInput);
+      correct = accepted.some(a => normalizeAnswer(a) === given);
+      correctAns = translateLessonText(base, state.nativeLang) || base;
     }
     setFeedback({ correct, answer: correctAns });
     setLocked(true);
     if (correct) { playCorrectSound(); setScore(s => s + 1); } else { playIncorrectSound(); }
-  }, [q, selected, textInput]);
+  }, [q, selected, textInput, state.nativeLang]);
 
   const advance = () => {
     setFeedback(null); setLocked(false); setSelected(null); setTextInput(''); setTimeLeft(60);
@@ -135,7 +147,7 @@ export default function QuizPage() {
           <div className="text-[0.62rem] font-semibold tracking-widest uppercase text-foreground-muted mb-2">
             {q.t === 'mc' ? `✦ ${tt('multiple_choice')}` : `✦ ${tt('write_response')}`}
           </div>
-          <div className="font-serif text-xl mb-4" dangerouslySetInnerHTML={{ __html: q.q }} />
+          <div className="font-serif text-xl mb-4" dangerouslySetInnerHTML={{ __html: translateLessonText(q.q, state.nativeLang) }} />
 
           {q.t === 'mc' && q.opts && (
             <div className="grid gap-2 grid-cols-2">
@@ -149,7 +161,7 @@ export default function QuizPage() {
                 return (
                   <button key={i} disabled={locked} onClick={() => setSelected(i)} className={`flex items-center gap-2 p-2.5 border-[1.5px] rounded-xl text-sm text-left transition-all ${cls}`}>
                     <span className="w-5 h-5 rounded-md bg-foreground/[0.06] flex items-center justify-center text-[0.63rem] font-bold">{labels[i]}</span>
-                    {opt}
+                    {translateOption(opt, state.nativeLang)}
                   </button>
                 );
               })}
@@ -170,7 +182,7 @@ export default function QuizPage() {
           {feedback && (
             <div className={`p-3 rounded-xl text-sm mt-3 animate-fade-in ${feedback.correct ? 'bg-success-light text-success' : 'bg-destructive/10 text-destructive'}`}>
               <strong>{feedback.correct ? `✅ ${tt('correct')}` : `❌ ${tt('incorrect')}`}</strong>
-              {!feedback.correct && <span> — {tt('answer_was')}: <em>{feedback.answer}</em></span>}
+              {!feedback.correct && <span> — {tt('answer_was')}: <em>{translateLessonText(feedback.answer, state.nativeLang)}</em></span>}
             </div>
           )}
         </div>

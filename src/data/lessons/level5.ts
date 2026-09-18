@@ -1,3 +1,4 @@
+import { getLangConfig } from '../languages';
 import { Lesson } from '../types';
 
 // C1/HSK6/TOPIK6/C2 — Advanced & mastery level lessons
@@ -7,7 +8,8 @@ interface L5Data {
   topics: [string, string][]; // 23 topic pairs [word, reading]
 }
 
-function makeL5(code: string, level: string, lang: string, d: L5Data): Lesson[] {
+function makeL5(code: string, level: string, langName: string, d: L5Data): Lesson[] {
+  const lang = getLangConfig(code)?.nativeName || langName;
   const p = (n: number) => `${code}-${level.toLowerCase()}-${n}`;
   const rd = (s: string) => s.toLowerCase().replace(/[^a-z\s]/g, '').trim();
   const topicNames = [
@@ -29,10 +31,10 @@ function makeL5(code: string, level: string, lang: string, d: L5Data): Lesson[] 
   .forEach((g, i) => {
     lessons.push({
       id: p(i + 1), title: `${g.t} - ${lang}`, type: 'grammar', steps: [
-        { t: 'th', char: g.c, rd: g.r, mn: g.t, note: `Mastery-level grammar in ${lang}.` },
+        { t: 'th', char: g.c, rd: g.r, mn: g.t, note: `Gramática de nivel maestría en ${lang}.` },
         { t: 'th', char: g.e, rd: '', mn: g.m, note: 'Advanced example.' },
-        { t: 'mc', q: `Which represents "${g.t}" in ${lang}?`, opts: [d.g1, d.g2, d.topics[0]?.[0] || '', d.topics[1]?.[0] || ''], ans: i },
-        { t: 'tx', q: `Reading of "${g.c}":`, ans: rd(g.r) },
+        { t: 'mc', q: `¿Cuál representa "${g.t}" en ${lang}?`, opts: [d.g1, d.g2, d.topics[0]?.[0] || '', d.topics[1]?.[0] || ''], ans: i },
+        { t: 'tx', q: `Lectura de "${g.c}":`, ans: rd(g.r) },
       ]
     });
   });
@@ -46,8 +48,8 @@ function makeL5(code: string, level: string, lang: string, d: L5Data): Lesson[] 
     lessons.push({
       id: p(i + 3), title: `${topicNames[i]} - ${lang}`, type: 'vocab', steps: [
         { t: 'th', char: w, rd: r, mn: topicNames[i], note: `Advanced: ${topicNames[i]} in ${lang}.` },
-        { t: 'mc', q: `"${topicNames[i]}" term in ${lang}?`, opts: [w, d.topics[oi][0], d.topics[oi2][0], d.topics[oi3][0]], ans: 0 },
-        { t: 'tx', q: `Reading of "${w}":`, ans: rd(r) },
+        { t: 'mc', q: `¿Término de "${topicNames[i]}" en ${lang}?`, opts: [w, d.topics[oi][0], d.topics[oi2][0], d.topics[oi3][0]], ans: 0 },
+        { t: 'tx', q: `Lectura de "${w}":`, ans: rd(r) },
       ]
     });
   }

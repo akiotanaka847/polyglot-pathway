@@ -631,6 +631,123 @@ const LESSON_CONTENT_PATTERNS: Record<string, Record<string, string>> = {
   },
 };
 
+
+// ==================== CORE QUESTION HEADS ====================
+// These fragments appear in almost every generated question. Without a full
+// set per language, the English fallback used to mix languages in one sentence.
+const CORE_PATTERNS: Record<string, Record<string, string>> = {
+  en: {
+    '¿Cómo se lee': 'How do you read', '¿Cómo se dice': 'How do you say', '¿Cómo se escribe': 'How do you write',
+    '¿Qué significa': 'What does ... mean', '¿Cuál es el negativo de': 'What is the negative of',
+    '¿Cuál es la forma': 'What is the form', '¿Cuál es el kanji de': 'Which is the kanji for',
+    '¿Cuál es el': 'Which is', '¿Cuál es la': 'Which is', '¿Cuál es': 'Which is',
+    '¿Qué es': 'What is', '¿Para qué se usa': 'What is it used for', '¿Qué partícula': 'Which particle',
+    '¿Qué color es': 'What colour is', '¿Qué número es': 'What number is',
+    '¿Cuál expresa': 'Which expresses', '¿Cuál representa': 'Which represents',
+    'Lectura de': 'Reading of', 'Vocabulario de': 'Vocabulary of', 'Gramática avanzada': 'Advanced grammar',
+    '¿Cómo se forma': 'How is it formed', '¿Palabra relacionada con': 'Word related to', '¿Término de': 'Term from',
+  },
+  fr: {
+    '¿Cómo se lee': 'Comment se lit', '¿Cómo se dice': 'Comment dit-on', '¿Cómo se escribe': "Comment s'écrit",
+    '¿Qué significa': 'Que signifie', '¿Cuál es el negativo de': 'Quelle est la forme négative de',
+    '¿Cuál es la forma': 'Quelle est la forme', '¿Cuál es el kanji de': 'Quel est le kanji de',
+    '¿Cuál es el': 'Quel est', '¿Cuál es la': 'Quelle est', '¿Cuál es': 'Quel est',
+    '¿Qué es': "Qu'est-ce que", '¿Para qué se usa': 'À quoi sert', '¿Qué partícula': 'Quelle particule',
+    '¿Qué color es': 'Quelle couleur est', '¿Qué número es': 'Quel nombre est',
+    '¿Cuál expresa': 'Lequel exprime', '¿Cuál representa': 'Lequel représente',
+    'Lectura de': 'Lecture de', 'Vocabulario de': 'Vocabulaire de', 'Gramática avanzada': 'Grammaire avancée',
+    '¿Cómo se forma': 'Comment se forme', '¿Palabra relacionada con': 'Mot lié à', '¿Término de': 'Terme de',
+  },
+  pt: {
+    '¿Cómo se lee': 'Como se lê', '¿Cómo se dice': 'Como se diz', '¿Cómo se escribe': 'Como se escreve',
+    '¿Qué significa': 'O que significa', '¿Cuál es el negativo de': 'Qual é a forma negativa de',
+    '¿Cuál es la forma': 'Qual é a forma', '¿Cuál es el kanji de': 'Qual é o kanji de',
+    '¿Cuál es el': 'Qual é', '¿Cuál es la': 'Qual é', '¿Cuál es': 'Qual é',
+    '¿Qué es': 'O que é', '¿Para qué se usa': 'Para que serve', '¿Qué partícula': 'Qual partícula',
+    '¿Qué color es': 'Que cor é', '¿Qué número es': 'Que número é',
+    '¿Cuál expresa': 'Qual expressa', '¿Cuál representa': 'Qual representa',
+    'Lectura de': 'Leitura de', 'Vocabulario de': 'Vocabulário de', 'Gramática avanzada': 'Gramática avançada',
+    '¿Cómo se forma': 'Como se forma', '¿Palabra relacionada con': 'Palavra relacionada a', '¿Término de': 'Termo de',
+  },
+  zh: {
+    '¿Cómo se lee': '怎么读', '¿Cómo se dice': '怎么说', '¿Cómo se escribe': '怎么写',
+    '¿Qué significa': '是什么意思', '¿Cuál es el negativo de': '否定形式是什么',
+    '¿Cuál es la forma': '形式是什么', '¿Cuál es el kanji de': '汉字是什么',
+    '¿Cuál es el': '哪个是', '¿Cuál es la': '哪个是', '¿Cuál es': '哪个是',
+    '¿Qué es': '这是什么', '¿Para qué se usa': '用于什么', '¿Qué partícula': '哪个助词',
+    '¿Qué color es': '这是什么颜色', '¿Qué número es': '这是哪个数字',
+    '¿Cuál expresa': '哪个表达', '¿Cuál representa': '哪个代表',
+    'Lectura de': '读音', 'Vocabulario de': '词汇', 'Gramática avanzada': '高级语法',
+    '¿Cómo se forma': '如何构成', '¿Palabra relacionada con': '相关词语', '¿Término de': '术语',
+  },
+  jp: {
+    '¿Cómo se lee': 'の読み方は', '¿Cómo se dice': 'はどう言いますか', '¿Cómo se escribe': 'はどう書きますか',
+    '¿Qué significa': 'の意味は', '¿Cuál es el negativo de': 'の否定形は',
+    '¿Cuál es la forma': 'の形は', '¿Cuál es el kanji de': 'の漢字は',
+    '¿Cuál es el': 'どれですか', '¿Cuál es la': 'どれですか', '¿Cuál es': 'どれですか',
+    '¿Qué es': 'とは何ですか', '¿Para qué se usa': 'は何に使いますか', '¿Qué partícula': 'どの助詞',
+    '¿Qué color es': 'は何色ですか', '¿Qué número es': 'はどの数字ですか',
+    '¿Cuál expresa': 'どれが表しますか', '¿Cuál representa': 'どれを表しますか',
+    'Lectura de': 'の読み', 'Vocabulario de': 'の語彙', 'Gramática avanzada': '上級文法',
+    '¿Cómo se forma': 'はどう作りますか', '¿Palabra relacionada con': 'に関する語', '¿Término de': 'の用語',
+  },
+  ko: {
+    '¿Cómo se lee': '어떻게 읽나요', '¿Cómo se dice': '어떻게 말하나요', '¿Cómo se escribe': '어떻게 쓰나요',
+    '¿Qué significa': '무슨 뜻인가요', '¿Cuál es el negativo de': '부정형은 무엇인가요',
+    '¿Cuál es la forma': '형태는 무엇인가요', '¿Cuál es el kanji de': '한자는 무엇인가요',
+    '¿Cuál es el': '어느 것인가요', '¿Cuál es la': '어느 것인가요', '¿Cuál es': '어느 것인가요',
+    '¿Qué es': '무엇인가요', '¿Para qué se usa': '무엇에 쓰나요', '¿Qué partícula': '어떤 조사',
+    '¿Qué color es': '무슨 색인가요', '¿Qué número es': '어떤 숫자인가요',
+    '¿Cuál expresa': '어느 것이 표현하나요', '¿Cuál representa': '어느 것을 나타내나요',
+    'Lectura de': '읽기', 'Vocabulario de': '어휘', 'Gramática avanzada': '고급 문법',
+    '¿Cómo se forma': '어떻게 만드나요', '¿Palabra relacionada con': '관련 단어', '¿Término de': '용어',
+  },
+  ru: {
+    '¿Cómo se lee': 'Как читается', '¿Cómo se dice': 'Как сказать', '¿Cómo se escribe': 'Как пишется',
+    '¿Qué significa': 'Что значит', '¿Cuál es el negativo de': 'Какая отрицательная форма у',
+    '¿Cuál es la forma': 'Какая форма', '¿Cuál es el kanji de': 'Какой кандзи у',
+    '¿Cuál es el': 'Какой', '¿Cuál es la': 'Какая', '¿Cuál es': 'Какой',
+    '¿Qué es': 'Что это', '¿Para qué se usa': 'Для чего используется', '¿Qué partícula': 'Какая частица',
+    '¿Qué color es': 'Какой это цвет', '¿Qué número es': 'Какое это число',
+    '¿Cuál expresa': 'Что выражает', '¿Cuál representa': 'Что представляет',
+    'Lectura de': 'Чтение', 'Vocabulario de': 'Лексика', 'Gramática avanzada': 'Продвинутая грамматика',
+    '¿Cómo se forma': 'Как образуется', '¿Palabra relacionada con': 'Слово, связанное с', '¿Término de': 'Термин из',
+  },
+  ar: {
+    '¿Cómo se lee': 'كيف تُقرأ', '¿Cómo se dice': 'كيف تقول', '¿Cómo se escribe': 'كيف تُكتب',
+    '¿Qué significa': 'ما معنى', '¿Cuál es el negativo de': 'ما صيغة النفي لـ',
+    '¿Cuál es la forma': 'ما هي صيغة', '¿Cuál es el kanji de': 'ما هو الكانجي لـ',
+    '¿Cuál es el': 'أي واحد', '¿Cuál es la': 'أي واحدة', '¿Cuál es': 'أي واحد',
+    '¿Qué es': 'ما هو', '¿Para qué se usa': 'فيم يُستخدم', '¿Qué partícula': 'أي أداة',
+    '¿Qué color es': 'ما هذا اللون', '¿Qué número es': 'ما هذا الرقم',
+    '¿Cuál expresa': 'أي منها يعبر عن', '¿Cuál representa': 'أي منها يمثل',
+    'Lectura de': 'قراءة', 'Vocabulario de': 'مفردات', 'Gramática avanzada': 'قواعد متقدمة',
+    '¿Cómo se forma': 'كيف تتكون', '¿Palabra relacionada con': 'كلمة مرتبطة بـ', '¿Término de': 'مصطلح من',
+  },
+  hi: {
+    '¿Cómo se lee': 'कैसे पढ़ा जाता है', '¿Cómo se dice': 'कैसे कहते हैं', '¿Cómo se escribe': 'कैसे लिखते हैं',
+    '¿Qué significa': 'का अर्थ क्या है', '¿Cuál es el negativo de': 'का नकारात्मक रूप क्या है',
+    '¿Cuál es la forma': 'रूप क्या है', '¿Cuál es el kanji de': 'का कांजी क्या है',
+    '¿Cuál es el': 'कौन सा है', '¿Cuál es la': 'कौन सी है', '¿Cuál es': 'कौन सा है',
+    '¿Qué es': 'क्या है', '¿Para qué se usa': 'किसके लिए उपयोग होता है', '¿Qué partícula': 'कौन सा कारक',
+    '¿Qué color es': 'यह कौन सा रंग है', '¿Qué número es': 'यह कौन सी संख्या है',
+    '¿Cuál expresa': 'कौन सा व्यक्त करता है', '¿Cuál representa': 'कौन सा दर्शाता है',
+    'Lectura de': 'का उच्चारण', 'Vocabulario de': 'की शब्दावली', 'Gramática avanzada': 'उन्नत व्याकरण',
+    '¿Cómo se forma': 'कैसे बनता है', '¿Palabra relacionada con': 'से संबंधित शब्द', '¿Término de': 'का शब्द',
+  },
+  ro: {
+    '¿Cómo se lee': 'Cum se citește', '¿Cómo se dice': 'Cum se spune', '¿Cómo se escribe': 'Cum se scrie',
+    '¿Qué significa': 'Ce înseamnă', '¿Cuál es el negativo de': 'Care este forma negativă a',
+    '¿Cuál es la forma': 'Care este forma', '¿Cuál es el kanji de': 'Care este kanji pentru',
+    '¿Cuál es el': 'Care este', '¿Cuál es la': 'Care este', '¿Cuál es': 'Care este',
+    '¿Qué es': 'Ce este', '¿Para qué se usa': 'La ce se folosește', '¿Qué partícula': 'Care particulă',
+    '¿Qué color es': 'Ce culoare este', '¿Qué número es': 'Ce număr este',
+    '¿Cuál expresa': 'Care exprimă', '¿Cuál representa': 'Care reprezintă',
+    'Lectura de': 'Citirea', 'Vocabulario de': 'Vocabular de', 'Gramática avanzada': 'Gramatică avansată',
+    '¿Cómo se forma': 'Cum se formează', '¿Palabra relacionada con': 'Cuvânt legat de', '¿Término de': 'Termen din',
+  },
+};
+
 // ==================== CORE FUNCTIONS ====================
 
 function applyPatterns(text: string, patterns: Record<string, string>): string {
@@ -651,20 +768,30 @@ function applyPatterns(text: string, patterns: Record<string, string>): string {
   return result;
 }
 
+// Pattern matching is expensive; memoise per language + string.
+const translationCache = new Map<string, string>();
+
 export function translateLessonText(text: string | undefined, nativeLang: string): string {
   if (!text) return '';
   if (nativeLang === 'es') return text;
-  
+
+  const cacheKey = nativeLang + '\u0000' + text;
+  const cached = translationCache.get(cacheKey);
+  if (cached !== undefined) return cached;
+
   let result = text;
   
   // Apply all pattern dictionaries for the native language
+  const corePatterns = CORE_PATTERNS[nativeLang];
   const qPatterns = QUESTION_PATTERNS[nativeLang];
   const ePatterns = EXPLANATION_PATTERNS[nativeLang];
   const cPatterns = LESSON_CONTENT_PATTERNS[nativeLang];
   if (cPatterns) result = applyPatterns(result, cPatterns); // longest sentences first
   if (ePatterns) result = applyPatterns(result, ePatterns);
   if (qPatterns) result = applyPatterns(result, qPatterns);
-  
+  // Core question heads last so they always win over partial English fallbacks
+  if (corePatterns) result = applyPatterns(result, corePatterns);
+
   // If native lang is not en/es, also try English as fallback for anything still in Spanish
   if (nativeLang !== 'en' && nativeLang !== 'es') {
     const enC = LESSON_CONTENT_PATTERNS['en'];
@@ -674,7 +801,9 @@ export function translateLessonText(text: string | undefined, nativeLang: string
     if (enE) result = applyPatterns(result, enE);
     if (enQ) result = applyPatterns(result, enQ);
   }
-  
+
+  if (translationCache.size > 20000) translationCache.clear();
+  translationCache.set(cacheKey, result);
   return result;
 }
 

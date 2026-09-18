@@ -1,3 +1,4 @@
+import { getLangConfig } from '../languages';
 import { Lesson } from '../types';
 
 // B2/HSK4/TOPIK4 — Upper-intermediate: advanced grammar, professional, academic vocabulary
@@ -9,7 +10,8 @@ interface L4Data {
   v: [string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string]; // 21 pairs: word, reading
 }
 
-function makeL4(code: string, level: string, lang: string, d: L4Data): Lesson[] {
+function makeL4(code: string, level: string, langName: string, d: L4Data): Lesson[] {
+  const lang = getLangConfig(code)?.nativeName || langName;
   const p = (n: number) => `${code}-${level.toLowerCase()}-${n}`;
   const rd = (s: string) => s.toLowerCase().replace(/[^a-z\s]/g, '').trim();
   const v = d.v;
@@ -36,11 +38,11 @@ function makeL4(code: string, level: string, lang: string, d: L4Data): Lesson[] 
   grams.forEach((g, i) => {
     lessons.push({
       id: p(i + 1), title: `${g.title} - ${lang}`, type: 'grammar', steps: [
-        { t: 'th', char: g.char, rd: g.grd, mn: g.title, note: `Advanced grammar in ${lang}.` },
+        { t: 'th', char: g.char, rd: g.grd, mn: g.title, note: `Gramática avanzada en ${lang}.` },
         { t: 'th', char: g.ex, rd: '', mn: g.exm, note: 'Example.' },
-        { t: 'mc', q: `Which is "${g.title}" in ${lang}?`, opts: [d.g1, d.g2, d.g3, d.g4], ans: i },
-        { t: 'mc', q: `"${g.ex}" means?`, opts: [d.g1ExM, d.g2ExM, d.g3ExM, d.g4ExM], ans: i },
-        { t: 'tx', q: `Reading of "${g.char}":`, ans: rd(g.grd) },
+        { t: 'mc', q: `¿Cuál es "${g.title}" en ${lang}?`, opts: [d.g1, d.g2, d.g3, d.g4], ans: i },
+        { t: 'mc', q: `¿Qué significa "${g.ex}"?`, opts: [d.g1ExM, d.g2ExM, d.g3ExM, d.g4ExM], ans: i },
+        { t: 'tx', q: `Lectura de "${g.char}":`, ans: rd(g.grd) },
       ]
     });
   });
@@ -51,10 +53,10 @@ function makeL4(code: string, level: string, lang: string, d: L4Data): Lesson[] 
     const oi = (i + 7) % 21; // offset for wrong answers
     lessons.push({
       id: p(i + 5), title: `${titles[i]} - ${lang}`, type: 'vocab', steps: [
-        { t: 'th', char: vw(wi), rd: vr(wi), mn: titles[i], note: `${titles[i]} vocabulary in ${lang}.` },
-        { t: 'mc', q: `"${titles[i]}" related word in ${lang}?`, opts: [vw(wi), vw(oi), vw((i + 3) % 21), vw((i + 5) % 21)], ans: 0 },
-        { t: 'mc', q: `What does "${vw(wi)}" mean?`, opts: [titles[i], titles[oi], titles[(i + 3) % 21], titles[(i + 5) % 21]], ans: 0 },
-        { t: 'tx', q: `Reading of "${vw(wi)}":`, ans: rd(vr(wi)) },
+        { t: 'th', char: vw(wi), rd: vr(wi), mn: titles[i], note: `Vocabulario de ${titles[i]} en ${lang}.` },
+        { t: 'mc', q: `¿Palabra relacionada con "${titles[i]}" en ${lang}?`, opts: [vw(wi), vw(oi), vw((i + 3) % 21), vw((i + 5) % 21)], ans: 0 },
+        { t: 'mc', q: `¿Qué significa "${vw(wi)}"?`, opts: [titles[i], titles[oi], titles[(i + 3) % 21], titles[(i + 5) % 21]], ans: 0 },
+        { t: 'tx', q: `Lectura de "${vw(wi)}":`, ans: rd(vr(wi)) },
       ]
     });
   }

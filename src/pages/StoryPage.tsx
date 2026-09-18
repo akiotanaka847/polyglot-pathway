@@ -6,6 +6,7 @@ import { STORIES } from '@/data/stories';
 import { STORY_I18N_EN } from '@/data/storyI18n';
 import { getLangConfig } from '@/data/languages';
 import { speakText } from '@/utils/helpers';
+import { translateLessonText, translateLessonTitle } from '@/utils/lessonI18n';
 
 function useStoryI18n(storyLang: string, nativeLang: string) {
   // For Spanish native speakers, use inline data (already in Spanish)
@@ -57,8 +58,8 @@ export default function StoryPage() {
             <div className="p-4 flex items-center gap-3.5">
               <span className="text-4xl">{scene.image_emoji}</span>
               <div>
-                <div className="font-serif text-lg font-semibold">{scene.title}</div>
-                <div className="text-[0.77rem] text-foreground-secondary italic">{sceneI18n?.setting || scene.setting}</div>
+                <div className="font-serif text-lg font-semibold">{translateLessonTitle(scene.title, state.nativeLang)}</div>
+                <div className="text-[0.77rem] text-foreground-secondary italic">{sceneI18n?.setting || translateLessonText(scene.setting, state.nativeLang)}</div>
               </div>
             </div>
             <div className="px-4 pb-4 space-y-2.5">
@@ -97,7 +98,7 @@ export default function StoryPage() {
           </div>
 
           <div className="bg-card border border-border rounded-[16px] p-4">
-            <div className="text-sm font-semibold mb-2.5">❓ {sceneI18n?.quizQ || scene.quiz.q}</div>
+            <div className="text-sm font-semibold mb-2.5">❓ {sceneI18n?.quizQ || translateLessonText(scene.quiz.q, state.nativeLang)}</div>
             {(sceneI18n?.quizOpts || scene.quiz.opts).map((opt, i) => (
               <button key={i} onClick={() => {
                 if (i === scene.quiz.ans) {
@@ -147,7 +148,7 @@ export default function StoryPage() {
         {story.chapters.map((ch, ci) => (
           <div key={ci} className="mb-5">
             <div className="text-[0.68rem] font-bold tracking-widest uppercase mb-2 pb-1 border-b border-border" style={{ color: `hsl(${config.hue}, 70%, 40%)` }}>
-              {tt('chapter')} {ci + 1} — {i18n.chapterTitle(ci, ch.title)} <span className="opacity-60 font-normal">({ch.level})</span>
+              {tt('chapter')} {ci + 1} — {translateLessonTitle(i18n.chapterTitle(ci, ch.title), state.nativeLang)} <span className="opacity-60 font-normal">({ch.level})</span>
             </div>
             {ch.scenes.map((sc, si) => {
               const done = state.storyDone.includes(sc.id);
@@ -156,7 +157,7 @@ export default function StoryPage() {
                 <button key={sc.id} onClick={() => setActiveScene({ ci, si })} className="w-full flex items-center gap-3 p-3 rounded-xl border border-border mb-2 text-left hover:shadow-sm transition-all" style={{ background: sc.color }}>
                   <span className="text-2xl">{sc.image_emoji}</span>
                   <div className="flex-1">
-                    <div className="text-sm font-semibold">{sc.title}</div>
+                    <div className="text-sm font-semibold">{translateLessonTitle(sc.title, state.nativeLang)}</div>
                     <div className="text-[0.72rem] text-foreground-secondary">{(scI18n?.setting || sc.setting).substring(0, 60)}...</div>
                   </div>
                   <span>{done ? '✅' : '▶️'}</span>

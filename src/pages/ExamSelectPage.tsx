@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { EXAM_DATA } from '@/data/exams';
 import { getLangConfig, LANGUAGES } from '@/data/languages';
+import { translateExamTitle } from '@/utils/lessonI18n';
 
 export default function ExamSelectPage() {
   const navigate = useNavigate();
@@ -31,7 +32,7 @@ export default function ExamSelectPage() {
               <div key={lang.code} className="border border-border rounded-2xl p-4 bg-card">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-2xl">{config.flag}</span>
-                  <span className="font-bold">{config.name}</span>
+                  <span className="font-bold">{config.nativeName}</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {Object.entries(exams).map(([level, exam]) => (
@@ -40,7 +41,7 @@ export default function ExamSelectPage() {
                       onClick={() => navigate(`/exam/${lang.code}/${level}`)}
                       className="px-3 py-1.5 rounded-full text-sm font-medium border border-border hover:bg-accent transition-colors"
                     >
-                      {exam.title.split('—')[0].trim()}
+                      {translateExamTitle(exam.title.split('—')[0].trim(), state.nativeLang)}
                     </button>
                   ))}
                 </div>
