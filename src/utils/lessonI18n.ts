@@ -787,10 +787,9 @@ export function translateLessonText(text: string | undefined, nativeLang: string
   const ePatterns = EXPLANATION_PATTERNS[nativeLang];
   const cPatterns = LESSON_CONTENT_PATTERNS[nativeLang];
   if (cPatterns) result = applyPatterns(result, cPatterns); // longest sentences first
+  if (corePatterns) result = applyPatterns(result, corePatterns); // question heads before any fallback
   if (ePatterns) result = applyPatterns(result, ePatterns);
   if (qPatterns) result = applyPatterns(result, qPatterns);
-  // Core question heads last so they always win over partial English fallbacks
-  if (corePatterns) result = applyPatterns(result, corePatterns);
 
   // If native lang is not en/es, also try English as fallback for anything still in Spanish
   if (nativeLang !== 'en' && nativeLang !== 'es') {
