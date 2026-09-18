@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { GRAMMAR_REF, VOCAB_REF } from '@/data/reference';
@@ -6,6 +6,8 @@ import { getLangConfig, LANGUAGES } from '@/data/languages';
 import { speakText } from '@/utils/helpers';
 import { GrammarEntry } from '@/data/types';
 import { translateLessonTitle, translateExplanation, translateOption } from '@/utils/lessonI18n';
+import { useAiTranslate } from '@/hooks/useAiTranslate';
+import RecallBars from '@/components/RecallBars';
 
 const VALID_LANG_CODES = new Set(LANGUAGES.map(l => l.code));
 
@@ -32,7 +34,7 @@ function getCatLabel(nativeLang: string, cat: string) {
 
 export default function ReferencePage() {
   const navigate = useNavigate();
-  const { state, tt } = useApp();
+  const { state, tt, getRecall } = useApp();
   const activeLangs = [...new Set(state.activeLangs || [])];
 
   const refLangs = [...new Set([
@@ -48,6 +50,32 @@ export default function ReferencePage() {
   const [expandedEntry, setExpandedEntry] = useState<number | null>(null);
   const config = getLangConfig(lang);
   const langConfig = getLangConfig(lang);
+  const nativeLang = state.nativeLang || 'es';
+
+  // AI translation for grammar explanations and vocabulary meanings.
+  const aiTexts = useMemo(() => {
+    if (nativeLang === 'es' || nativeLang === 'en') return [];
+    const out: string[] = [];
+    // Only the folder the user opened, to keep translation work small.
+    if (tab === 'grammar') {
+      (GRAMMAR_REF[lang] || []).filter(g => !openLevel || (g.level || 'General') === openLevel).forEach(g => {
+        out.push(g.title, g.explanation);
+        (g.examples || []).forEach(ex => { if (ex.translation) out.push(ex.translation); });
+      });
+    } else {
+      Object.entries(VOCAB_REF[lang] || {}).forEach(([lvl, list]) => {
+        if (openLevel && lvl !== openLevel) return;
+        list.forEach(v => { if (v.meaning) out.push(v.meaning); });
+      });
+    }
+    return [...new Set(out.filter(t => typeof t === 'string' && t.length > 3))].slice(0, 300);
+  }, [lang, nativeLang, tab, openLevel]);
+  const { tr: aiTr } = useAiTranslate(aiTexts, nativeLang);
+  const ai = (text: string | undefined, base: string) => {
+    if (!text) return base;
+    const t = aiTr(text);
+    return t && t !== text ? t : base;
+  };
 
   // Grammar grouped by level
   const grammarEntries = GRAMMAR_REF[lang] || [];
@@ -196,17 +224,17 @@ export default function ReferencePage() {
                                         </div>
                                         <div className="flex-1 min-w-0">
                                           <div className={`font-semibold text-[0.82rem] truncate ${config.fontClass || ''}`} style={{ color: colors.text }}>
-                                            {translateLessonTitle(entry.title, state.nativeLang)}
+                                            {ai(entry.title, translateLessonTitle(entry.title, state.nativeLang))}
                                           </div>
                                           {!isExpanded && (
-                                            <div className="text-[0.68rem] text-foreground-muted truncate mt-0.5">{translateExplanation(entry.explanation, state.nativeLang).slice(0, 70)}...</div>
+                                            <div className="text-[0.68rem] text-foreground-muted truncate mt-0.5">{ai(entry.explanation, translateExplanation(entry.explanation, state.nativeLang)).slice(0, 70)}...</div>
                                           )}
                                         </div>
                                       </button>
                                       {isExpanded && (
                                           <div className="px-3 pb-3 animate-fade-in border-t border-border/40">
                                           <div className="text-[0.8rem] leading-relaxed text-foreground-secondary my-2.5 pl-8">
-                                            {translateExplanation(entry.explanation, state.nativeLang)}
+                                            {ai(entry.explanation, translateExplanation(entry.explanation, state.nativeLang))}
                                           </div>
                                           <div className="pl-8">
                                             <div className="text-[0.62rem] font-bold tracking-widest uppercase text-foreground-muted mb-1.5">{tt('examples')}</div>
@@ -216,7 +244,7 @@ export default function ReferencePage() {
                                                   <button onClick={() => speakText(ex.text, lang)} className="shrink-0 mt-0.5 hover:scale-110 transition-transform">🔊</button>
                                                   <div>
                                                     <span className={`font-semibold ${config.fontClass || ''}`} style={{ color: colors.text }}>{ex.text}</span>
-                                                    <div className="text-foreground-muted text-[0.72rem]">→ {translateOption(ex.translation, state.nativeLang)}</div>
+                                                    <div className="text-foreground-muted text-[0.72rem]">→ {ai(ex.translation, translateOption(ex.translation, state.nativeLang))}</div>
                                                   </div>
                                                 </div>
                                               ))}
@@ -296,7 +324,10 @@ export default function ReferencePage() {
                                   <span className={`font-bold text-[0.82rem] ${config.fontClass || ''}`} style={{ color: colors.text }}>{entry.word}</span>
                                   {entry.reading && <span className="text-[0.68rem] text-foreground-muted">({entry.reading})</span>}
                                 </div>
-                                <div className="text-[0.75rem] text-foreground-secondary">{translateOption(entry.meaning, state.nativeLang)}</div>
+                                <div className="text-[0.75rem] text-foreground-secondary flex items-center gap-1.5">
+                                  {ai(entry.meaning, translateOption(entry.meaning, state.nativeLang))}
+                                  <RecallBars bars={getRecall(lang, entry.word).bars} />
+                                </div>
                                 {entry.example && <div className="text-[0.65rem] text-foreground-muted mt-0.5 italic truncate">{entry.example}</div>}
                               </div>
                             </div>

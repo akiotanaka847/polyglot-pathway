@@ -7,6 +7,7 @@ import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { normalizeAnswer, shuffleArray, speakText, playCorrectSound, playIncorrectSound, playLevelUpSound, spawnConfetti } from '@/utils/helpers';
 import { translateLessonText, translateLessonTitle } from '@/utils/lessonI18n';
 import { useAiTranslate } from '@/hooks/useAiTranslate';
+import RecallBars from '@/components/RecallBars';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
 
 // Topic-related emoji illustrations for visual association
@@ -54,7 +55,7 @@ function getLessonIllustration(lesson: { unit?: { id: string; emoji: string }; t
 export default function LessonPage() {
   const { lang, level, index } = useParams();
   const navigate = useNavigate();
-  const { addXP, markLessonDone, checkStreak, earnAchievement, tt, state: appState } = useApp();
+  const { addXP, markLessonDone, checkStreak, earnAchievement, tt, state: appState, recordRecall, getRecall, recordAnswer } = useApp();
   const nativeLang = appState.nativeLang || 'en';
   const tlTitle = (title: string) => translateLessonTitle(title, nativeLang);
 
@@ -140,6 +141,12 @@ export default function LessonPage() {
     return <div className="flex-1 flex items-center justify-center"><p>{tt('coming_soon')}</p></div>;
   }
 
+  const recallKey = (st: LessonStep): string => {
+    const any = st as unknown as Record<string, unknown>;
+    const cand = [any.w, any.expected, any.ans, any.q].find(v => typeof v === 'string');
+    return (cand as string) || '';
+  };
+
   const handleCheck = () => {
     if (!step) return;
     if (step.t === 'th') { advance(true); return; }
@@ -169,6 +176,10 @@ export default function LessonPage() {
       correct = normalizedInput.includes(normalizeAnswer(step.expected)) || normalizeAnswer(step.expected).includes(normalizedInput);
       correctAns = step.expected;
     }
+    // Spaced-memory evidence for this item (3 bars need correct recall on different days)
+    const key = recallKey(step);
+    if (key) recordRecall(l, key, correct);
+    recordAnswer(l, correct);
     setFeedback({ correct, answer: correctAns });
     setLocked(true);
     setAccuracy(prev => [...prev, correct]);
@@ -304,6 +315,11 @@ export default function LessonPage() {
           <span className="text-[0.6rem] font-bold tracking-widest uppercase text-foreground-muted">
             {tt('step_of').replace('{0}', String(stepIdx + 1)).replace('{1}', String(steps.length))}
           </span>
+          {recallKey(step) && (
+            <span className="flex items-center gap-1 text-[0.58rem] text-foreground-muted">
+              🧠 <RecallBars bars={getRecall(l, recallKey(step)).bars} />
+            </span>
+          )}
           <span className="flex-1" />
           <button onClick={() => speakText(step.t === 'th' ? step.char : step.t === 'la' ? step.audio : (step as any).q || '', l)}
             className="px-2.5 py-1 rounded-full border border-border bg-card text-[0.65rem] hover:bg-background transition-colors">

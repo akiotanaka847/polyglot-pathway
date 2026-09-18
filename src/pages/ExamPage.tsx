@@ -7,6 +7,7 @@ import { normalizeAnswer, playCorrectSound, playIncorrectSound, playLevelUpSound
 import { translateLessonText, translateExamTitle, translateSectionName, translateOption } from '@/utils/lessonI18n';
 import { MCStep, TextStep, ReadingStep, SpeakStep, ListenAnswerStep } from '@/data/types';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
+import { useAiTranslate } from '@/hooks/useAiTranslate';
 
 type Q = MCStep | TextStep | ReadingStep | SpeakStep | ListenAnswerStep;
 
@@ -41,7 +42,31 @@ export default function ExamPage() {
   const navigate = useNavigate();
   const { tt, addXP, state: appState } = useApp();
   const nativeLang = appState.nativeLang || 'en';
-  const tl = (text: string | undefined) => translateLessonText(text, nativeLang);
+  const examForAi = EXAM_DATA[lang]?.[level];
+  // AI translation for exam prose (questions, options, reading passages).
+  const aiTexts = useMemo(() => {
+    if (!examForAi || nativeLang === 'es' || nativeLang === 'en') return [];
+    const out: string[] = [];
+    examForAi.sections.forEach(sec => {
+      out.push(sec.name);
+      sec.qs.forEach(qq => {
+        const any = qq as unknown as Record<string, unknown>;
+        [any.q, any.passage, any.note, any.hint].forEach(v => { if (typeof v === 'string' && v.length > 8) out.push(v); });
+        if (Array.isArray(any.opts)) (any.opts as string[]).forEach(o => { if (o.length > 3) out.push(o); });
+      });
+    });
+    return [...new Set(out)];
+  }, [examForAi, nativeLang]);
+  const { tr: aiTr } = useAiTranslate(aiTexts, nativeLang);
+  const tsec = (name: string) => {
+    const ai = aiTr(name);
+    return ai && ai !== name ? ai : translateSectionName(name, nativeLang);
+  };
+  const tl = (text: string | undefined) => {
+    if (!text) return '';
+    const ai = aiTr(text);
+    return ai && ai !== text ? ai : translateLessonText(text, nativeLang);
+  };
   const exam = EXAM_DATA[lang]?.[level];
   const config = getLangConfig(lang);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -149,7 +174,7 @@ export default function ExamPage() {
                   {i + 1}
                 </div>
                 <div className="flex-1">
-                  <span className="font-semibold text-sm">{translateSectionName(s.name, nativeLang)}</span>
+                  <span className="font-semibold text-sm">{tsec(s.name)}</span>
                   <div className="text-xs text-foreground-muted">{s.qs.length} {tt('questions')} · {s.time} min</div>
                 </div>
               </div>
@@ -213,7 +238,7 @@ export default function ExamPage() {
             <p className="font-semibold text-sm mb-3">{tt('progress')}</p>
             {sectionResults.map((sr, i) => (
               <div key={i} className="flex items-center gap-2 mb-2">
-                <span className="text-sm flex-1">{translateSectionName(sr.name, nativeLang)}</span>
+                <span className="text-sm flex-1">{tsec(sr.name)}</span>
                 <div className="w-20 h-1.5 bg-border rounded-full overflow-hidden">
                   <div className="h-full rounded-full" style={{ width: `${sr.total > 0 ? (sr.correct / sr.total) * 100 : 0}%`, background: sr.correct / sr.total >= 0.7 ? 'hsl(var(--success))' : 'hsl(var(--destructive))' }} />
                 </div>
@@ -243,7 +268,7 @@ export default function ExamPage() {
         <div className="flex items-center gap-3 mb-4">
           <CircularTimer timeLeft={timeLeft} total={sectionTime} />
           <div className="flex-1">
-            <span className="text-sm font-bold">{translateSectionName(section?.name || '', nativeLang)}</span>
+            <span className="text-sm font-bold">{tsec(section?.name || '')}</span>
             <div className="text-xs text-foreground-muted">
               {tt('question_of').replace('{0}', String(qIdx + 1)).replace('{1}', String(section?.qs.length))} · {sectionIdx + 1}/{exam.sections.length}
             </div>
@@ -272,7 +297,7 @@ export default function ExamPage() {
             {q.t === 'rd' && (
               <div className="bg-background rounded-xl p-4 mb-4 text-sm leading-relaxed border border-border">
                 <p className="font-bold text-xs mb-1.5" style={{ color: `hsl(${config.hue}, 70%, 40%)` }}>{(q as ReadingStep).title}</p>
-                <p>{(q as ReadingStep).passage}</p>
+                <p>{tl((q as ReadingStep).passage)}</p>
               </div>
             )}
 
@@ -315,7 +340,7 @@ export default function ExamPage() {
                       style={{ background: `hsl(${config.hue}, 80%, 95%)`, color: `hsl(${config.hue}, 70%, 40%)` }}>
                       {['A','B','C','D'][i]}
                     </span>
-                    {translateOption(o, nativeLang)}
+                    {aiTr(o) !== o ? aiTr(o) : translateOption(o, nativeLang)}
                   </button>
                 ))}
               </div>

@@ -524,7 +524,9 @@ function hasType(exam: Exam, type: string): boolean {
 export function enhanceExam(lang: string, exam: Exam): Exam {
   const bank = BANKS[lang];
   if (!bank) return exam;
-  const names = SECTION_NAMES[lang] || SECTION_NAMES.es;
+  // Section headings must follow the learner's native language, not the studied one:
+  // keep the Spanish base so the UI translation layer can localize them.
+  const names = SECTION_NAMES.es;
 
   const sections = [...exam.sections];
 
