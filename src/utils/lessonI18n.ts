@@ -792,14 +792,9 @@ export function translateLessonText(text: string | undefined, nativeLang: string
   if (qPatterns) result = applyPatterns(result, qPatterns);
 
   // If native lang is not en/es, also try English as fallback for anything still in Spanish
-  if (nativeLang !== 'en' && nativeLang !== 'es') {
-    const enC = LESSON_CONTENT_PATTERNS['en'];
-    const enE = EXPLANATION_PATTERNS['en'];
-    const enQ = QUESTION_PATTERNS['en'];
-    if (enC) result = applyPatterns(result, enC);
-    if (enE) result = applyPatterns(result, enE);
-    if (enQ) result = applyPatterns(result, enQ);
-  }
+  // NOTE: no English fallback here. Mixing a native sentence with English
+  // fragments was the source of the "idiomas mezclados" reports; leftover
+  // strings stay in the base language instead of becoming half-English.
 
   if (translationCache.size > 20000) translationCache.clear();
   translationCache.set(cacheKey, result);
@@ -810,10 +805,6 @@ export function translateLessonTitle(title: string, nativeLang: string): string 
   if (nativeLang === 'es') return title;
   const patterns = TITLE_PATTERNS[nativeLang];
   if (patterns) return applyPatterns(title, patterns);
-  if (nativeLang !== 'en') {
-    const enPatterns = TITLE_PATTERNS['en'];
-    if (enPatterns) return applyPatterns(title, enPatterns);
-  }
   return title;
 }
 
