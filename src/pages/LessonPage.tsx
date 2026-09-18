@@ -200,6 +200,7 @@ export default function LessonPage() {
     setTimeout(() => {
       setFeedback(null); setLocked(false); setSelectedChoice(null); setTextInput(''); setOrderPlaced([]);
       speech.setTranscript('');
+      setShowSubtitle(false);
       const next = stepIdx + 1;
       if (next >= steps.length) { completeLesson(); }
       else { setStepIdx(next); const ns = steps[next]; if (ns?.t === 'or') initOrderWords(ns); }
