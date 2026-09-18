@@ -9,11 +9,10 @@ import { speakText } from '@/utils/helpers';
 import { translateLessonText, translateLessonTitle } from '@/utils/lessonI18n';
 
 function useStoryI18n(storyLang: string, nativeLang: string) {
-  // For Spanish native speakers, use inline data (already in Spanish)
-  // For English native speakers, use English overlay
-  // For others, use English overlay as best fallback
-  const useOverlay = nativeLang !== 'es';
-  const overlay = useOverlay ? STORY_I18N_EN[storyLang] : null;
+  // Spanish natives read the inline data; English natives read the English overlay.
+  // Any other language goes through the pattern translator on the Spanish base so
+  // sentences never end up half English / half native.
+  const overlay = nativeLang === 'en' ? STORY_I18N_EN[storyLang] : null;
 
   return {
     subtitle: (original: string) => overlay?.subtitle || original,
