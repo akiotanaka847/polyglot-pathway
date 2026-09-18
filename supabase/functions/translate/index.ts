@@ -89,7 +89,9 @@ ${missing.map((t, i) => `${i + 1}. ${t}`).join("\n")}`;
 
       const inserts: { key: string; lang: string; source: string; translated: string }[] = [];
       missing.forEach((src, i) => {
-        const tr = typeof out[i] === "string" && out[i].trim() ? out[i] : src;
+        // The model sometimes echoes the "1. " list numbering; strip it.
+        const raw = typeof out[i] === "string" ? out[i].replace(/^\s*\d+\.\s*/, "").trim() : "";
+        const tr = raw || src;
         cached.set(keyOf.get(src)!, tr);
         if (tr !== src) inserts.push({ key: keyOf.get(src)!, lang, source: src, translated: tr });
       });
