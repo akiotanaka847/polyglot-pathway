@@ -316,7 +316,7 @@ export default function LessonPage() {
             {tt('step_of').replace('{0}', String(stepIdx + 1)).replace('{1}', String(steps.length))}
           </span>
           {recallKey(step) && (
-            <span className="flex items-center gap-1 text-[0.58rem] text-foreground-muted" title={tt('memory_label')}>
+            <span className="flex items-center gap-1 text-[0.58rem] text-foreground-muted">
               🧠 <RecallBars bars={getRecall(l, recallKey(step)).bars} />
             </span>
           )}
