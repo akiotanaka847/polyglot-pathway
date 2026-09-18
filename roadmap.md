@@ -9,11 +9,11 @@
 - [x] Barras de memoria 1-3 (evidencia espaciada por días)
 - [x] Dificultad adaptativa (habilidad por idioma)
 - [x] Barras de memoria visibles en lecciones y repositorio
-- [ ] App nativa iOS/Android con Capacitor
+- [x] Capacitor configurado (appId/appName Voxia, webDir dist, hot-reload). Faltan pasos locales del usuario: `npx cap add ios/android`, `npm run build`, `npx cap sync`, `npx cap run`.
 
 ## Actualizaciones PWA
 - [x] Confirmado: la PWA se actualiza al abrirla y el progreso local (localStorage) se conserva.
-- [ ] Verificar que el service worker no sirva versiones viejas en caché tras publicar.
+- [x] No hay service worker: la PWA carga siempre la versión publicada (sin caché vieja) y el progreso en localStorage se conserva.
 - [x] Bug quiz verificado en navegador (texto y opción múltiple marcan bien; se acepta respuesta base, nativa e IA).
 
 ## Auditoría de idioma (resultado)
