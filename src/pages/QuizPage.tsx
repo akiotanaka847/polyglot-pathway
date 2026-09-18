@@ -182,7 +182,7 @@ export default function QuizPage() {
                 return (
                   <button key={i} disabled={locked} onClick={() => setSelected(i)} className={`flex items-center gap-2 p-2.5 border-[1.5px] rounded-xl text-sm text-left transition-all ${cls}`}>
                     <span className="w-5 h-5 rounded-md bg-foreground/[0.06] flex items-center justify-center text-[0.63rem] font-bold">{labels[i]}</span>
-                    {translateOption(opt, state.nativeLang)}
+                    {aiTr(opt) !== opt ? aiTr(opt) : translateOption(opt, state.nativeLang)}
                   </button>
                 );
               })}
