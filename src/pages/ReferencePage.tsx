@@ -7,6 +7,7 @@ import { speakText } from '@/utils/helpers';
 import { GrammarEntry } from '@/data/types';
 import { translateLessonTitle, translateExplanation, translateOption } from '@/utils/lessonI18n';
 import { useAiTranslate } from '@/hooks/useAiTranslate';
+import RecallBars from '@/components/RecallBars';
 
 const VALID_LANG_CODES = new Set(LANGUAGES.map(l => l.code));
 
@@ -33,7 +34,7 @@ function getCatLabel(nativeLang: string, cat: string) {
 
 export default function ReferencePage() {
   const navigate = useNavigate();
-  const { state, tt } = useApp();
+  const { state, tt, getRecall } = useApp();
   const activeLangs = [...new Set(state.activeLangs || [])];
 
   const refLangs = [...new Set([
@@ -323,7 +324,10 @@ export default function ReferencePage() {
                                   <span className={`font-bold text-[0.82rem] ${config.fontClass || ''}`} style={{ color: colors.text }}>{entry.word}</span>
                                   {entry.reading && <span className="text-[0.68rem] text-foreground-muted">({entry.reading})</span>}
                                 </div>
-                                <div className="text-[0.75rem] text-foreground-secondary">{ai(entry.meaning, translateOption(entry.meaning, state.nativeLang))}</div>
+                                <div className="text-[0.75rem] text-foreground-secondary flex items-center gap-1.5">
+                                  {ai(entry.meaning, translateOption(entry.meaning, state.nativeLang))}
+                                  <RecallBars bars={getRecall(lang, entry.word).bars} />
+                                </div>
                                 {entry.example && <div className="text-[0.65rem] text-foreground-muted mt-0.5 italic truncate">{entry.example}</div>}
                               </div>
                             </div>

@@ -7,6 +7,7 @@ import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { normalizeAnswer, shuffleArray, speakText, playCorrectSound, playIncorrectSound, playLevelUpSound, spawnConfetti } from '@/utils/helpers';
 import { translateLessonText, translateLessonTitle } from '@/utils/lessonI18n';
 import { useAiTranslate } from '@/hooks/useAiTranslate';
+import RecallBars from '@/components/RecallBars';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
 
 // Topic-related emoji illustrations for visual association
@@ -314,6 +315,11 @@ export default function LessonPage() {
           <span className="text-[0.6rem] font-bold tracking-widest uppercase text-foreground-muted">
             {tt('step_of').replace('{0}', String(stepIdx + 1)).replace('{1}', String(steps.length))}
           </span>
+          {recallKey(step) && (
+            <span className="flex items-center gap-1 text-[0.58rem] text-foreground-muted" title={tt('memory_label')}>
+              🧠 <RecallBars bars={getRecall(l, recallKey(step)).bars} />
+            </span>
+          )}
           <span className="flex-1" />
           <button onClick={() => speakText(step.t === 'th' ? step.char : step.t === 'la' ? step.audio : (step as any).q || '', l)}
             className="px-2.5 py-1 rounded-full border border-border bg-card text-[0.65rem] hover:bg-background transition-colors">
