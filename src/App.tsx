@@ -66,7 +66,7 @@ function BottomNav() {
     { id: 'home', icon: '🏠', label: tt('home'), path: '/', color: 'hsl(263, 70%, 50%)' },
     { id: 'lessons', icon: '📚', label: tt('lessons'), path: `/levels/${lessonsLang}`, color: 'hsl(217, 91%, 60%)' },
     { id: 'progress', icon: '📊', label: tt('progress'), path: '/dashboard', color: 'hsl(152, 69%, 46%)' },
-    { id: 'practice', icon: '🎯', label: tt('practice'), path: '/practice', color: 'hsl(25, 95%, 53%)' },
+    { id: 'conversation', icon: '🎙️', label: tt('conversation'), path: '/conversation', color: 'hsl(25, 95%, 53%)' },
     { id: 'reference', icon: '📖', label: tt('reference'), path: '/reference', color: 'hsl(330, 81%, 60%)' },
   ];
 
