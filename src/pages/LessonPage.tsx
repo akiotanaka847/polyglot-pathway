@@ -6,6 +6,7 @@ import { getLangConfig } from '@/data/languages';
 import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { normalizeAnswer, shuffleArray, speakText, playCorrectSound, playIncorrectSound, playLevelUpSound, spawnConfetti } from '@/utils/helpers';
 import { translateLessonText, translateLessonTitle } from '@/utils/lessonI18n';
+import { useAiTranslate } from '@/hooks/useAiTranslate';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
 
 // Topic-related emoji illustrations for visual association
@@ -55,7 +56,6 @@ export default function LessonPage() {
   const navigate = useNavigate();
   const { addXP, markLessonDone, checkStreak, earnAchievement, tt, state: appState } = useApp();
   const nativeLang = appState.nativeLang || 'en';
-  const tl = (text: string | undefined) => translateLessonText(text, nativeLang);
   const tlTitle = (title: string) => translateLessonTitle(title, nativeLang);
 
   const l = lang || 'jp';
@@ -95,6 +95,27 @@ export default function LessonPage() {
       setOrderPlaced([]);
     }
   }, []);
+
+  // Long explanations (advanced levels) fall back to AI translation, cached forever.
+  const aiTexts = useMemo(() => {
+    if (!lesson || nativeLang === 'es' || nativeLang === 'en') return [];
+    const out: string[] = [];
+    const push = (v: unknown) => { if (typeof v === 'string' && v.length > 45) out.push(v); };
+    push(lesson.title);
+    (lesson.steps ?? []).forEach((st) => {
+      const any = st as unknown as Record<string, unknown>;
+      push(any.q); push(any.note); push(any.text); push(any.hint); push(any.mn);
+    });
+    return [...new Set(out)];
+  }, [lesson, nativeLang]);
+  const { tr: aiTr } = useAiTranslate(aiTexts, nativeLang);
+
+  const tl = (text: string | undefined) => {
+    const base = translateLessonText(text, nativeLang);
+    if (!text || nativeLang === 'es') return base;
+    const ai = aiTr(text);
+    return ai && ai !== text ? ai : base;
+  };
 
   const steps = lesson?.steps ?? [];
   const rawStep = steps[stepIdx] as LessonStep | undefined;
