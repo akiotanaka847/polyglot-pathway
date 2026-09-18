@@ -7,6 +7,7 @@ import { normalizeAnswer, playCorrectSound, playIncorrectSound, playLevelUpSound
 import { translateLessonText, translateExamTitle, translateSectionName, translateOption } from '@/utils/lessonI18n';
 import { MCStep, TextStep, ReadingStep, SpeakStep, ListenAnswerStep } from '@/data/types';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
+import { useAiTranslate } from '@/hooks/useAiTranslate';
 
 type Q = MCStep | TextStep | ReadingStep | SpeakStep | ListenAnswerStep;
 
@@ -41,7 +42,26 @@ export default function ExamPage() {
   const navigate = useNavigate();
   const { tt, addXP, state: appState } = useApp();
   const nativeLang = appState.nativeLang || 'en';
-  const tl = (text: string | undefined) => translateLessonText(text, nativeLang);
+  const examForAi = EXAM_DATA[lang]?.[level];
+  // AI translation for exam prose (questions, options, reading passages).
+  const aiTexts = useMemo(() => {
+    if (!examForAi || nativeLang === 'es' || nativeLang === 'en') return [];
+    const out: string[] = [];
+    examForAi.sections.forEach(sec => {
+      sec.qs.forEach(qq => {
+        const any = qq as unknown as Record<string, unknown>;
+        [any.q, any.passage, any.note, any.hint].forEach(v => { if (typeof v === 'string' && v.length > 8) out.push(v); });
+        if (Array.isArray(any.opts)) (any.opts as string[]).forEach(o => { if (o.length > 3) out.push(o); });
+      });
+    });
+    return [...new Set(out)];
+  }, [examForAi, nativeLang]);
+  const { tr: aiTr } = useAiTranslate(aiTexts, nativeLang);
+  const tl = (text: string | undefined) => {
+    if (!text) return '';
+    const ai = aiTr(text);
+    return ai && ai !== text ? ai : translateLessonText(text, nativeLang);
+  };
   const exam = EXAM_DATA[lang]?.[level];
   const config = getLangConfig(lang);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -272,7 +292,7 @@ export default function ExamPage() {
             {q.t === 'rd' && (
               <div className="bg-background rounded-xl p-4 mb-4 text-sm leading-relaxed border border-border">
                 <p className="font-bold text-xs mb-1.5" style={{ color: `hsl(${config.hue}, 70%, 40%)` }}>{(q as ReadingStep).title}</p>
-                <p>{(q as ReadingStep).passage}</p>
+                <p>{tl((q as ReadingStep).passage)}</p>
               </div>
             )}
 
@@ -315,7 +335,7 @@ export default function ExamPage() {
                       style={{ background: `hsl(${config.hue}, 80%, 95%)`, color: `hsl(${config.hue}, 70%, 40%)` }}>
                       {['A','B','C','D'][i]}
                     </span>
-                    {translateOption(o, nativeLang)}
+                    {aiTr(o) !== o ? aiTr(o) : translateOption(o, nativeLang)}
                   </button>
                 ))}
               </div>
