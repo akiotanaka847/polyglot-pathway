@@ -1,4 +1,13 @@
 import { Lesson, LessonStep } from '../types';
+import { translateLessonText } from '@/utils/lessonI18n';
+import { getLangConfig } from '../languages';
+
+// The language being learned is always shown by its own native name
+// (日本語, Français…) so it reads the same for every native language.
+function langLabel(code: string, fallback: string): string {
+  const cfg = getLangConfig(code);
+  return cfg?.nativeName || fallback;
+}
 
 // Unit template definitions
 export interface UnitDef {
@@ -98,16 +107,28 @@ const MEANING_DICT: Record<string, Record<string, string>> = {
   // For other languages, fall back to English if not found
 };
 
+function lookup(dict: Record<string, string> | undefined, mn: string): string | null {
+  if (!dict) return null;
+  if (dict[mn]) return dict[mn];
+  const key = Object.keys(dict).find(k => k.toLowerCase() === mn.toLowerCase());
+  return key ? dict[key] : null;
+}
+
 function translateMeaning(mn: string, nativeLang: string): string {
   if (nativeLang === 'en') return mn;
-  const dict = MEANING_DICT[nativeLang];
-  if (dict && dict[mn]) return dict[mn];
-  // Try lowercase match
-  if (dict) {
-    const key = Object.keys(dict).find(k => k.toLowerCase() === mn.toLowerCase());
-    if (key) return dict[key];
+  const direct = lookup(MEANING_DICT[nativeLang], mn);
+  if (direct) return direct;
+  // Chain: English meaning -> Spanish (base language of all content) -> native
+  const spanish = lookup(MEANING_DICT.es, mn);
+  if (spanish) {
+    if (nativeLang === 'es') return spanish;
+    const translated = translateLessonText(spanish, nativeLang);
+    if (translated && translated !== spanish) return translated;
+    return spanish;
   }
-  return mn; // fallback to English
+  // Last resort: try translating the English meaning itself
+  const viaEn = translateLessonText(mn, nativeLang);
+  return viaEn || mn;
 }
 
 // Question template translations
@@ -367,10 +388,11 @@ function generateReviewLesson(
 
 // Main generator: produces ~100 lessons from a wordbank
 export function generateLessons(
-  code: string, level: string, lang: string,
+  code: string, level: string, langName: string,
   bank: LevelWordbank,
   nativeLang: string = 'en'
 ): Lesson[] {
+  const lang = langLabel(code, langName);
   const lessons: Lesson[] = [];
   let num = 1;
   const units = getA1Units(nativeLang);
