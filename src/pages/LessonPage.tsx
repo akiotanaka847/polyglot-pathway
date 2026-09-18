@@ -8,6 +8,7 @@ import { normalizeAnswer, shuffleArray, speakText, playCorrectSound, playIncorre
 import { translateLessonText, translateLessonTitle } from '@/utils/lessonI18n';
 import { useAiTranslate } from '@/hooks/useAiTranslate';
 import RecallBars from '@/components/RecallBars';
+import VoiceOrb from '@/components/VoiceOrb';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
 
 // Topic-related emoji illustrations for visual association
@@ -80,6 +81,7 @@ export default function LessonPage() {
   const [completed, setCompleted] = useState(false);
   const [xpEarned, setXpEarned] = useState(0);
   const [slideDir, setSlideDir] = useState<'in' | 'out'>('in');
+  const [showSubtitle, setShowSubtitle] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Speech recognition
@@ -198,6 +200,7 @@ export default function LessonPage() {
     setTimeout(() => {
       setFeedback(null); setLocked(false); setSelectedChoice(null); setTextInput(''); setOrderPlaced([]);
       speech.setTranscript('');
+      setShowSubtitle(false);
       const next = stepIdx + 1;
       if (next >= steps.length) { completeLesson(); }
       else { setStepIdx(next); const ns = steps[next]; if (ns?.t === 'or') initOrderWords(ns); }
@@ -491,6 +494,13 @@ export default function LessonPage() {
                     🔊
                   </button>
                   <p className="text-sm font-medium" style={{ color: `hsl(${config.hue}, 70%, 35%)` }}>{tt('what_did_you_hear')}</p>
+                  <button onClick={() => setShowSubtitle(s => !s)}
+                    className="mt-2 px-3 py-1 rounded-full border border-border bg-card text-[0.65rem] hover:bg-background transition-colors">
+                    {showSubtitle ? '🙈' : '👁️'} {tt('hint')}
+                  </button>
+                  {showSubtitle && (
+                    <p className={`mt-2 text-lg font-bold ${fontClass}`} style={{ color: `hsl(${config.hue}, 70%, 35%)` }}>{step.audio}</p>
+                  )}
                 </div>
                 <div className="relative">
                   <input value={textInput} onChange={e => setTextInput(e.target.value)}
@@ -510,6 +520,12 @@ export default function LessonPage() {
                 <div className="text-center p-5 rounded-xl mb-2"
                   style={{ background: `linear-gradient(135deg, hsl(${config.hue}, 80%, 96%), hsl(${config.hue}, 60%, 90%))` }}>
                   <p className="text-sm mb-1 text-foreground-muted">{tt('say_word')}</p>
+                  <VoiceOrb
+                    mode={speech.isListening ? 'listening' : 'idle'}
+                    hue={config.hue}
+                    label={tt('tap_to_speak')}
+                    onClick={() => { if (!locked && speech.isSupported) speech.isListening ? speech.stop() : speech.start(); }}
+                  />
                   <p className={`text-2xl font-bold ${fontClass}`} style={{ color: `hsl(${config.hue}, 70%, 35%)` }}>{step.hint}</p>
                   <button onClick={() => speakText(step.hint || step.expected, l)}
                     className="mt-2 px-3 py-1 rounded-full border border-border bg-card text-xs hover:bg-background transition-colors">
