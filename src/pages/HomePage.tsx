@@ -168,7 +168,7 @@ export default function HomePage() {
               <span className="text-4xl">🎙️</span>
               <div>
                 <div className="font-display text-lg font-bold">{tt('conversation')}</div>
-                <div className="text-[0.7rem] text-foreground-muted font-semibold">{tt('speaking')} · AI</div>
+                <div className="text-[0.7rem] text-foreground-muted font-semibold">🗣️ 🧠 · {tt('practice')}</div>
               </div>
               <span className="ml-auto text-2xl">→</span>
             </button>
