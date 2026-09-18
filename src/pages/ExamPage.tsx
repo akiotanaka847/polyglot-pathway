@@ -48,6 +48,7 @@ export default function ExamPage() {
     if (!examForAi || nativeLang === 'es' || nativeLang === 'en') return [];
     const out: string[] = [];
     examForAi.sections.forEach(sec => {
+      out.push(sec.name);
       sec.qs.forEach(qq => {
         const any = qq as unknown as Record<string, unknown>;
         [any.q, any.passage, any.note, any.hint].forEach(v => { if (typeof v === 'string' && v.length > 8) out.push(v); });
@@ -57,6 +58,10 @@ export default function ExamPage() {
     return [...new Set(out)];
   }, [examForAi, nativeLang]);
   const { tr: aiTr } = useAiTranslate(aiTexts, nativeLang);
+  const tsec = (name: string) => {
+    const ai = aiTr(name);
+    return ai && ai !== name ? ai : translateSectionName(name, nativeLang);
+  };
   const tl = (text: string | undefined) => {
     if (!text) return '';
     const ai = aiTr(text);
@@ -169,7 +174,7 @@ export default function ExamPage() {
                   {i + 1}
                 </div>
                 <div className="flex-1">
-                  <span className="font-semibold text-sm">{translateSectionName(s.name, nativeLang)}</span>
+                  <span className="font-semibold text-sm">{tsec(s.name)}</span>
                   <div className="text-xs text-foreground-muted">{s.qs.length} {tt('questions')} · {s.time} min</div>
                 </div>
               </div>
@@ -233,7 +238,7 @@ export default function ExamPage() {
             <p className="font-semibold text-sm mb-3">{tt('progress')}</p>
             {sectionResults.map((sr, i) => (
               <div key={i} className="flex items-center gap-2 mb-2">
-                <span className="text-sm flex-1">{translateSectionName(sr.name, nativeLang)}</span>
+                <span className="text-sm flex-1">{tsec(sr.name)}</span>
                 <div className="w-20 h-1.5 bg-border rounded-full overflow-hidden">
                   <div className="h-full rounded-full" style={{ width: `${sr.total > 0 ? (sr.correct / sr.total) * 100 : 0}%`, background: sr.correct / sr.total >= 0.7 ? 'hsl(var(--success))' : 'hsl(var(--destructive))' }} />
                 </div>
@@ -263,7 +268,7 @@ export default function ExamPage() {
         <div className="flex items-center gap-3 mb-4">
           <CircularTimer timeLeft={timeLeft} total={sectionTime} />
           <div className="flex-1">
-            <span className="text-sm font-bold">{translateSectionName(section?.name || '', nativeLang)}</span>
+            <span className="text-sm font-bold">{tsec(section?.name || '')}</span>
             <div className="text-xs text-foreground-muted">
               {tt('question_of').replace('{0}', String(qIdx + 1)).replace('{1}', String(section?.qs.length))} · {sectionIdx + 1}/{exam.sections.length}
             </div>
