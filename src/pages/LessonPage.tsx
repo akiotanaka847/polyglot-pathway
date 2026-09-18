@@ -54,7 +54,7 @@ function getLessonIllustration(lesson: { unit?: { id: string; emoji: string }; t
 export default function LessonPage() {
   const { lang, level, index } = useParams();
   const navigate = useNavigate();
-  const { addXP, markLessonDone, checkStreak, earnAchievement, tt, state: appState } = useApp();
+  const { addXP, markLessonDone, checkStreak, earnAchievement, tt, state: appState, recordRecall, getRecall, recordAnswer } = useApp();
   const nativeLang = appState.nativeLang || 'en';
   const tlTitle = (title: string) => translateLessonTitle(title, nativeLang);
 
@@ -140,6 +140,12 @@ export default function LessonPage() {
     return <div className="flex-1 flex items-center justify-center"><p>{tt('coming_soon')}</p></div>;
   }
 
+  const recallKey = (st: LessonStep): string => {
+    const any = st as unknown as Record<string, unknown>;
+    const cand = [any.w, any.expected, any.ans, any.q].find(v => typeof v === 'string');
+    return (cand as string) || '';
+  };
+
   const handleCheck = () => {
     if (!step) return;
     if (step.t === 'th') { advance(true); return; }
@@ -169,6 +175,10 @@ export default function LessonPage() {
       correct = normalizedInput.includes(normalizeAnswer(step.expected)) || normalizeAnswer(step.expected).includes(normalizedInput);
       correctAns = step.expected;
     }
+    // Spaced-memory evidence for this item (3 bars need correct recall on different days)
+    const key = recallKey(step);
+    if (key) recordRecall(l, key, correct);
+    recordAnswer(l, correct);
     setFeedback({ correct, answer: correctAns });
     setLocked(true);
     setAccuracy(prev => [...prev, correct]);
