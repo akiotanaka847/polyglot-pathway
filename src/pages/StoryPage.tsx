@@ -34,6 +34,24 @@ export default function StoryPage() {
   const config = getLangConfig(lang);
   const story = STORIES[lang];
   const i18n = useStoryI18n(lang, state.nativeLang || 'es');
+  const nat = state.nativeLang || 'es';
+
+  // Long narration cannot be covered by the offline dictionary: translate it with AI.
+  const aiTexts = useMemo(() => {
+    const s = STORIES[lang];
+    if (!s || nat === 'es' || nat === 'en') return [];
+    const out: string[] = [s.subtitle];
+    s.chapters.forEach(ch => {
+      out.push(ch.title);
+      ch.scenes.forEach(sc => {
+        out.push(sc.title, sc.setting, sc.lesson, sc.quiz.q, ...sc.quiz.opts);
+        sc.dialogue.forEach(d => { if (d.tr) out.push(d.tr); });
+      });
+    });
+    return [...new Set(out.filter(Boolean))];
+  }, [lang, nat]);
+  const { tr, loading: aiLoading } = useAiTranslate(aiTexts, nat);
+
 
   if (!story) {
     return (
