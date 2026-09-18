@@ -55,13 +55,20 @@ export default function ReferencePage() {
   const aiTexts = useMemo(() => {
     if (nativeLang === 'es' || nativeLang === 'en') return [];
     const out: string[] = [];
-    (GRAMMAR_REF[lang] || []).forEach(g => {
-      out.push(g.title, g.explanation);
-      (g.examples || []).forEach(ex => { if (ex.translation) out.push(ex.translation); });
-    });
-    Object.values(VOCAB_REF[lang] || {}).forEach(list => list.forEach(v => { if (v.meaning) out.push(v.meaning); }));
-    return [...new Set(out.filter(t => typeof t === 'string' && t.length > 3))];
-  }, [lang, nativeLang]);
+    // Only the folder the user opened, to keep translation work small.
+    if (tab === 'grammar') {
+      (GRAMMAR_REF[lang] || []).filter(g => !openLevel || (g.level || 'General') === openLevel).forEach(g => {
+        out.push(g.title, g.explanation);
+        (g.examples || []).forEach(ex => { if (ex.translation) out.push(ex.translation); });
+      });
+    } else {
+      Object.entries(VOCAB_REF[lang] || {}).forEach(([lvl, list]) => {
+        if (openLevel && lvl !== openLevel) return;
+        list.forEach(v => { if (v.meaning) out.push(v.meaning); });
+      });
+    }
+    return [...new Set(out.filter(t => typeof t === 'string' && t.length > 3))].slice(0, 300);
+  }, [lang, nativeLang, tab, openLevel]);
   const { tr: aiTr } = useAiTranslate(aiTexts, nativeLang);
   const ai = (text: string | undefined, base: string) => {
     if (!text) return base;
