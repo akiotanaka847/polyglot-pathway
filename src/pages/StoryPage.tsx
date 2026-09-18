@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { LANGUAGES } from '@/data/languages';
@@ -7,6 +7,7 @@ import { STORY_I18N_EN } from '@/data/storyI18n';
 import { getLangConfig } from '@/data/languages';
 import { speakText } from '@/utils/helpers';
 import { translateLessonText, translateLessonTitle } from '@/utils/lessonI18n';
+import { useAiTranslate } from '@/hooks/useAiTranslate';
 
 function useStoryI18n(storyLang: string, nativeLang: string) {
   // Spanish natives read the inline data; English natives read the English overlay.
