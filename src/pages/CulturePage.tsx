@@ -6,6 +6,8 @@ import { CULTURE_I18N } from '@/data/cultureI18n';
 import { SLANG_DATA, SlangEntry } from '@/data/slang';
 import { getLangConfig } from '@/data/languages';
 import { translateLessonText } from '@/utils/lessonI18n';
+import { useAiTranslate } from '@/hooks/useAiTranslate';
+import { useMemo } from 'react';
 
 export default function CulturePage() {
   const navigate = useNavigate();
@@ -20,9 +22,27 @@ export default function CulturePage() {
   const slangs = SLANG_DATA[lang] || [];
   const nativeLang = state.nativeLang || 'es';
   const overlay = nativeLang !== 'es' ? (CULTURE_I18N[nativeLang] || CULTURE_I18N['en'] || {}) : {};
+  // Texts that need AI translation (culture prose + slang) for natives other than ES/EN.
+  const aiTexts = useMemo(() => {
+    if (nativeLang === 'es' || nativeLang === 'en') return [];
+    const out: string[] = [];
+    cards.forEach(c => {
+      if (!overlay[c.id]?.title) out.push(c.title, c.body, c.fact);
+    });
+    slangs.forEach(sl => { out.push(sl.meaning); if (sl.literal) out.push(sl.literal); });
+    return [...new Set(out.filter(Boolean))];
+  }, [cards, slangs, nativeLang, overlay]);
+  const { tr: aiTr } = useAiTranslate(aiTexts, nativeLang);
+  const tslang = (text: string | undefined) => {
+    if (!text) return '';
+    const ai = aiTr(text);
+    return ai && ai !== text ? ai : translateLessonText(text, nativeLang);
+  };
+
   const tr = (cardId: string, field: 'title' | 'body' | 'fact', fallback: string) => {
     if (nativeLang === 'es') return fallback;
-    return overlay[cardId]?.[field] || CULTURE_I18N['en']?.[cardId]?.[field] || fallback;
+    if (nativeLang === 'en') return CULTURE_I18N['en']?.[cardId]?.[field] || fallback;
+    return overlay[cardId]?.[field] || tslang(fallback);
   };
 
   const handleRead = (id: string) => {
@@ -122,7 +142,7 @@ export default function CulturePage() {
                     <span className="text-2xl">🗯️</span>
                     <div className="flex-1 min-w-0">
                       <div className="font-mono text-base font-bold truncate">{s.word}</div>
-                      <div className="text-sm text-foreground-secondary">{translateLessonText(s.meaning, state.nativeLang)}</div>
+                      <div className="text-sm text-foreground-secondary">{tslang(s.meaning)}</div>
                     </div>
                     {read && <span className="text-xs text-success">✅</span>}
                     <span className={`text-xs text-muted-foreground transition-transform ${isOpen ? 'rotate-180' : ''}`}>▼</span>
@@ -135,7 +155,7 @@ export default function CulturePage() {
                       </div>
                       {s.literal && (
                         <div className="p-2.5 rounded-lg bg-gold-light text-sm border-l-[3px] border-l-gold">
-                          <span className="font-bold">📝 {tt('origin_label')}: </span>{translateLessonText(s.literal, state.nativeLang)}
+                          <span className="font-bold">📝 {tt('origin_label')}: </span>{tslang(s.literal)}
                         </div>
                       )}
                       <div className="text-[0.65rem] text-muted-foreground text-right">+20 XP</div>
