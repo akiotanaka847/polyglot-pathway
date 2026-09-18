@@ -102,8 +102,9 @@ export default function LessonPage() {
     const out: string[] = [];
     const push = (v: unknown) => { if (typeof v === 'string' && v.length > 45) out.push(v); };
     push(lesson.title);
-    (lesson.steps ?? []).forEach((st: Record<string, unknown>) => {
-      push(st.q); push(st.note); push(st.text); push(st.hint); push(st.mn);
+    (lesson.steps ?? []).forEach((st) => {
+      const any = st as unknown as Record<string, unknown>;
+      push(any.q); push(any.note); push(any.text); push(any.hint); push(any.mn);
     });
     return [...new Set(out)];
   }, [lesson, nativeLang]);
