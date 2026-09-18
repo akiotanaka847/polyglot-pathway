@@ -22,3 +22,4 @@
 - [x] Eliminado el fallback al inglés: ya no se mezclan idiomas en una misma frase.
 - [x] Modo Historia: overlay inglés solo para nativos en inglés.
 - [ ] Pendiente: narrativas largas de Story Mode y textos C1/C2 siguen en español base para nativos distintos de ES/EN (requiere traducción con IA).
+- [x] Traducción con IA (Lovable Cloud) para narrativas largas y explicaciones avanzadas, con caché compartida en la base de datos + teléfono.
