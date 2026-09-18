@@ -162,6 +162,16 @@ export default function HomePage() {
         {/* Quick links */}
         {hasProgress && (
           <div className="px-5 pb-8 lg:px-8">
+            <button onClick={() => navigate('/conversation')}
+              className="w-full mb-3 border-2 rounded-3xl p-4 flex items-center gap-4 text-left hover:shadow-xl hover:-translate-y-1 transition-all"
+              style={{ borderColor: 'hsl(263, 70%, 70%)', background: 'linear-gradient(135deg, hsl(263, 80%, 96%), hsl(330, 80%, 96%))' }}>
+              <span className="text-4xl">🎙️</span>
+              <div>
+                <div className="font-display text-lg font-bold">{tt('conversation')}</div>
+                <div className="text-[0.7rem] text-foreground-muted font-semibold">{tt('speaking')} · AI</div>
+              </div>
+              <span className="ml-auto text-2xl">→</span>
+            </button>
             <div className="grid grid-cols-4 gap-2.5">
               {[
                 { icon: '📖', label: tt('story_mode'), path: '/story', color: 'hsl(263, 80%, 95%)' },
