@@ -8,6 +8,7 @@ import { normalizeAnswer, shuffleArray, speakText, playCorrectSound, playIncorre
 import { translateLessonText, translateLessonTitle } from '@/utils/lessonI18n';
 import { useAiTranslate } from '@/hooks/useAiTranslate';
 import RecallBars from '@/components/RecallBars';
+import VoiceOrb from '@/components/VoiceOrb';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
 
 // Topic-related emoji illustrations for visual association
@@ -80,6 +81,7 @@ export default function LessonPage() {
   const [completed, setCompleted] = useState(false);
   const [xpEarned, setXpEarned] = useState(0);
   const [slideDir, setSlideDir] = useState<'in' | 'out'>('in');
+  const [showSubtitle, setShowSubtitle] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Speech recognition
