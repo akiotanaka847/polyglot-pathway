@@ -59,7 +59,7 @@ export default function ReferencePage() {
       out.push(g.title, g.explanation);
       (g.examples || []).forEach(ex => { if (ex.translation) out.push(ex.translation); });
     });
-    (VOCAB_REF[lang] || []).forEach(v => { if (v.meaning) out.push(v.meaning); });
+    Object.values(VOCAB_REF[lang] || {}).forEach(list => list.forEach(v => { if (v.meaning) out.push(v.meaning); }));
     return [...new Set(out.filter(t => typeof t === 'string' && t.length > 3))];
   }, [lang, nativeLang]);
   const { tr: aiTr } = useAiTranslate(aiTexts, nativeLang);
