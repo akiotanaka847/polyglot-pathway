@@ -57,8 +57,11 @@ export default function SpeakingPage() {
     try { return JSON.parse(localStorage.getItem(STORE) || '[]'); } catch { return []; }
   });
   const [showSaved, setShowSaved] = useState(false);
-  const { transcript, isListening, isSupported, start, stop, setTranscript } = useSpeechRecognition(lang);
+  const { transcript, isListening, isSupported, start, stop, setTranscript, micError } = useSpeechRecognition(lang);
   const spokenRef = useRef('');
+  const heardRef = useRef('');
+  const [typed, setTyped] = useState('');
+  useEffect(() => { heardRef.current = transcript; }, [transcript]);
 
   useEffect(() => {
     try { localStorage.setItem(STORE, JSON.stringify(saved.slice(-120))); } catch { /* ignore */ }
