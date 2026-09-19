@@ -32,6 +32,8 @@ const UI: Record<string, Record<string, string>> = {
   ro: { title: 'Doar vorbit', sub: 'Vorbește despre orice și te corectez', pick: 'Alege o temă', own: 'Scrie tema ta…', speak: 'Vorbește', stop: 'Termină', thinking: 'Ascult și corectez…', corrections: 'Corecturi', none: 'Fără greșeli! Bravo', better: 'Mai bine așa', mine: 'Corecturile mele', clear: 'Șterge', back: 'Acasă', start: 'Începe', change: 'Schimbă tema', nomic: 'Browserul tău nu permite microfonul', retry: 'Repetă', tip: 'Sfat' },
 };
 
+const glass = 'rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md';
+
 export default function SpeakingPage() {
   const navigate = useNavigate();
   const { state, addXP, recordAnswer, getAbility } = useApp();
