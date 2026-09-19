@@ -175,7 +175,7 @@ export default function HomePage() {
             </button>
             <div className="grid grid-cols-4 gap-2.5">
               {[
-                { icon: '📖', label: tt('story_mode'), path: '/story', color: 'hsl(258, 55%, 20%)' },
+                { icon: '🗣️', label: tt('tap_to_speak').split(' ').slice(-1)[0], path: '/speaking', color: 'hsl(187, 60%, 18%)' },
                 { icon: '🌍', label: tt('culture'), path: '/culture', color: 'hsl(165, 50%, 16%)' },
                 { icon: '📝', label: tt('simulation'), path: '/exams', color: 'hsl(45, 45%, 18%)' },
                 { icon: '📚', label: tt('reference'), path: '/reference', color: 'hsl(330, 50%, 20%)' },

@@ -67,7 +67,7 @@ function BottomNav() {
     { id: 'home', icon: '🏠', label: tt('home'), path: '/', color: 'hsl(263, 70%, 50%)' },
     { id: 'lessons', icon: '📚', label: tt('lessons'), path: `/levels/${lessonsLang}`, color: 'hsl(217, 91%, 60%)' },
     { id: 'progress', icon: '📊', label: tt('progress'), path: '/dashboard', color: 'hsl(152, 69%, 46%)' },
-    { id: 'speaking', icon: '🗣️', label: tt('speak') || '🗣️', path: '/speaking', color: 'hsl(187, 85%, 53%)' },
+    { id: 'speaking', icon: '🗣️', label: tt('tap_to_speak').split(' ').slice(-1)[0], path: '/speaking', color: 'hsl(187, 85%, 53%)' },
     { id: 'conversation', icon: '🎙️', label: tt('conversation'), path: '/conversation', color: 'hsl(25, 95%, 53%)' },
   ];
 
