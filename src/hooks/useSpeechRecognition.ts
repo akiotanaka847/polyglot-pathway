@@ -102,9 +102,9 @@ export function useSpeechRecognition(lang: string) {
       const form = new FormData();
       form.append('file', audio, 'recording.wav');
       form.append('language', lang);
-      const { data, error } = await supabase.functions.invoke('transcribe-audio', { body: form });
+      const { data, error, response } = await supabase.functions.invoke('transcribe-audio', { body: form });
       if (error) {
-        const detail = await error.context?.json().catch(() => null) as { error?: string } | null;
+        const detail = await response?.json().catch(() => null) as { error?: string } | null;
         throw new Error(detail?.error || error.message);
       }
       const text = typeof data?.text === 'string' ? data.text.trim() : '';

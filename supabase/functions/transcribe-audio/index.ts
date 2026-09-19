@@ -48,16 +48,18 @@ Deno.serve(async req => {
 
     const stream = await response.text();
     let transcript = "";
+    let deltas = "";
     for (const line of stream.split("\n")) {
       if (!line.startsWith("data:")) continue;
       try {
         const event = JSON.parse(line.slice(5).trim()) as { type?: string; delta?: string; text?: string };
         if (event.type === "transcript.text.done" && event.text) transcript = event.text;
-        else if (!transcript && event.type === "transcript.text.delta" && event.delta) transcript += event.delta;
+        else if (event.type === "transcript.text.delta" && event.delta) deltas += event.delta;
       } catch { /* ignore non-JSON SSE control lines */ }
     }
-    if (!transcript.trim()) return json({ error: "No pude oír palabras claras. Acércate al micrófono e inténtalo otra vez." }, 400);
-    return json({ text: transcript.trim() });
+    const text = (transcript || deltas).trim();
+    if (!text) return json({ error: "No pude oír palabras claras. Acércate al micrófono e inténtalo otra vez." }, 400);
+    return json({ text });
   } catch (error) {
     console.error("transcribe-audio error", error);
     return json({ error: "No se pudo procesar la grabación." }, 500);
