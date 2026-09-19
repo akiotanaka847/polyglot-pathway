@@ -173,7 +173,7 @@ export default function HomePage() {
               </div>
               <span className="ml-auto text-2xl">→</span>
             </button>
-            <div className="grid grid-cols-4 gap-2.5">
+            <div className="grid grid-cols-5 gap-2">
               {[
                 { icon: '🗣️', label: tt('tap_to_speak').split(' ').slice(-1)[0], path: '/speaking', color: 'hsl(187, 60%, 18%)' },
                 { icon: '📖', label: tt('story_mode'), path: '/story', color: 'hsl(258, 55%, 20%)' },
