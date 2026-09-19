@@ -259,6 +259,21 @@ export default function SpeakingPage() {
           {transcript && !isListening && !loading && (
             <button onClick={() => send(transcript)} className="text-[0.75rem] underline text-foreground-muted">{u('retry')}</button>
           )}
+          {micError && (
+            <p className="text-[0.72rem] text-destructive text-center max-w-[300px]">🎤 {u('nomic')} ({micError})</p>
+          )}
+          <div className="w-full flex items-center gap-2 mt-1">
+            <input
+              value={typed}
+              onChange={e => setTyped(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter' && typed.trim()) { send(typed); setTyped(''); } }}
+              placeholder="⌨️ …"
+              className="flex-1 px-3 py-2 rounded-full bg-card border border-border text-sm outline-none" />
+            <button
+              disabled={loading || !typed.trim()}
+              onClick={() => { setCoach(null); send(typed); setTyped(''); }}
+              className="px-4 py-2 rounded-full border border-border text-sm disabled:opacity-40">↑</button>
+          </div>
         </div>
       </div>
     </div>
