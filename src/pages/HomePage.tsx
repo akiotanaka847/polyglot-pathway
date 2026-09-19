@@ -134,8 +134,9 @@ export default function HomePage() {
                 <button key={lang.code} onClick={() => pickLang(lang.code)}
                   className="border-2 rounded-2xl p-4 transition-all hover:-translate-y-1.5 hover:shadow-xl cursor-pointer text-left group"
                   style={{
-                    borderColor: isActive ? colors.accent : `hsl(${lang.hue}, 30%, 88%)`,
-                    background: isActive ? colors.bg : 'hsl(0, 0%, 100%)',
+                    borderColor: isActive ? colors.accent : 'hsl(var(--border))',
+                    background: isActive ? colors.bg : 'hsl(var(--card))',
+                    boxShadow: isActive ? `0 0 24px ${colors.accent}55` : undefined,
                   }}>
                   <span className="text-4xl block mb-2 group-hover:animate-wiggle">{lang.flag}</span>
                   <div className="font-display text-lg font-bold">{lang.nativeName}</div>
@@ -145,7 +146,7 @@ export default function HomePage() {
                       <div className="w-full h-2 bg-border rounded-full overflow-hidden">
                         <div className="h-full rounded-full transition-all" style={{ width: `${Math.min(100, xp / 10)}%`, background: `hsl(${lang.hue}, 70%, 46%)` }} />
                       </div>
-                      <div className="text-[0.62rem] font-bold mt-1" style={{ color: `hsl(${lang.hue}, 60%, 45%)` }}>⚡ {xp} XP</div>
+                      <div className="text-[0.62rem] font-bold mt-1" style={{ color: `hsl(${lang.hue}, 85%, 75%)` }}>⚡ {xp} XP</div>
                     </div>
                   )}
                   {!xp && (
@@ -164,7 +165,7 @@ export default function HomePage() {
           <div className="px-5 pb-8 lg:px-8">
             <button onClick={() => navigate('/conversation')}
               className="w-full mb-3 border-2 rounded-3xl p-4 flex items-center gap-4 text-left hover:shadow-xl hover:-translate-y-1 transition-all"
-              style={{ borderColor: 'hsl(263, 70%, 70%)', background: 'linear-gradient(135deg, hsl(263, 80%, 96%), hsl(330, 80%, 96%))' }}>
+              style={{ borderColor: 'hsl(var(--neon-violet))', background: 'linear-gradient(135deg, hsl(258, 55%, 22%), hsl(330, 50%, 22%))', boxShadow: '0 0 30px hsl(var(--neon-violet) / 0.35)' }}>
               <span className="text-4xl">🎙️</span>
               <div>
                 <div className="font-display text-lg font-bold">{tt('conversation')}</div>
@@ -174,10 +175,10 @@ export default function HomePage() {
             </button>
             <div className="grid grid-cols-4 gap-2.5">
               {[
-                { icon: '📖', label: tt('story_mode'), path: '/story', color: 'hsl(263, 80%, 95%)' },
-                { icon: '🌍', label: tt('culture'), path: '/culture', color: 'hsl(152, 70%, 94%)' },
-                { icon: '📝', label: tt('simulation'), path: '/exams', color: 'hsl(25, 90%, 94%)' },
-                { icon: '📚', label: tt('reference'), path: '/reference', color: 'hsl(330, 80%, 95%)' },
+                { icon: '📖', label: tt('story_mode'), path: '/story', color: 'hsl(258, 55%, 20%)' },
+                { icon: '🌍', label: tt('culture'), path: '/culture', color: 'hsl(165, 50%, 16%)' },
+                { icon: '📝', label: tt('simulation'), path: '/exams', color: 'hsl(45, 45%, 18%)' },
+                { icon: '📚', label: tt('reference'), path: '/reference', color: 'hsl(330, 50%, 20%)' },
               ].map(item => (
                 <button key={item.path} onClick={() => navigate(item.path)}
                   className="border-2 border-border rounded-2xl p-3.5 text-center hover:shadow-lg hover:-translate-y-1 transition-all"
