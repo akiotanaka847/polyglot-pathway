@@ -239,7 +239,12 @@ export default function SpeakingPage() {
           {isSupported ? (
             <button
               disabled={loading}
-              onClick={() => { if (isListening) { stop(); send(transcript); } else { setCoach(null); start(); } }}
+              onClick={() => {
+                if (isListening) {
+                  stop();
+                  setTimeout(() => send(heardRef.current), 350);
+                } else { setCoach(null); start(); }
+              }}
               className={`px-8 py-3.5 rounded-full text-sm font-bold transition-transform active:scale-95 ${isListening ? 'animate-pulse' : ''}`}
               style={{
                 background: isListening ? 'hsl(var(--destructive))' : 'linear-gradient(135deg, hsl(var(--neon-cyan)), hsl(var(--neon-violet)))',
