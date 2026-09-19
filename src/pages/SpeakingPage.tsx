@@ -32,6 +32,8 @@ const UI: Record<string, Record<string, string>> = {
   ro: { title: 'Doar vorbit', sub: 'Vorbește despre orice și te corectez', pick: 'Alege o temă', own: 'Scrie tema ta…', speak: 'Vorbește', stop: 'Termină', thinking: 'Ascult și corectez…', corrections: 'Corecturi', none: 'Fără greșeli! Bravo', better: 'Mai bine așa', mine: 'Corecturile mele', clear: 'Șterge', back: 'Acasă', start: 'Începe', change: 'Schimbă tema', nomic: 'Browserul tău nu permite microfonul', retry: 'Repetă', tip: 'Sfat' },
 };
 
+const glass = 'rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md';
+
 export default function SpeakingPage() {
   const navigate = useNavigate();
   const { state, addXP, recordAnswer, getAbility } = useApp();
@@ -106,16 +108,17 @@ export default function SpeakingPage() {
   if (showSaved) {
     const mine = saved.filter(c => c.lang === lang).slice().reverse();
     return (
-      <div className="animate-fade-in flex-1 overflow-y-auto">
-        <div className="max-w-[560px] mx-auto px-4 py-5">
+      <div className="animate-fade-in flex-1 overflow-y-auto relative">
+        <div className="pointer-events-none absolute -top-24 -left-24 w-72 h-72 rounded-full blur-[110px] opacity-20" style={{ background: 'hsl(var(--neon-violet))' }} />
+        <div className="max-w-[560px] mx-auto px-4 py-5 relative z-10">
           <div className="flex items-center gap-2 mb-4">
-            <button onClick={() => setShowSaved(false)} className="px-3 py-1 rounded-full border border-border text-sm">←</button>
+            <button onClick={() => setShowSaved(false)} className={`px-3 py-1 rounded-full text-sm ${glass}`}>←</button>
             <span className="flex-1 text-center font-display font-bold">📝 {u('mine')}</span>
-            <button onClick={() => setSaved(s => s.filter(c => c.lang !== lang))} className="px-3 py-1 rounded-full border border-border text-[0.7rem]">{u('clear')}</button>
+            <button onClick={() => setSaved(s => s.filter(c => c.lang !== lang))} className={`px-3 py-1 rounded-full text-[0.7rem] ${glass}`}>{u('clear')}</button>
           </div>
           {mine.length === 0 && <p className="text-sm text-foreground-muted text-center py-10">{u('none')}</p>}
           {mine.map((c, i) => (
-            <div key={i} className="mb-3 p-3 rounded-2xl bg-card border border-border">
+            <div key={i} className={`mb-3 p-3 ${glass}`}>
               <div className="text-sm line-through opacity-60">{c.wrong}</div>
               <button onClick={() => speakText(c.right, lang)} className="text-sm font-bold mt-0.5 text-left" style={{ color: 'hsl(var(--neon-cyan))' }}>
                 🔊 {c.right}
@@ -131,27 +134,35 @@ export default function SpeakingPage() {
   // ---------- Topic picker ----------
   if (!topic && !customTopic.trim()) {
     return (
-      <div className="animate-fade-in flex-1 overflow-y-auto">
-        <div className="max-w-[560px] mx-auto px-4 py-5">
+      <div className="animate-fade-in flex-1 overflow-y-auto relative">
+        {/* Ambient neon glows */}
+        <div className="pointer-events-none absolute -top-24 -left-24 w-72 h-72 rounded-full blur-[110px] opacity-20" style={{ background: 'hsl(var(--neon-violet))' }} />
+        <div className="pointer-events-none absolute top-1/2 -right-24 w-72 h-72 rounded-full blur-[110px] opacity-15" style={{ background: 'hsl(var(--neon-cyan))' }} />
+
+        <div className="max-w-[560px] mx-auto px-4 py-5 relative z-10">
           <div className="flex items-center gap-2 mb-4">
-            <button onClick={() => navigate('/')} className="px-3 py-1 rounded-full border border-border text-sm">← {u('back')}</button>
+            <button onClick={() => navigate('/')} className={`px-3 py-1 rounded-full text-sm ${glass}`}>← {u('back')}</button>
             <span className="flex-1 text-center font-display font-bold">🗣️ {u('title')}</span>
-            <span className="px-3 py-1 rounded-full border border-primary bg-card text-sm" title={config.nativeName}>
+            <span className={`px-3 py-1 rounded-full text-sm ${glass}`} title={config.nativeName}
+              style={{ boxShadow: '0 0 14px hsl(var(--neon-violet) / 0.4)' }}>
               {config.flag}
             </span>
           </div>
 
+          <h2 className="font-display text-2xl font-bold mb-1 bg-gradient-to-r from-[hsl(var(--neon-cyan))] to-[hsl(var(--neon-violet))] bg-clip-text text-transparent">
+            {u('title')}
+          </h2>
           <p className="text-sm text-foreground-secondary mb-4">{u('sub')} · {config.flag} {config.nativeName}</p>
 
           <div className="flex gap-2 mb-5">
             <input value={customTopic} onChange={e => setCustomTopic(e.target.value)}
               placeholder={u('own')}
-              className="flex-1 rounded-2xl px-4 py-3 text-sm bg-card border border-border outline-none focus:border-primary" />
-            <button onClick={() => setTurns([])} className="px-4 py-3 rounded-2xl font-bold text-sm text-background"
-              style={{ background: 'hsl(var(--neon-cyan))' }}>{u('start')}</button>
+              className={`flex-1 rounded-2xl px-4 py-3 text-sm outline-none focus:border-[hsl(var(--neon-cyan))] ${glass}`} />
+            <button onClick={() => setTurns([])} className="px-4 py-3 rounded-2xl font-bold text-sm text-background transition-transform active:scale-95"
+              style={{ background: 'linear-gradient(135deg, hsl(var(--neon-cyan)), hsl(var(--neon-violet)))', boxShadow: '0 0 22px hsl(var(--neon-cyan) / 0.45)' }}>{u('start')}</button>
           </div>
 
-          <button onClick={() => setShowSaved(true)} className="w-full mb-5 p-3 rounded-2xl border border-border bg-card text-sm font-semibold">
+          <button onClick={() => setShowSaved(true)} className={`w-full mb-5 p-3 text-sm font-semibold transition-all hover:-translate-y-0.5 ${glass}`}>
             📝 {u('mine')} · {saved.filter(c => c.lang === lang).length}
           </button>
 
@@ -159,7 +170,8 @@ export default function SpeakingPage() {
           <div className="grid grid-cols-2 gap-2.5">
             {SPEAK_TOPICS.map(t => (
               <button key={t.id} onClick={() => { setTopic(t.prompt); setTurns([]); setCoach(null); }}
-                className="p-3 rounded-2xl border border-border bg-card text-left hover:-translate-y-0.5 hover:border-primary transition-all">
+                className={`p-3 text-left transition-all hover:-translate-y-0.5 hover:border-[hsl(var(--neon-violet))] ${glass}`}
+                style={{ boxShadow: '0 6px 20px hsl(var(--neon-violet) / 0.08)' }}>
                 <div className="text-2xl mb-1">{t.emoji}</div>
                 <div className="text-sm font-bold">{tl(t.title)}</div>
                 <div className="text-[0.65rem] text-foreground-muted mt-0.5">{'🌱🌿🌳'.slice(0, t.level * 2)}</div>
@@ -174,13 +186,15 @@ export default function SpeakingPage() {
   // ---------- Talking view ----------
   const activeTopic = topic || customTopic;
   return (
-    <div className="flex-1 flex flex-col animate-fade-in">
-      <div className="max-w-[560px] w-full mx-auto px-4 py-4 flex-1 flex flex-col">
+    <div className="flex-1 flex flex-col animate-fade-in relative overflow-hidden">
+      <div className="pointer-events-none absolute -top-24 -left-24 w-72 h-72 rounded-full blur-[110px] opacity-25" style={{ background: 'hsl(var(--neon-violet))' }} />
+      <div className="pointer-events-none absolute -bottom-24 -right-24 w-72 h-72 rounded-full blur-[110px] opacity-20" style={{ background: 'hsl(var(--neon-cyan))' }} />
+      <div className="max-w-[560px] w-full mx-auto px-4 py-4 flex-1 flex flex-col relative z-10">
         <div className="flex items-center gap-2 mb-3">
           <button onClick={() => { setTopic(null); setCustomTopic(''); setTurns([]); setCoach(null); }}
-            className="px-3 py-1 rounded-full border border-border text-sm">←</button>
+            className={`px-3 py-1 rounded-full text-sm ${glass}`}>←</button>
           <span className="flex-1 text-center text-sm text-foreground-secondary">{tl(activeTopic)}</span>
-          <button onClick={() => setShowSaved(true)} className="px-3 py-1 rounded-full border border-border text-[0.7rem]">📝</button>
+          <button onClick={() => setShowSaved(true)} className={`px-3 py-1 rounded-full text-[0.7rem] ${glass}`}>📝</button>
         </div>
 
         <div className="flex-1 flex flex-col items-center justify-center gap-4">
@@ -188,7 +202,7 @@ export default function SpeakingPage() {
             onClick={() => coach?.reply && speakText(coach.reply, lang)} label={u('speak')} />
 
           {turns.length === 0 && !loading && (
-            <p className="text-sm text-center text-foreground-secondary max-w-[300px]">{tl(activeTopic)}</p>
+            <p className={`text-sm text-center px-4 py-2 max-w-[320px] ${glass}`}>{tl(activeTopic)}</p>
           )}
 
           {transcript && <p className="text-sm text-center opacity-80">“{transcript}”</p>}
@@ -197,7 +211,7 @@ export default function SpeakingPage() {
 
           {coach && !loading && (
             <div className="w-full space-y-3">
-              <div className="p-3 rounded-2xl bg-card border border-border">
+              <div className={`p-3 ${glass}`} style={{ boxShadow: '0 0 20px hsl(var(--neon-cyan) / 0.12)' }}>
                 <button onClick={() => speakText(coach.reply, lang)} className="text-left text-[0.95rem] font-semibold">
                   🔊 {coach.reply}
                 </button>
@@ -266,11 +280,12 @@ export default function SpeakingPage() {
               onChange={e => setTyped(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter' && typed.trim()) { send(typed); setTyped(''); } }}
               placeholder="⌨️ …"
-              className="flex-1 px-3 py-2 rounded-full bg-card border border-border text-sm outline-none" />
+              className={`flex-1 px-3 py-2 rounded-full text-sm outline-none ${glass}`} />
             <button
               disabled={loading || !typed.trim()}
               onClick={() => { setCoach(null); send(typed); setTyped(''); }}
-              className="px-4 py-2 rounded-full border border-border text-sm disabled:opacity-40">↑</button>
+              className="px-4 py-2 rounded-full text-sm font-bold text-background disabled:opacity-40"
+              style={{ background: 'linear-gradient(135deg, hsl(var(--neon-cyan)), hsl(var(--neon-violet)))' }}>↑</button>
           </div>
         </div>
       </div>
