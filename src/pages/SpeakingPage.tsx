@@ -108,16 +108,17 @@ export default function SpeakingPage() {
   if (showSaved) {
     const mine = saved.filter(c => c.lang === lang).slice().reverse();
     return (
-      <div className="animate-fade-in flex-1 overflow-y-auto">
-        <div className="max-w-[560px] mx-auto px-4 py-5">
+      <div className="animate-fade-in flex-1 overflow-y-auto relative">
+        <div className="pointer-events-none absolute -top-24 -left-24 w-72 h-72 rounded-full blur-[110px] opacity-20" style={{ background: 'hsl(var(--neon-violet))' }} />
+        <div className="max-w-[560px] mx-auto px-4 py-5 relative z-10">
           <div className="flex items-center gap-2 mb-4">
-            <button onClick={() => setShowSaved(false)} className="px-3 py-1 rounded-full border border-border text-sm">←</button>
+            <button onClick={() => setShowSaved(false)} className={`px-3 py-1 rounded-full text-sm ${glass}`}>←</button>
             <span className="flex-1 text-center font-display font-bold">📝 {u('mine')}</span>
-            <button onClick={() => setSaved(s => s.filter(c => c.lang !== lang))} className="px-3 py-1 rounded-full border border-border text-[0.7rem]">{u('clear')}</button>
+            <button onClick={() => setSaved(s => s.filter(c => c.lang !== lang))} className={`px-3 py-1 rounded-full text-[0.7rem] ${glass}`}>{u('clear')}</button>
           </div>
           {mine.length === 0 && <p className="text-sm text-foreground-muted text-center py-10">{u('none')}</p>}
           {mine.map((c, i) => (
-            <div key={i} className="mb-3 p-3 rounded-2xl bg-card border border-border">
+            <div key={i} className={`mb-3 p-3 ${glass}`}>
               <div className="text-sm line-through opacity-60">{c.wrong}</div>
               <button onClick={() => speakText(c.right, lang)} className="text-sm font-bold mt-0.5 text-left" style={{ color: 'hsl(var(--neon-cyan))' }}>
                 🔊 {c.right}
@@ -185,13 +186,15 @@ export default function SpeakingPage() {
   // ---------- Talking view ----------
   const activeTopic = topic || customTopic;
   return (
-    <div className="flex-1 flex flex-col animate-fade-in">
-      <div className="max-w-[560px] w-full mx-auto px-4 py-4 flex-1 flex flex-col">
+    <div className="flex-1 flex flex-col animate-fade-in relative overflow-hidden">
+      <div className="pointer-events-none absolute -top-24 -left-24 w-72 h-72 rounded-full blur-[110px] opacity-25" style={{ background: 'hsl(var(--neon-violet))' }} />
+      <div className="pointer-events-none absolute -bottom-24 -right-24 w-72 h-72 rounded-full blur-[110px] opacity-20" style={{ background: 'hsl(var(--neon-cyan))' }} />
+      <div className="max-w-[560px] w-full mx-auto px-4 py-4 flex-1 flex flex-col relative z-10">
         <div className="flex items-center gap-2 mb-3">
           <button onClick={() => { setTopic(null); setCustomTopic(''); setTurns([]); setCoach(null); }}
-            className="px-3 py-1 rounded-full border border-border text-sm">←</button>
+            className={`px-3 py-1 rounded-full text-sm ${glass}`}>←</button>
           <span className="flex-1 text-center text-sm text-foreground-secondary">{tl(activeTopic)}</span>
-          <button onClick={() => setShowSaved(true)} className="px-3 py-1 rounded-full border border-border text-[0.7rem]">📝</button>
+          <button onClick={() => setShowSaved(true)} className={`px-3 py-1 rounded-full text-[0.7rem] ${glass}`}>📝</button>
         </div>
 
         <div className="flex-1 flex flex-col items-center justify-center gap-4">
@@ -199,7 +202,7 @@ export default function SpeakingPage() {
             onClick={() => coach?.reply && speakText(coach.reply, lang)} label={u('speak')} />
 
           {turns.length === 0 && !loading && (
-            <p className="text-sm text-center text-foreground-secondary max-w-[300px]">{tl(activeTopic)}</p>
+            <p className={`text-sm text-center px-4 py-2 max-w-[320px] ${glass}`}>{tl(activeTopic)}</p>
           )}
 
           {transcript && <p className="text-sm text-center opacity-80">“{transcript}”</p>}
