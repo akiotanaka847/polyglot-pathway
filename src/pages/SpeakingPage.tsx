@@ -211,7 +211,7 @@ export default function SpeakingPage() {
 
           {coach && !loading && (
             <div className="w-full space-y-3">
-              <div className="p-3 rounded-2xl bg-card border border-border">
+              <div className={`p-3 ${glass}`} style={{ boxShadow: '0 0 20px hsl(var(--neon-cyan) / 0.12)' }}>
                 <button onClick={() => speakText(coach.reply, lang)} className="text-left text-[0.95rem] font-semibold">
                   🔊 {coach.reply}
                 </button>
@@ -280,11 +280,12 @@ export default function SpeakingPage() {
               onChange={e => setTyped(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter' && typed.trim()) { send(typed); setTyped(''); } }}
               placeholder="⌨️ …"
-              className="flex-1 px-3 py-2 rounded-full bg-card border border-border text-sm outline-none" />
+              className={`flex-1 px-3 py-2 rounded-full text-sm outline-none ${glass}`} />
             <button
               disabled={loading || !typed.trim()}
               onClick={() => { setCoach(null); send(typed); setTyped(''); }}
-              className="px-4 py-2 rounded-full border border-border text-sm disabled:opacity-40">↑</button>
+              className="px-4 py-2 rounded-full text-sm font-bold text-background disabled:opacity-40"
+              style={{ background: 'linear-gradient(135deg, hsl(var(--neon-cyan)), hsl(var(--neon-violet)))' }}>↑</button>
           </div>
         </div>
       </div>
