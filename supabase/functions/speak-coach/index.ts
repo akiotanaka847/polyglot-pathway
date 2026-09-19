@@ -21,6 +21,7 @@ Deno.serve(async (req) => {
     const body = await req.json() as {
       said?: string; lang?: string; native?: string; topic?: string;
       level?: string; history?: Turn[];
+      mistakes?: { wrong?: string; right?: string }[];
     };
     const said = (body.said || "").trim();
     const target = LANG_NAMES[body.lang || ""] || "English";
