@@ -62,9 +62,7 @@ export default function ConversationPage() {
   const conv = convs.find(c => c.id === activeConv);
 
   const { transcript, isListening, isSupported, start, stop, setTranscript, micError } = useSpeechRecognition(lang);
-  const heardRef = useRef('');
   const spokenRef = useRef('');
-  useEffect(() => { heardRef.current = transcript; }, [transcript]);
 
   // Speak the coach reply once
   useEffect(() => {
@@ -101,13 +99,12 @@ export default function ConversationPage() {
     } finally {
       setLoading(false);
       setTranscript('');
-      heardRef.current = '';
     }
   }
 
-  const stopAndSend = () => {
-    stop();
-    setTimeout(() => send(heardRef.current), 350);
+  const stopAndSend = async () => {
+    const heard = await stop();
+    if (heard) await send(heard);
   };
 
   const reset = () => {
@@ -204,7 +201,7 @@ export default function ConversationPage() {
                 {transcript && <p className="text-sm opacity-80">“{transcript}”</p>}
                 {isSupported ? (
                   <button
-                    onClick={() => { if (isListening) stopAndSend(); else { setTranscript(''); heardRef.current = ''; start(); } }}
+                    onClick={() => { if (isListening) void stopAndSend(); else { setTranscript(''); void start(); } }}
                     disabled={loading}
                     className={`px-6 py-2.5 rounded-full text-sm font-medium disabled:opacity-50 ${isListening ? 'bg-red-500 text-white animate-pulse' : 'bg-white text-black'}`}
                   >

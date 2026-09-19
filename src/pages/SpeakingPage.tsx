@@ -59,9 +59,7 @@ export default function SpeakingPage() {
   const [showSaved, setShowSaved] = useState(false);
   const { transcript, isListening, isSupported, start, stop, setTranscript, micError } = useSpeechRecognition(lang);
   const spokenRef = useRef('');
-  const heardRef = useRef('');
   const [typed, setTyped] = useState('');
-  useEffect(() => { heardRef.current = transcript; }, [transcript]);
 
   useEffect(() => {
     try { localStorage.setItem(STORE, JSON.stringify(saved.slice(-120))); } catch { /* ignore */ }
@@ -239,11 +237,11 @@ export default function SpeakingPage() {
           {isSupported ? (
             <button
               disabled={loading}
-              onClick={() => {
+               onClick={async () => {
                 if (isListening) {
-                  stop();
-                  setTimeout(() => send(heardRef.current), 350);
-                } else { setCoach(null); start(); }
+                   const heard = await stop();
+                   if (heard) await send(heard);
+                 } else { setCoach(null); await start(); }
               }}
               className={`px-8 py-3.5 rounded-full text-sm font-bold transition-transform active:scale-95 ${isListening ? 'animate-pulse' : ''}`}
               style={{
