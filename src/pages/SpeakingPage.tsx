@@ -84,7 +84,7 @@ export default function SpeakingPage() {
     setTurns(t => [...t, { role: 'user', text: said }]);
     try {
       const { data, error: err } = await supabase.functions.invoke('speak-coach', {
-        body: { said, lang, native: nativeLang, topic: topic || customTopic, level, history },
+        body: { said, lang, native: nativeLang, topic: topic || customTopic, level, history, mistakes: saved.slice(-8) },
       });
       if (err || (data as any)?.error) throw new Error(err?.message || (data as any).error);
       const r = data as CoachReply;
