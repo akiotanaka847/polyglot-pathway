@@ -280,7 +280,7 @@ export default function LevelMapPage() {
         style={{ background: 'linear-gradient(135deg, hsl(var(--neon-cyan)), hsl(var(--neon-violet)) 55%, hsl(var(--neon-pink)))', boxShadow: '0 0 34px hsl(var(--neon-cyan) / 0.55)' }}>
         <span className="absolute inset-0 rounded-full animate-node-ping" style={{ border: '2px solid hsl(var(--neon-cyan))' }} />
         🎙️
-      </div>
+      </button>
     </div>
   );
 }
