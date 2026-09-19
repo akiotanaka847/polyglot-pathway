@@ -100,6 +100,14 @@ export function getThemedConversations(lang: string, handcrafted: Conversation[]
 
 function guessTheme(c: Conversation): string {
   const hay = `${c.title} ${c.scenario}`.toLowerCase();
+  // Prefer an exact/near name match over keyword overlap so a handcrafted
+  // dialogue titled like a theme (e.g. "En la farmacia") claims that theme
+  // and the generated duplicate is suppressed.
+  const byName = CONV_THEMES.find(t => {
+    const n = t.name.toLowerCase();
+    return hay.includes(n) || n.includes(c.title.toLowerCase().trim());
+  });
+  if (byName) return byName.id;
   const found = CONV_THEMES.find(t =>
     t.keywords.some(k => hay.includes(k.toLowerCase())) || hay.includes(t.name.toLowerCase().slice(0, 8))
   );
