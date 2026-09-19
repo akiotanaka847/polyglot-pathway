@@ -1,6 +1,7 @@
 # Roadmap Voxia
 
 ## En curso
+- [x] Reemplazado el reconocimiento de voz del navegador por grabación WAV y transcripción IA en conversación y práctica oral.
 - [x] Auditoría de idioma con traducción IA (historias, lecciones, cultura, slang, quiz, exámenes, repositorio). Restante: módulos avanzados (niveles 3-5, exámenes, referencia, cultura, slang, historias) muestran texto en español aunque el nativo sea otro. Ampliar cobertura de traducción y verificar consistencia en toda la app.
 
 ## Actualización inspirada en Mural
