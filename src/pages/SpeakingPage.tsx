@@ -40,7 +40,11 @@ export default function SpeakingPage() {
   const tl = (s: string) => translateLessonText(s, nativeLang) || s;
 
   const activeLangs = useMemo(() => [...new Set(state.activeLangs || [])], [state.activeLangs]);
-  const [lang, setLang] = useState(activeLangs[0] || 'en');
+  // The language you're learning = the active one with most XP (same as "Continuar" en Home)
+  const lang = useMemo(() => {
+    if (!activeLangs.length) return 'en';
+    return [...activeLangs].sort((a, b) => (state.xp?.[b] || 0) - (state.xp?.[a] || 0))[0];
+  }, [activeLangs, state.xp]);
   const config = getLangConfig(lang);
 
   const [topic, setTopic] = useState<string | null>(null);
@@ -131,14 +135,9 @@ export default function SpeakingPage() {
           <div className="flex items-center gap-2 mb-4">
             <button onClick={() => navigate('/')} className="px-3 py-1 rounded-full border border-border text-sm">← {u('back')}</button>
             <span className="flex-1 text-center font-display font-bold">🗣️ {u('title')}</span>
-            <div className="flex gap-1">
-              {(activeLangs.length ? activeLangs : ['en']).map(l => (
-                <button key={l} onClick={() => setLang(l)}
-                  className={`px-2 py-1 rounded-full border text-sm ${lang === l ? 'border-primary bg-card' : 'border-border'}`}>
-                  {getLangConfig(l).flag}
-                </button>
-              ))}
-            </div>
+            <span className="px-3 py-1 rounded-full border border-primary bg-card text-sm" title={config.nativeName}>
+              {config.flag}
+            </span>
           </div>
 
           <p className="text-sm text-foreground-secondary mb-4">{u('sub')} · {config.flag} {config.nativeName}</p>
