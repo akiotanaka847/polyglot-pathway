@@ -94,9 +94,9 @@ export default function ReferencePage() {
   // Level colors gradient
   const levelColors = langConfig.levels.map((_, i, arr) => {
     const t = i / Math.max(arr.length - 1, 1);
-    const lightness = 92 - t * 20;
-    const saturation = 70 + t * 10;
-    return { bg: `hsl(${config.hue}, ${saturation}%, ${lightness}%)`, text: `hsl(${config.hue}, 70%, ${30 + t * 10}%)`, border: `hsl(${config.hue}, 60%, ${70 - t * 15}%)` };
+    const lightness = 16 + t * 10;
+    const saturation = 45 + t * 15;
+    return { bg: `hsl(${config.hue}, ${saturation}%, ${lightness}%)`, text: `hsl(${config.hue}, 85%, ${82 - t * 8}%)`, border: `hsl(${config.hue}, 70%, ${45 + t * 12}%)` };
   });
 
   function getLevelColor(level: string) {
