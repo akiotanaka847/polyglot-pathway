@@ -221,10 +221,10 @@ export default function LevelMapPage() {
                                     return (
                                       <button key={les.id} onClick={() => navigate(`/lesson/${l}/${d.lvl}/${i}`)}
                                         title={les.title}
-                                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-[0.65rem] font-bold transition-all hover:scale-110 ${
-                                          isDone ? 'text-card' : 'bg-card border border-border hover:border-foreground/30'
+                                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-[0.65rem] font-bold transition-all hover:scale-110 active:scale-95 ${
+                                          isDone ? 'text-background' : 'bg-muted border border-border hover:border-primary/60'
                                         }`}
-                                        style={isDone ? { background: `hsl(${config.hue}, 60%, 50%)` } : undefined}
+                                        style={isDone ? { background: 'hsl(var(--neon-cyan))', boxShadow: '0 0 12px hsl(var(--neon-cyan) / 0.5)' } : undefined}
                                       >
                                         {isDone ? '✓' : i + 1}
                                       </button>
@@ -243,7 +243,7 @@ export default function LevelMapPage() {
                             className={`w-full flex items-center gap-2 p-3 rounded-xl border-2 border-dashed mt-3 transition-all ${
                               !d.allDone ? 'opacity-40 cursor-not-allowed' : 'hover:shadow-md cursor-pointer'
                             }`}
-                            style={{ borderColor: `hsl(${config.hue}, 50%, 75%)`, background: `hsl(${config.hue}, 80%, 98%)` }}
+                            style={{ borderColor: 'hsl(var(--neon-violet) / 0.5)', background: 'hsl(var(--neon-violet) / 0.1)' }}
                           >
                             <span className="text-xl">{d.quizPassed ? '🏆' : d.allDone ? '📝' : '🔒'}</span>
                             <div className="flex-1 text-left">
@@ -264,7 +264,7 @@ export default function LevelMapPage() {
         </div>
 
         {/* Bottom nav */}
-        <div className="flex gap-2 mt-6 justify-center">
+        <div className="flex gap-2 mt-6 mb-24 justify-center">
           <button onClick={() => navigate('/')} className="px-4 py-2 rounded-full border border-border text-sm hover:bg-card transition-colors">
             ← {tt('go_home')}
           </button>
@@ -272,6 +272,14 @@ export default function LevelMapPage() {
             📊 {tt('progress')}
           </button>
         </div>
+      </div>
+
+      {/* Floating voice practice orb */}
+      <button onClick={() => navigate('/conversation')} aria-label={tt('conversation')}
+        className="fixed right-5 bottom-24 z-[280] w-16 h-16 rounded-full flex items-center justify-center text-2xl transition-transform hover:scale-110 active:scale-95"
+        style={{ background: 'linear-gradient(135deg, hsl(var(--neon-cyan)), hsl(var(--neon-violet)) 55%, hsl(var(--neon-pink)))', boxShadow: '0 0 34px hsl(var(--neon-cyan) / 0.55)' }}>
+        <span className="absolute inset-0 rounded-full animate-node-ping" style={{ border: '2px solid hsl(var(--neon-cyan))' }} />
+        🎙️
       </div>
     </div>
   );
