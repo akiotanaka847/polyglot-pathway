@@ -131,27 +131,35 @@ export default function SpeakingPage() {
   // ---------- Topic picker ----------
   if (!topic && !customTopic.trim()) {
     return (
-      <div className="animate-fade-in flex-1 overflow-y-auto">
-        <div className="max-w-[560px] mx-auto px-4 py-5">
+      <div className="animate-fade-in flex-1 overflow-y-auto relative">
+        {/* Ambient neon glows */}
+        <div className="pointer-events-none absolute -top-24 -left-24 w-72 h-72 rounded-full blur-[110px] opacity-20" style={{ background: 'hsl(var(--neon-violet))' }} />
+        <div className="pointer-events-none absolute top-1/2 -right-24 w-72 h-72 rounded-full blur-[110px] opacity-15" style={{ background: 'hsl(var(--neon-cyan))' }} />
+
+        <div className="max-w-[560px] mx-auto px-4 py-5 relative z-10">
           <div className="flex items-center gap-2 mb-4">
-            <button onClick={() => navigate('/')} className="px-3 py-1 rounded-full border border-border text-sm">← {u('back')}</button>
+            <button onClick={() => navigate('/')} className={`px-3 py-1 rounded-full text-sm ${glass}`}>← {u('back')}</button>
             <span className="flex-1 text-center font-display font-bold">🗣️ {u('title')}</span>
-            <span className="px-3 py-1 rounded-full border border-primary bg-card text-sm" title={config.nativeName}>
+            <span className={`px-3 py-1 rounded-full text-sm ${glass}`} title={config.nativeName}
+              style={{ boxShadow: '0 0 14px hsl(var(--neon-violet) / 0.4)' }}>
               {config.flag}
             </span>
           </div>
 
+          <h2 className="font-display text-2xl font-bold mb-1 bg-gradient-to-r from-[hsl(var(--neon-cyan))] to-[hsl(var(--neon-violet))] bg-clip-text text-transparent">
+            {u('title')}
+          </h2>
           <p className="text-sm text-foreground-secondary mb-4">{u('sub')} · {config.flag} {config.nativeName}</p>
 
           <div className="flex gap-2 mb-5">
             <input value={customTopic} onChange={e => setCustomTopic(e.target.value)}
               placeholder={u('own')}
-              className="flex-1 rounded-2xl px-4 py-3 text-sm bg-card border border-border outline-none focus:border-primary" />
-            <button onClick={() => setTurns([])} className="px-4 py-3 rounded-2xl font-bold text-sm text-background"
-              style={{ background: 'hsl(var(--neon-cyan))' }}>{u('start')}</button>
+              className={`flex-1 rounded-2xl px-4 py-3 text-sm outline-none focus:border-[hsl(var(--neon-cyan))] ${glass}`} />
+            <button onClick={() => setTurns([])} className="px-4 py-3 rounded-2xl font-bold text-sm text-background transition-transform active:scale-95"
+              style={{ background: 'linear-gradient(135deg, hsl(var(--neon-cyan)), hsl(var(--neon-violet)))', boxShadow: '0 0 22px hsl(var(--neon-cyan) / 0.45)' }}>{u('start')}</button>
           </div>
 
-          <button onClick={() => setShowSaved(true)} className="w-full mb-5 p-3 rounded-2xl border border-border bg-card text-sm font-semibold">
+          <button onClick={() => setShowSaved(true)} className={`w-full mb-5 p-3 text-sm font-semibold transition-all hover:-translate-y-0.5 ${glass}`}>
             📝 {u('mine')} · {saved.filter(c => c.lang === lang).length}
           </button>
 
@@ -159,7 +167,8 @@ export default function SpeakingPage() {
           <div className="grid grid-cols-2 gap-2.5">
             {SPEAK_TOPICS.map(t => (
               <button key={t.id} onClick={() => { setTopic(t.prompt); setTurns([]); setCoach(null); }}
-                className="p-3 rounded-2xl border border-border bg-card text-left hover:-translate-y-0.5 hover:border-primary transition-all">
+                className={`p-3 text-left transition-all hover:-translate-y-0.5 hover:border-[hsl(var(--neon-violet))] ${glass}`}
+                style={{ boxShadow: '0 6px 20px hsl(var(--neon-violet) / 0.08)' }}>
                 <div className="text-2xl mb-1">{t.emoji}</div>
                 <div className="text-sm font-bold">{tl(t.title)}</div>
                 <div className="text-[0.65rem] text-foreground-muted mt-0.5">{'🌱🌿🌳'.slice(0, t.level * 2)}</div>
