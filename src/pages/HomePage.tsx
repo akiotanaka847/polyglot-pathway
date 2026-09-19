@@ -42,14 +42,14 @@ export default function HomePage() {
     navigate(`/levels/${code}`);
   };
 
-  // Playful color palette for cards
+  // Neon night palette for cards
   const cardColors = [
-    { bg: 'hsl(263, 80%, 95%)', border: 'hsl(263, 60%, 80%)', accent: 'hsl(263, 70%, 50%)' },
-    { bg: 'hsl(217, 85%, 95%)', border: 'hsl(217, 60%, 80%)', accent: 'hsl(217, 91%, 60%)' },
-    { bg: 'hsl(152, 70%, 94%)', border: 'hsl(152, 50%, 78%)', accent: 'hsl(152, 69%, 46%)' },
-    { bg: 'hsl(25, 90%, 94%)', border: 'hsl(25, 70%, 82%)', accent: 'hsl(25, 95%, 53%)' },
-    { bg: 'hsl(330, 80%, 95%)', border: 'hsl(330, 60%, 82%)', accent: 'hsl(330, 81%, 60%)' },
-    { bg: 'hsl(45, 90%, 92%)', border: 'hsl(45, 70%, 78%)', accent: 'hsl(45, 93%, 47%)' },
+    { bg: 'hsl(258, 60%, 20%)', border: 'hsl(258, 90%, 76%)', accent: 'hsl(258, 90%, 76%)' },
+    { bg: 'hsl(187, 60%, 16%)', border: 'hsl(187, 85%, 53%)', accent: 'hsl(187, 85%, 53%)' },
+    { bg: 'hsl(330, 50%, 20%)', border: 'hsl(330, 85%, 70%)', accent: 'hsl(330, 85%, 70%)' },
+    { bg: 'hsl(165, 50%, 16%)', border: 'hsl(165, 80%, 55%)', accent: 'hsl(165, 80%, 55%)' },
+    { bg: 'hsl(226, 45%, 20%)', border: 'hsl(226, 60%, 60%)', accent: 'hsl(226, 70%, 70%)' },
+    { bg: 'hsl(45, 45%, 18%)', border: 'hsl(45, 93%, 62%)', accent: 'hsl(45, 93%, 62%)' },
   ];
 
   return (
@@ -87,10 +87,10 @@ export default function HomePage() {
                   return (
                     <button key={code} onClick={() => navigate(`/levels/${code}`)}
                       className="flex items-center gap-2 px-4 py-2.5 rounded-2xl border-2 border-border bg-card hover:shadow-lg hover:-translate-y-1 transition-all"
-                      style={{ borderColor: `hsl(${lc.hue}, 50%, 80%)`, background: `hsl(${lc.hue}, 80%, 97%)` }}>
+                      style={{ borderColor: `hsl(${lc.hue}, 70%, 55%)`, background: `hsl(${lc.hue}, 45%, 18%)` }}>
                       <span className="text-xl">{lc.flag}</span>
                       <span className="text-sm font-bold">{lc.nativeName}</span>
-                      <span className="text-[0.65rem] font-semibold px-2 py-0.5 rounded-full" style={{ background: `hsl(${lc.hue}, 60%, 90%)`, color: `hsl(${lc.hue}, 70%, 35%)` }}>
+                      <span className="text-[0.65rem] font-semibold px-2 py-0.5 rounded-full" style={{ background: `hsl(${lc.hue}, 60%, 28%)`, color: `hsl(${lc.hue}, 85%, 80%)` }}>
                         {r.icon} {state.xp[code] || 0}
                       </span>
                     </button>
