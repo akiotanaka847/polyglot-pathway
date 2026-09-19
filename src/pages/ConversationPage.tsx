@@ -2,33 +2,57 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { CONVERSATION_DATA } from '@/data/conversations';
-import { getThemedConversations, splitNpc } from '@/data/convGenerate';
+import { getThemedConversations } from '@/data/convGenerate';
 import { getLangConfig } from '@/data/languages';
 import { translateLessonText } from '@/utils/lessonI18n';
-import { speakText, normalizeAnswer } from '@/utils/helpers';
+import { speakText } from '@/utils/helpers';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
+import { supabase } from '@/integrations/supabase/client';
 import VoiceOrb from '@/components/VoiceOrb';
-import RecallBars from '@/components/RecallBars';
+
+type Correction = { wrong: string; right: string; why: string };
+type CoachReply = {
+  score: number; better: string; corrections: Correction[];
+  reply: string; replyMeaning: string; tip: string;
+};
+type Turn = { role: 'user' | 'coach'; text: string; meaning?: string };
+
+const UI: Record<string, Record<string, string>> = {
+  es: { prompt: 'Habla sobre este tema, yo te respondo y te corrijo', speak: 'Hablar', stop: 'Terminar', thinking: 'Escuchando y corrigiendo…', corrections: 'Correcciones', none: '¡Sin errores! Muy bien', better: 'Mejor así', tip: 'Consejo', write: 'Escribir', send: 'Enviar', nomic: 'Tu navegador no permite el micrófono', you: 'Tú', coach: 'Coach', retry: 'Reintentar' },
+  en: { prompt: 'Talk about this topic — I reply and correct you', speak: 'Speak', stop: 'Finish', thinking: 'Listening and correcting…', corrections: 'Corrections', none: 'No mistakes! Great', better: 'Better like this', tip: 'Tip', write: 'Write', send: 'Send', nomic: 'Your browser does not allow the microphone', you: 'You', coach: 'Coach', retry: 'Retry' },
+  fr: { prompt: 'Parle de ce thème — je réponds et je te corrige', speak: 'Parler', stop: 'Terminer', thinking: 'J’écoute et je corrige…', corrections: 'Corrections', none: 'Aucune erreur ! Bravo', better: 'Mieux ainsi', tip: 'Conseil', write: 'Écrire', send: 'Envoyer', nomic: 'Ton navigateur ne permet pas le micro', you: 'Toi', coach: 'Coach', retry: 'Réessayer' },
+  pt: { prompt: 'Fale sobre este tema — eu respondo e corrijo', speak: 'Falar', stop: 'Terminar', thinking: 'Ouvindo e corrigindo…', corrections: 'Correções', none: 'Sem erros! Muito bem', better: 'Melhor assim', tip: 'Dica', write: 'Escrever', send: 'Enviar', nomic: 'Seu navegador não permite o microfone', you: 'Você', coach: 'Coach', retry: 'Tentar de novo' },
+  zh: { prompt: '就这个话题聊聊，我会回应并纠正你', speak: '说话', stop: '结束', thinking: '正在听并纠正…', corrections: '纠正', none: '没有错误！很好', better: '更自然的说法', tip: '建议', write: '打字', send: '发送', nomic: '你的浏览器不支持麦克风', you: '你', coach: '教练', retry: '重试' },
+  jp: { prompt: 'このトピックで話してください。返事と訂正をします', speak: '話す', stop: '終わる', thinking: '聞いて直しています…', corrections: '訂正', none: '間違いなし！すばらしい', better: 'こう言うと自然', tip: 'アドバイス', write: '書く', send: '送る', nomic: 'このブラウザはマイクを使えません', you: 'あなた', coach: 'コーチ', retry: 'もう一度' },
+  ko: { prompt: '이 주제로 말해 보세요 — 대답하고 교정해 줘요', speak: '말하기', stop: '끝내기', thinking: '듣고 교정 중…', corrections: '교정', none: '실수 없음! 잘했어요', better: '이렇게가 더 자연스러워요', tip: '팁', write: '쓰기', send: '보내기', nomic: '이 브라우저는 마이크를 지원하지 않아요', you: '나', coach: '코치', retry: '다시' },
+  ru: { prompt: 'Говори на эту тему — я отвечу и исправлю', speak: 'Говорить', stop: 'Закончить', thinking: 'Слушаю и исправляю…', corrections: 'Исправления', none: 'Ошибок нет! Отлично', better: 'Лучше так', tip: 'Совет', write: 'Написать', send: 'Отправить', nomic: 'Браузер не поддерживает микрофон', you: 'Ты', coach: 'Тренер', retry: 'Повторить' },
+  ar: { prompt: 'تحدث عن هذا الموضوع — سأرد وأصحح لك', speak: 'تحدث', stop: 'إنهاء', thinking: 'أستمع وأصحح…', corrections: 'التصحيحات', none: 'لا أخطاء! رائع', better: 'الأفضل هكذا', tip: 'نصيحة', write: 'اكتب', send: 'إرسال', nomic: 'متصفحك لا يدعم الميكروفون', you: 'أنت', coach: 'المدرب', retry: 'أعد' },
+  hi: { prompt: 'इस विषय पर बोलें — मैं जवाब दूँगा और सुधार करूँगा', speak: 'बोलें', stop: 'समाप्त', thinking: 'सुन रहा हूँ और सुधार रहा हूँ…', corrections: 'सुधार', none: 'कोई गलती नहीं! बहुत अच्छा', better: 'ऐसे बेहतर है', tip: 'सुझाव', write: 'लिखें', send: 'भेजें', nomic: 'आपका ब्राउज़र माइक्रोफ़ोन नहीं देता', you: 'आप', coach: 'कोच', retry: 'फिर से' },
+  ro: { prompt: 'Vorbește despre această temă — răspund și te corectez', speak: 'Vorbește', stop: 'Termină', thinking: 'Ascult și corectez…', corrections: 'Corecturi', none: 'Fără greșeli! Bravo', better: 'Mai bine așa', tip: 'Sfat', write: 'Scrie', send: 'Trimite', nomic: 'Browserul tău nu permite microfonul', you: 'Tu', coach: 'Antrenor', retry: 'Reîncearcă' },
+};
 
 export default function ConversationPage() {
   const navigate = useNavigate();
-  const { state, addXP, markConvDone, tt, recordRecall, getRecall, recordAnswer, getAbility } = useApp();
+  const { state, addXP, markConvDone, tt, recordAnswer, getAbility } = useApp();
   const nativeLang = state.nativeLang || 'es';
-  const activeLangs = [...new Set(state.activeLangs || [])];
-  const convLangs = (activeLangs.length ? activeLangs : Object.keys(CONVERSATION_DATA));
-  const [lang, setLang] = useState<string>(convLangs[0] || 'jp');
+  const u = (k: string) => UI[nativeLang]?.[k] || UI.es[k];
+  const activeLangs = useMemo(() => [...new Set(state.activeLangs || [])], [state.activeLangs]);
+  const convLangs = activeLangs.length ? activeLangs : Object.keys(CONVERSATION_DATA);
+  // Language being learned = active one with most XP (same rule as "Continuar" on Home)
+  const [lang, setLang] = useState<string>(() => {
+    const ls = activeLangs.length ? activeLangs : Object.keys(CONVERSATION_DATA);
+    return [...ls].sort((a, b) => (state.xp?.[b] || 0) - (state.xp?.[a] || 0))[0] || 'en';
+  });
   const [activeConv, setActiveConv] = useState<string | null>(null);
-  const [turnIdx, setTurnIdx] = useState(0);
-  const [input, setInput] = useState('');
-  const [fb, setFb] = useState<'correct' | 'wrong' | null>(null);
-  const [done, setDone] = useState(false);
+  const [turns, setTurns] = useState<Turn[]>([]);
+  const [coach, setCoach] = useState<CoachReply | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [showMeaning, setShowMeaning] = useState(true);
   const [typing, setTyping] = useState(false);
-  const [lookup, setLookup] = useState<string | null>(null);
-  const [spoke, setSpoke] = useState(false);
+  const [input, setInput] = useState('');
 
   const config = getLangConfig(lang);
-  const ability = getAbility(lang);
   const tl = (s: string) => translateLessonText(s, nativeLang) || s;
 
   const convs = useMemo(
@@ -36,67 +60,63 @@ export default function ConversationPage() {
     [lang]
   );
   const conv = convs.find(c => c.id === activeConv);
-  const turn = conv?.turns[turnIdx];
-  const npc = turn ? splitNpc(turn.npc) : { text: '', meaning: '' };
-  const npcMeaning = turn?.npcMn || npc.meaning;
 
-  const { transcript, isListening, isSupported, start, stop, setTranscript } = useSpeechRecognition(lang);
-  const lastSpoken = useRef<string>('');
+  const { transcript, isListening, isSupported, start, stop, setTranscript, micError } = useSpeechRecognition(lang);
+  const heardRef = useRef('');
+  const spokenRef = useRef('');
+  useEffect(() => { heardRef.current = transcript; }, [transcript]);
 
-  // Speak the other person's line when the turn changes
+  // Speak the coach reply once
   useEffect(() => {
-    if (!conv || done || !npc.text) return;
-    if (lastSpoken.current === `${conv.id}-${turnIdx}`) return;
-    lastSpoken.current = `${conv.id}-${turnIdx}`;
-    setSpoke(true);
-    speakText(npc.text, lang);
-    const id = setTimeout(() => setSpoke(false), Math.min(6000, 900 + npc.text.length * 110));
-    return () => clearTimeout(id);
-  }, [conv, turnIdx, npc.text, lang, done]);
+    if (!coach?.reply || spokenRef.current === coach.reply) return;
+    spokenRef.current = coach.reply;
+    speakText(coach.reply, lang);
+  }, [coach, lang]);
 
-  const answer = (typing ? input : transcript).trim();
+  const level = (() => {
+    const a = getAbility(lang);
+    return a > 0.75 ? 'advanced' : a > 0.45 ? 'intermediate' : 'beginner';
+  })();
 
-  const check = (value: string) => {
-    if (!conv || !turn || !value.trim()) return;
-    const v = normalizeAnswer(value);
-    const match = turn.accept.some(a => v.includes(normalizeAnswer(a)) || normalizeAnswer(a).includes(v));
-    recordAnswer(lang, match);
-    recordRecall(lang, turn.expected, match);
-    if (match) {
-      setFb('correct');
-      addXP(lang, 30);
-      setTimeout(() => {
-        setFb(null); setInput(''); setTranscript('');
-        if (turnIdx + 1 >= conv.turns.length) {
-          markConvDone(conv.id); addXP(lang, 120); setDone(true);
-        } else setTurnIdx(i => i + 1);
-      }, 1300);
-    } else {
-      setFb('wrong');
-      setInput(''); setTranscript('');
+  async function send(said: string) {
+    const text = said.trim();
+    if (!text || !conv) return;
+    setLoading(true); setError(null); setCoach(null); setInput('');
+    const history = turns.slice(-8);
+    setTurns(t => [...t, { role: 'user', text }]);
+    try {
+      const { data, error: err } = await supabase.functions.invoke('speak-coach', {
+        body: { said: text, lang, native: nativeLang, topic: `${conv.title} — ${conv.scenario}`, level, history },
+      });
+      if (err || (data as { error?: string })?.error) throw new Error(err?.message || (data as { error?: string }).error);
+      const r = data as CoachReply;
+      setCoach(r);
+      setTurns(t => [...t, { role: 'coach', text: r.reply, meaning: r.replyMeaning }]);
+      const clean = !r.corrections?.length;
+      recordAnswer(lang, clean);
+      addXP(lang, clean ? 40 : 25);
+      if (turns.length >= 5) markConvDone(conv.id);
+    } catch (e) {
+      setError(String((e as Error).message || e));
+    } finally {
+      setLoading(false);
+      setTranscript('');
+      heardRef.current = '';
     }
+  }
+
+  const stopAndSend = () => {
+    stop();
+    setTimeout(() => send(heardRef.current), 350);
   };
 
-  const reset = () => { setActiveConv(null); setTurnIdx(0); setFb(null); setInput(''); setTranscript(''); setDone(false); setLookup(null); };
+  const reset = () => {
+    setActiveConv(null); setTurns([]); setCoach(null); setInput('');
+    setTranscript(''); setError(null); spokenRef.current = '';
+  };
 
-  // ---------- Conversation view (calm, focused) ----------
+  // ---------- Live conversation (AI coach, free speaking) ----------
   if (conv) {
-    if (done) {
-      return (
-        <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-fade-in">
-          <div className="text-5xl mb-4">🎉</div>
-          <h2 className="font-serif text-2xl font-semibold mb-2">{tt('conversation_complete')}</h2>
-          <p className="text-sm text-foreground-secondary mb-5">+150 {tt('xp_earned')}</p>
-          <div className="flex gap-2">
-            <button onClick={reset} className="px-5 py-2 rounded-full border border-border text-sm">← {tt('back')}</button>
-            <button onClick={() => { setTurnIdx(0); setDone(false); lastSpoken.current = ''; }} className="px-5 py-2 rounded-full bg-foreground text-background text-sm font-medium">🔄 {tt('repeat')}</button>
-          </div>
-        </div>
-      );
-    }
-
-    const hideHint = ability > 0.7 && fb !== 'wrong';
-
     return (
       <div
         className="flex-1 flex flex-col animate-fade-in text-white"
@@ -116,48 +136,53 @@ export default function ConversationPage() {
 
           <div className="flex-1 flex flex-col items-center justify-center gap-4">
             <VoiceOrb
-              mode={isListening ? 'listening' : spoke ? 'speaking' : 'idle'}
+              mode={isListening ? 'listening' : loading ? 'speaking' : 'idle'}
               hue={config.hue}
-              onClick={() => speakText(npc.text, lang)}
+              onClick={() => coach?.reply && speakText(coach.reply, lang)}
               label={tt('listen') || 'Escuchar'}
             />
 
-            <div className="text-center">
-              <p className="text-lg leading-relaxed">
-                {npc.text.split(/(\s+)/).map((w, i) =>
-                  w.trim() ? (
-                    <button
-                      key={i}
-                      onClick={() => { setLookup(w.replace(/[.,!?¿¡。、？！]/g, '')); speakText(w, lang); }}
-                      className="hover:underline decoration-dotted"
-                    >{w}</button>
-                  ) : <span key={i}> </span>
-                )}
-              </p>
-              {showMeaning && npcMeaning && (
-                <p className="text-[0.8rem] opacity-60 mt-2 italic">{tl(npcMeaning)}</p>
-              )}
-              {lookup && (
-                <p className="text-[0.75rem] mt-2 opacity-80">
-                  🔍 <strong>{lookup}</strong> — <RecallBars bars={getRecall(lang, lookup).bars} />
-                </p>
-              )}
-            </div>
-
-            {!hideHint && (
-              <p className="text-[0.75rem] opacity-70 text-center">💡 {tl(turn!.hint)}</p>
+            {!turns.length && !loading && (
+              <p className="text-sm text-center opacity-80 px-4">💬 {u('prompt')}</p>
             )}
 
-            {fb === 'correct' && (
-              <div className="text-sm text-center px-4 py-2 rounded-xl bg-white/10">
-                ✅ {tt('correct')} — <em>{turn!.expected}</em>
+            {loading && <p className="text-sm opacity-70">{u('thinking')}</p>}
+
+            {coach && !loading && (
+              <div className="w-full space-y-2">
+                <div className="text-center">
+                  <p className="text-lg leading-relaxed">{coach.reply}</p>
+                  {showMeaning && coach.replyMeaning && (
+                    <p className="text-[0.8rem] opacity-60 mt-1 italic">{coach.replyMeaning}</p>
+                  )}
+                </div>
+                <div className="rounded-xl bg-white/10 px-3 py-2 text-[0.8rem] space-y-1">
+                  <div className="opacity-80">⭐ {coach.score}/100</div>
+                  {coach.corrections?.length ? (
+                    <>
+                      <div className="font-semibold">🛠 {u('corrections')}</div>
+                      {coach.corrections.map((c, i) => (
+                        <div key={i} className="opacity-90">
+                          <s className="opacity-60">{c.wrong}</s> → <strong>{c.right}</strong>
+                          {c.why && <span className="opacity-70"> — {c.why}</span>}
+                        </div>
+                      ))}
+                    </>
+                  ) : (
+                    <div>✅ {u('none')}</div>
+                  )}
+                  {coach.better && <div className="opacity-90">✨ {u('better')}: <em>{coach.better}</em></div>}
+                  {coach.tip && <div className="opacity-70">💡 {u('tip')}: {coach.tip}</div>}
+                </div>
               </div>
             )}
-            {fb === 'wrong' && (
-              <div className="text-sm text-center px-4 py-2 rounded-xl bg-white/10">
-                ❌ {tt('try_again')} — 💡 {tl(turn!.hint)}
+
+            {error && (
+              <div className="text-[0.8rem] text-center px-4 py-2 rounded-xl bg-red-500/20">
+                ⚠️ {error}
               </div>
             )}
+            {micError && <p className="text-[0.75rem] opacity-70">🎤 {micError}</p>}
           </div>
 
           {/* Reply controls */}
@@ -168,41 +193,34 @@ export default function ConversationPage() {
                   autoFocus
                   value={input}
                   onChange={e => setInput(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && check(input)}
-                  placeholder={tt('write_in_language')}
+                  onKeyDown={e => e.key === 'Enter' && send(input)}
+                  placeholder={tt('write_in_language') || u('write')}
                   className="flex-1 rounded-xl px-3 py-2 text-sm bg-white/10 border border-white/20 outline-none placeholder:text-white/40"
                 />
-                <button onClick={() => check(input)} className="px-4 py-2 rounded-full bg-white text-black text-sm font-medium">{tt('send')}</button>
+                <button onClick={() => send(input)} disabled={loading} className="px-4 py-2 rounded-full bg-white text-black text-sm font-medium disabled:opacity-50">{u('send')}</button>
               </div>
             ) : (
               <div className="flex flex-col items-center gap-2">
                 {transcript && <p className="text-sm opacity-80">“{transcript}”</p>}
-                <div className="flex gap-2">
-                  {isSupported ? (
-                    <button
-                      onClick={() => { if (isListening) { stop(); check(transcript); } else start(); }}
-                      className={`px-6 py-2.5 rounded-full text-sm font-medium ${isListening ? 'bg-red-500 text-white animate-pulse' : 'bg-white text-black'}`}
-                    >
-                      {isListening ? `⏹ ${tt('stop') || 'Parar'}` : `🎤 ${tt('speak') || 'Hablar'}`}
-                    </button>
-                  ) : (
-                    <span className="text-[0.7rem] opacity-60">🎤 {tt('coming_soon')}</span>
-                  )}
-                  {transcript && !isListening && (
-                    <button onClick={() => check(transcript)} className="px-4 py-2.5 rounded-full border border-white/30 text-sm">{tt('send')}</button>
-                  )}
-                </div>
+                {isSupported ? (
+                  <button
+                    onClick={() => { if (isListening) stopAndSend(); else { setTranscript(''); heardRef.current = ''; start(); } }}
+                    disabled={loading}
+                    className={`px-6 py-2.5 rounded-full text-sm font-medium disabled:opacity-50 ${isListening ? 'bg-red-500 text-white animate-pulse' : 'bg-white text-black'}`}
+                  >
+                    {isListening ? `⏹ ${u('stop')}` : `🎤 ${u('speak')}`}
+                  </button>
+                ) : (
+                  <span className="text-[0.7rem] opacity-60">🎤 {u('nomic')}</span>
+                )}
               </div>
             )}
             <button
               onClick={() => { setTyping(v => !v); setInput(''); setTranscript(''); }}
               className="mt-3 w-full text-center text-[0.7rem] opacity-60 underline"
             >
-              {typing ? `🎤 ${tt('speak') || 'Hablar'}` : `⌨️ ${tt('write_in_language')}`}
+              {typing ? `🎤 ${u('speak')}` : `⌨️ ${u('write')}`}
             </button>
-            <div className="mt-2 text-[0.7rem] opacity-50 text-center">
-              {tt('turn_of').replace('{0}', String(turnIdx + 1)).replace('{1}', String(conv.turns.length))}
-            </div>
           </div>
         </div>
       </div>
@@ -210,10 +228,6 @@ export default function ConversationPage() {
   }
 
   // ---------- Theme catalogue ----------
-  const levels: { key: 1 | 2 | 3; label: string }[] = [
-    { key: 1, label: '🌱' }, { key: 2, label: '🌿' }, { key: 3, label: '🌳' },
-  ];
-
   return (
     <div className="animate-fade-in flex-1 overflow-y-auto">
       <div className="max-w-[580px] mx-auto px-4 py-5">
@@ -230,7 +244,7 @@ export default function ConversationPage() {
         </div>
 
         <h2 className="font-serif text-2xl font-light mb-1">{tt('practice_conv')}</h2>
-        <p className="text-sm text-foreground-secondary mb-4">{tt('simulate_real')}</p>
+        <p className="text-sm text-foreground-secondary mb-4">{u('prompt')}</p>
 
         {convs.length === 0 ? (
           <p className="text-sm text-foreground-muted text-center py-8">{tt('coming_soon')}</p>
@@ -239,7 +253,7 @@ export default function ConversationPage() {
           return (
             <button
               key={c.id}
-              onClick={() => { setActiveConv(c.id); setTurnIdx(0); setFb(null); setInput(''); setTranscript(''); setDone(false); lastSpoken.current = ''; }}
+              onClick={() => { setActiveConv(c.id); setTurns([]); setCoach(null); setInput(''); setTranscript(''); setError(null); spokenRef.current = ''; }}
               className="w-full border-[1.5px] border-border rounded-[18px] overflow-hidden mb-3 bg-card text-left hover:-translate-y-0.5 hover:shadow-md transition-all"
             >
               <div className="p-4 flex items-center gap-3.5">
@@ -253,7 +267,6 @@ export default function ConversationPage() {
             </button>
           );
         })}
-        <p className="text-[0.7rem] text-foreground-muted text-center mt-2">{levels.map(l => l.label).join(' ')}</p>
       </div>
     </div>
   );
