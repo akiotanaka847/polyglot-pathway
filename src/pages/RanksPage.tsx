@@ -24,11 +24,11 @@ export default function RanksPage() {
             const r = getRank(code);
             return (
               <div key={code} className="rounded-[16px] p-4 text-center border"
-                style={{ background: `hsl(${config.hue}, 80%, 96%)`, borderColor: `hsl(${config.hue}, 60%, 80%)` }}>
+                style={{ background: `hsl(${config.hue}, 50%, 18%)`, borderColor: `hsl(${config.hue}, 70%, 48%)` }}>
                 <div className="text-3xl">{r.icon}</div>
-                <div className="font-serif text-lg font-semibold" style={{ color: `hsl(${config.hue}, 70%, 40%)` }}>{config.flag} {r.title}</div>
+                <div className="font-serif text-lg font-semibold" style={{ color: `hsl(${config.hue}, 85%, 78%)` }}>{config.flag} {r.title}</div>
                 <div className="text-[0.7rem] text-foreground-secondary">{r.romaji ? `${r.romaji} · ` : ''}{r.meaning}</div>
-                <div className="text-[0.75rem] font-bold mt-1" style={{ color: `hsl(${config.hue}, 70%, 40%)` }}>{state.xp[code] || 0} XP</div>
+                <div className="text-[0.75rem] font-bold mt-1" style={{ color: `hsl(${config.hue}, 85%, 78%)` }}>{state.xp[code] || 0} XP</div>
                 <div className="h-1.5 bg-border rounded-full mt-2 overflow-hidden">
                   <div className="h-full rounded-full" style={{ width: `${getRankPct(code)}%`, background: `hsl(${config.hue}, 70%, 46%)` }} />
                 </div>
@@ -53,7 +53,7 @@ export default function RanksPage() {
             const levels = config.levels;
             return (
               <div key={code}>
-                <div className="text-[0.68rem] font-bold tracking-widest uppercase mb-2" style={{ color: `hsl(${config.hue}, 70%, 40%)` }}>
+                <div className="text-[0.68rem] font-bold tracking-widest uppercase mb-2" style={{ color: `hsl(${config.hue}, 85%, 78%)` }}>
                   {config.flag} {config.nativeName}
                 </div>
                 {levels.slice(0, 5).map((lvl, i) => {

@@ -94,14 +94,14 @@ export default function ReferencePage() {
   // Level colors gradient
   const levelColors = langConfig.levels.map((_, i, arr) => {
     const t = i / Math.max(arr.length - 1, 1);
-    const lightness = 92 - t * 20;
-    const saturation = 70 + t * 10;
-    return { bg: `hsl(${config.hue}, ${saturation}%, ${lightness}%)`, text: `hsl(${config.hue}, 70%, ${30 + t * 10}%)`, border: `hsl(${config.hue}, 60%, ${70 - t * 15}%)` };
+    const lightness = 16 + t * 10;
+    const saturation = 45 + t * 15;
+    return { bg: `hsl(${config.hue}, ${saturation}%, ${lightness}%)`, text: `hsl(${config.hue}, 85%, ${82 - t * 8}%)`, border: `hsl(${config.hue}, 70%, ${45 + t * 12}%)` };
   });
 
   function getLevelColor(level: string) {
     const idx = langConfig.levels.indexOf(level);
-    return idx >= 0 ? levelColors[idx] : { bg: `hsl(${config.hue}, 60%, 94%)`, text: `hsl(${config.hue}, 60%, 40%)`, border: `hsl(${config.hue}, 50%, 75%)` };
+    return idx >= 0 ? levelColors[idx] : { bg: `hsl(${config.hue}, 50%, 18%)`, text: `hsl(${config.hue}, 85%, 78%)`, border: `hsl(${config.hue}, 70%, 52%)` };
   }
 
   const grammarLevelsWithContent = langConfig.levels.filter(lvl => grammarByLevel[lvl]?.length);
@@ -128,7 +128,7 @@ export default function ReferencePage() {
                 className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl border-2 text-sm font-medium transition-all whitespace-nowrap shrink-0 ${
                   isActive ? 'shadow-md -translate-y-0.5' : 'border-border hover:border-foreground/20'
                 }`}
-                style={isActive ? { borderColor: `hsl(${lc.hue}, 60%, 60%)`, background: `hsl(${lc.hue}, 80%, 96%)` } : undefined}
+                style={isActive ? { borderColor: `hsl(${lc.hue}, 60%, 60%)`, background: `hsl(${lc.hue}, 50%, 18%)` } : undefined}
               >
                 <span className="text-lg">{lc.flag}</span>
                 <span>{lc.nativeName}</span>

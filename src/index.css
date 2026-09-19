@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Fredoka:wght@400;500;600;700&family=Noto+Serif+JP:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Figtree:wght@400;500;600;700;800&family=Noto+Serif+JP:wght@400;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -22,42 +22,47 @@
     --fr-light: 212 50% 94%;
     --fr-accent: 212 42% 50%;
 
-    /* Playful, bright background */
-    --background: 250 100% 99%;
-    --foreground: 250 25% 12%;
-    --foreground-secondary: 250 10% 38%;
-    --foreground-muted: 250 8% 56%;
+    /* Neon night background */
+    --background: 226 48% 8%;
+    --foreground: 210 40% 98%;
+    --foreground-secondary: 222 20% 78%;
+    --foreground-muted: 222 16% 66%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 250 25% 12%;
+    --card: 226 35% 13%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 250 25% 12%;
+    --popover: 226 35% 13%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 263 70% 50%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 258 90% 76%;
+    --primary-foreground: 226 48% 8%;
 
-    --secondary: 217 91% 60%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 187 85% 53%;
+    --secondary-foreground: 226 48% 8%;
 
-    --muted: 250 30% 96%;
-    --muted-foreground: 250 8% 56%;
+    --muted: 226 30% 18%;
+    --muted-foreground: 222 16% 66%;
 
-    --accent: 152 69% 46%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 330 85% 70%;
+    --accent-foreground: 226 48% 8%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 350 85% 62%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 152 69% 46%;
-    --success-light: 152 60% 94%;
+    --success: 165 80% 55%;
+    --success-light: 165 45% 18%;
 
-    --gold: 45 93% 47%;
-    --gold-light: 45 90% 92%;
+    --gold: 45 93% 62%;
+    --gold-light: 45 40% 20%;
 
-    --border: 250 20% 92%;
-    --input: 250 20% 92%;
-    --ring: 263 70% 50%;
+    --border: 226 25% 24%;
+    --input: 226 25% 24%;
+    --ring: 258 90% 76%;
+
+    /* Neon accents */
+    --neon-cyan: 187 85% 53%;
+    --neon-violet: 258 90% 76%;
+    --neon-pink: 330 85% 70%;
 
     --radius: 1rem;
 
@@ -79,11 +84,11 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Figtree', sans-serif;
     overflow-x: hidden;
   }
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Fredoka', sans-serif;
+    font-family: 'Outfit', sans-serif;
   }
 }
 
@@ -92,13 +97,13 @@
     font-family: 'Noto Serif JP', serif;
   }
   .font-serif {
-    font-family: 'Fredoka', sans-serif;
+    font-family: 'Outfit', sans-serif;
   }
   .font-sans {
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Figtree', sans-serif;
   }
   .font-display {
-    font-family: 'Fredoka', sans-serif;
+    font-family: 'Outfit', sans-serif;
   }
 }
 
@@ -167,3 +172,20 @@
 .animate-shake { animation: shake 0.5s ease; }
 .animate-scale-in { animation: scale-in 0.3s ease-out; }
 .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+
+/* Neon interactive extras */
+@keyframes neon-breathe {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.06); filter: brightness(1.25); }
+}
+@keyframes node-ping {
+  0% { transform: scale(0.9); opacity: 0.6; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+@keyframes trail-flow {
+  to { stroke-dashoffset: -400; }
+}
+.animate-neon-breathe { animation: neon-breathe 2.8s ease-in-out infinite; }
+.animate-node-ping { animation: node-ping 2s ease-out infinite; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }

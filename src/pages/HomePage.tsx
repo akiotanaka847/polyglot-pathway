@@ -42,14 +42,14 @@ export default function HomePage() {
     navigate(`/levels/${code}`);
   };
 
-  // Playful color palette for cards
+  // Neon night palette for cards
   const cardColors = [
-    { bg: 'hsl(263, 80%, 95%)', border: 'hsl(263, 60%, 80%)', accent: 'hsl(263, 70%, 50%)' },
-    { bg: 'hsl(217, 85%, 95%)', border: 'hsl(217, 60%, 80%)', accent: 'hsl(217, 91%, 60%)' },
-    { bg: 'hsl(152, 70%, 94%)', border: 'hsl(152, 50%, 78%)', accent: 'hsl(152, 69%, 46%)' },
-    { bg: 'hsl(25, 90%, 94%)', border: 'hsl(25, 70%, 82%)', accent: 'hsl(25, 95%, 53%)' },
-    { bg: 'hsl(330, 80%, 95%)', border: 'hsl(330, 60%, 82%)', accent: 'hsl(330, 81%, 60%)' },
-    { bg: 'hsl(45, 90%, 92%)', border: 'hsl(45, 70%, 78%)', accent: 'hsl(45, 93%, 47%)' },
+    { bg: 'hsl(258, 60%, 20%)', border: 'hsl(258, 90%, 76%)', accent: 'hsl(258, 90%, 76%)' },
+    { bg: 'hsl(187, 60%, 16%)', border: 'hsl(187, 85%, 53%)', accent: 'hsl(187, 85%, 53%)' },
+    { bg: 'hsl(330, 50%, 20%)', border: 'hsl(330, 85%, 70%)', accent: 'hsl(330, 85%, 70%)' },
+    { bg: 'hsl(165, 50%, 16%)', border: 'hsl(165, 80%, 55%)', accent: 'hsl(165, 80%, 55%)' },
+    { bg: 'hsl(226, 45%, 20%)', border: 'hsl(226, 60%, 60%)', accent: 'hsl(226, 70%, 70%)' },
+    { bg: 'hsl(45, 45%, 18%)', border: 'hsl(45, 93%, 62%)', accent: 'hsl(45, 93%, 62%)' },
   ];
 
   return (
@@ -87,10 +87,10 @@ export default function HomePage() {
                   return (
                     <button key={code} onClick={() => navigate(`/levels/${code}`)}
                       className="flex items-center gap-2 px-4 py-2.5 rounded-2xl border-2 border-border bg-card hover:shadow-lg hover:-translate-y-1 transition-all"
-                      style={{ borderColor: `hsl(${lc.hue}, 50%, 80%)`, background: `hsl(${lc.hue}, 80%, 97%)` }}>
+                      style={{ borderColor: `hsl(${lc.hue}, 70%, 55%)`, background: `hsl(${lc.hue}, 45%, 18%)` }}>
                       <span className="text-xl">{lc.flag}</span>
                       <span className="text-sm font-bold">{lc.nativeName}</span>
-                      <span className="text-[0.65rem] font-semibold px-2 py-0.5 rounded-full" style={{ background: `hsl(${lc.hue}, 60%, 90%)`, color: `hsl(${lc.hue}, 70%, 35%)` }}>
+                      <span className="text-[0.65rem] font-semibold px-2 py-0.5 rounded-full" style={{ background: `hsl(${lc.hue}, 60%, 28%)`, color: `hsl(${lc.hue}, 85%, 80%)` }}>
                         {r.icon} {state.xp[code] || 0}
                       </span>
                     </button>
@@ -134,8 +134,9 @@ export default function HomePage() {
                 <button key={lang.code} onClick={() => pickLang(lang.code)}
                   className="border-2 rounded-2xl p-4 transition-all hover:-translate-y-1.5 hover:shadow-xl cursor-pointer text-left group"
                   style={{
-                    borderColor: isActive ? colors.accent : `hsl(${lang.hue}, 30%, 88%)`,
-                    background: isActive ? colors.bg : 'hsl(0, 0%, 100%)',
+                    borderColor: isActive ? colors.accent : 'hsl(var(--border))',
+                    background: isActive ? colors.bg : 'hsl(var(--card))',
+                    boxShadow: isActive ? `0 0 24px ${colors.accent}55` : undefined,
                   }}>
                   <span className="text-4xl block mb-2 group-hover:animate-wiggle">{lang.flag}</span>
                   <div className="font-display text-lg font-bold">{lang.nativeName}</div>
@@ -145,7 +146,7 @@ export default function HomePage() {
                       <div className="w-full h-2 bg-border rounded-full overflow-hidden">
                         <div className="h-full rounded-full transition-all" style={{ width: `${Math.min(100, xp / 10)}%`, background: `hsl(${lang.hue}, 70%, 46%)` }} />
                       </div>
-                      <div className="text-[0.62rem] font-bold mt-1" style={{ color: `hsl(${lang.hue}, 60%, 45%)` }}>⚡ {xp} XP</div>
+                      <div className="text-[0.62rem] font-bold mt-1" style={{ color: `hsl(${lang.hue}, 85%, 75%)` }}>⚡ {xp} XP</div>
                     </div>
                   )}
                   {!xp && (
@@ -164,7 +165,7 @@ export default function HomePage() {
           <div className="px-5 pb-8 lg:px-8">
             <button onClick={() => navigate('/conversation')}
               className="w-full mb-3 border-2 rounded-3xl p-4 flex items-center gap-4 text-left hover:shadow-xl hover:-translate-y-1 transition-all"
-              style={{ borderColor: 'hsl(263, 70%, 70%)', background: 'linear-gradient(135deg, hsl(263, 80%, 96%), hsl(330, 80%, 96%))' }}>
+              style={{ borderColor: 'hsl(var(--neon-violet))', background: 'linear-gradient(135deg, hsl(258, 55%, 22%), hsl(330, 50%, 22%))', boxShadow: '0 0 30px hsl(var(--neon-violet) / 0.35)' }}>
               <span className="text-4xl">🎙️</span>
               <div>
                 <div className="font-display text-lg font-bold">{tt('conversation')}</div>
@@ -174,10 +175,10 @@ export default function HomePage() {
             </button>
             <div className="grid grid-cols-4 gap-2.5">
               {[
-                { icon: '📖', label: tt('story_mode'), path: '/story', color: 'hsl(263, 80%, 95%)' },
-                { icon: '🌍', label: tt('culture'), path: '/culture', color: 'hsl(152, 70%, 94%)' },
-                { icon: '📝', label: tt('simulation'), path: '/exams', color: 'hsl(25, 90%, 94%)' },
-                { icon: '📚', label: tt('reference'), path: '/reference', color: 'hsl(330, 80%, 95%)' },
+                { icon: '📖', label: tt('story_mode'), path: '/story', color: 'hsl(258, 55%, 20%)' },
+                { icon: '🌍', label: tt('culture'), path: '/culture', color: 'hsl(165, 50%, 16%)' },
+                { icon: '📝', label: tt('simulation'), path: '/exams', color: 'hsl(45, 45%, 18%)' },
+                { icon: '📚', label: tt('reference'), path: '/reference', color: 'hsl(330, 50%, 20%)' },
               ].map(item => (
                 <button key={item.path} onClick={() => navigate(item.path)}
                   className="border-2 border-border rounded-2xl p-3.5 text-center hover:shadow-lg hover:-translate-y-1 transition-all"

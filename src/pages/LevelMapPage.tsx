@@ -77,62 +77,110 @@ export default function LevelMapPage() {
 
   return (
     <div className="animate-fade-in flex-1 overflow-y-auto">
-      <div className="max-w-[540px] mx-auto px-4 py-6">
+      <div className="max-w-[540px] mx-auto px-4 py-6 relative">
+        {/* Ambient neon glows */}
+        <div className="pointer-events-none absolute -top-10 right-0 w-64 h-64 rounded-full blur-[90px] opacity-30"
+          style={{ background: 'hsl(var(--neon-violet))' }} />
+        <div className="pointer-events-none absolute bottom-20 left-0 w-64 h-64 rounded-full blur-[90px] opacity-20"
+          style={{ background: 'hsl(var(--neon-cyan))' }} />
+
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold mb-3"
-            style={{ background: `hsl(${config.hue}, 80%, 96%)`, color: `hsl(${config.hue}, 70%, 35%)` }}>
+        <div className="text-center mb-8 relative">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold mb-3 border border-white/10 bg-white/5">
             {config.flag} {config.nativeName}
           </div>
-          <h1 className="font-serif text-3xl font-light mb-1">{tt('learning_path')}</h1>
+          <h1 className="font-display text-3xl font-bold mb-1">{tt('learning_path')}</h1>
           <p className="text-sm text-foreground-muted">{tt('complete_lessons')} {tt('unlock_quiz')}</p>
         </div>
 
         {/* Skill Tree Path */}
         <div className="relative">
-          {/* Vertical connector line */}
-          <div className="absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2"
-            style={{ background: `linear-gradient(to bottom, hsl(${config.hue}, 70%, 85%), hsl(${config.hue}, 30%, 92%))` }} />
+          {/* Curved neon trail */}
+          <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" viewBox="0 0 192 1000">
+            <path d="M96 0 C 96 130, 164 190, 96 320 C 28 450, 96 540, 96 700 C 96 860, 30 900, 96 1000"
+              stroke="hsl(var(--neon-violet) / 0.15)" strokeWidth="12" strokeLinecap="round" fill="none" />
+            <path d="M96 0 C 96 130, 164 190, 96 320 C 28 450, 96 540, 96 700 C 96 860, 30 900, 96 1000"
+              stroke="hsl(var(--neon-cyan))" strokeWidth="5" strokeLinecap="round" fill="none"
+              strokeDasharray="14 22" style={{ animation: 'trail-flow 9s linear infinite', opacity: 0.55 }} />
+          </svg>
 
           {levelData.map((d, nodeIdx) => {
             const isLeft = nodeIdx % 2 === 0;
             const isSelected = selectedLevel === d.lvl;
             const isCurrentNode = d.unlocked && !d.quizPassed && (nodeIdx === 0 || prog.passed[levels[nodeIdx - 1]]);
+            const memoryBars = Math.min(3, Math.round((d.pct / 100) * 3));
 
             return (
-              <div key={d.lvl} className="relative mb-2">
+              <div key={d.lvl} className="relative mb-6">
                 {/* Node row */}
                 <div className={`flex items-center gap-3 ${isLeft ? 'flex-row' : 'flex-row-reverse'}`}>
                   <div className="flex-1" />
-                  
-                  {/* Circle node */}
-                  <button
-                    onClick={() => d.unlocked && setSelectedLevel(isSelected ? null : d.lvl)}
-                    disabled={!d.unlocked}
-                    className={`relative z-10 flex items-center justify-center transition-all duration-300 ${
-                      d.unlocked ? 'cursor-pointer hover:scale-110' : 'cursor-not-allowed'
-                    } ${isCurrentNode ? 'animate-pulse-glow' : ''}`}
-                  >
-                    <CircleProgress pct={d.pct} size={72} stroke={5} hue={config.hue} />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      {!d.unlocked ? (
-                        <span className="text-xl opacity-40">🔒</span>
-                      ) : d.quizPassed ? (
-                        <span className="text-2xl">✅</span>
-                      ) : (
-                        <span className="text-xl font-bold" style={{ color: `hsl(${config.hue}, 70%, 40%)` }}>{d.lvl}</span>
+
+                  <div className={`relative z-10 flex flex-col items-center ${isLeft ? 'translate-x-3' : '-translate-x-3'}`}>
+                    {/* Memory bars on active node */}
+                    {isCurrentNode && (
+                      <div className="flex gap-1 mb-2">
+                        {[0, 1, 2].map(i => (
+                          <span key={i} className="w-5 h-1.5 rounded-full transition-all"
+                            style={{ background: i < memoryBars ? 'hsl(var(--neon-violet))' : 'hsl(var(--border))' }} />
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Node */}
+                    <button
+                      onClick={() => d.unlocked && setSelectedLevel(isSelected ? null : d.lvl)}
+                      disabled={!d.unlocked}
+                      className={`relative flex items-center justify-center transition-all duration-300 active:translate-y-1 ${
+                        d.unlocked ? 'cursor-pointer hover:scale-105' : 'cursor-not-allowed opacity-45'
+                      }`}
+                    >
+                      {isCurrentNode && (
+                        <span className="absolute inset-0 rounded-full animate-node-ping"
+                          style={{ border: '2px solid hsl(var(--neon-violet))' }} />
                       )}
-                    </div>
-                  </button>
+                      {!d.unlocked ? (
+                        <span className="w-[72px] h-[72px] rounded-[1.8rem] border-2 border-dashed border-white/20 bg-muted flex items-center justify-center text-xl">🔒</span>
+                      ) : d.quizPassed ? (
+                        <span className="w-[72px] h-[72px] rounded-[1.8rem] flex items-center justify-center text-3xl font-black text-background"
+                          style={{ background: 'hsl(var(--neon-cyan))', boxShadow: '0 10px 0 hsl(var(--neon-cyan) / 0.45), 0 18px 34px hsl(var(--neon-cyan) / 0.3)' }}>✓</span>
+                      ) : isCurrentNode ? (
+                        <span className="w-[86px] h-[86px] rounded-full p-[3px] animate-neon-breathe"
+                          style={{ background: 'linear-gradient(135deg, hsl(var(--neon-violet)), hsl(var(--neon-pink)))', boxShadow: '0 0 40px hsl(var(--neon-violet) / 0.55)' }}>
+                          <span className="w-full h-full rounded-full bg-background flex items-center justify-center font-display text-xl font-black">
+                            {d.lvl}
+                          </span>
+                        </span>
+                      ) : (
+                        <span className="relative w-[72px] h-[72px] flex items-center justify-center">
+                          <CircleProgress pct={d.pct} size={72} stroke={5} hue={config.hue} />
+                          <span className="absolute font-display text-lg font-bold">{d.lvl}</span>
+                        </span>
+                      )}
+                    </button>
+
+                    {/* Current quest pill */}
+                    {isCurrentNode && (
+                      <div className="flex flex-col items-center mt-3">
+                        <span className="px-4 py-1.5 rounded-2xl font-display text-[0.7rem] font-bold uppercase tracking-wider bg-foreground text-background shadow-[0_8px_24px_hsl(var(--neon-violet)/0.5)]">
+                          {tt('continue')}
+                        </span>
+                      </div>
+                    )}
+                  </div>
 
                   {/* Label */}
                   <div className={`flex-1 ${isLeft ? 'text-left' : 'text-right'}`}>
                     <div className={`inline-block px-3 py-1.5 rounded-xl transition-all ${
-                      isCurrentNode ? 'bg-card border border-foreground/20 shadow-sm' : 'bg-transparent'
+                      isCurrentNode ? 'bg-card border border-white/10 shadow-lg' : 'bg-transparent'
                     }`}>
-                      <div className="text-sm font-semibold">{d.lvl}</div>
+                      <div className="text-sm font-bold">{d.lvl}</div>
                       <div className="text-[0.65rem] text-foreground-muted">
                         {d.doneCount}/{d.lessons.length} · {d.pct}%
+                      </div>
+                      <div className="mt-1 h-1.5 w-20 rounded-full overflow-hidden bg-muted">
+                        <div className="h-full rounded-full transition-all duration-700"
+                          style={{ width: `${d.pct}%`, background: 'linear-gradient(90deg, hsl(var(--neon-cyan)), hsl(var(--neon-violet)))' }} />
                       </div>
                     </div>
                   </div>
@@ -173,10 +221,10 @@ export default function LevelMapPage() {
                                     return (
                                       <button key={les.id} onClick={() => navigate(`/lesson/${l}/${d.lvl}/${i}`)}
                                         title={les.title}
-                                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-[0.65rem] font-bold transition-all hover:scale-110 ${
-                                          isDone ? 'text-card' : 'bg-card border border-border hover:border-foreground/30'
+                                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-[0.65rem] font-bold transition-all hover:scale-110 active:scale-95 ${
+                                          isDone ? 'text-background' : 'bg-muted border border-border hover:border-primary/60'
                                         }`}
-                                        style={isDone ? { background: `hsl(${config.hue}, 60%, 50%)` } : undefined}
+                                        style={isDone ? { background: 'hsl(var(--neon-cyan))', boxShadow: '0 0 12px hsl(var(--neon-cyan) / 0.5)' } : undefined}
                                       >
                                         {isDone ? '✓' : i + 1}
                                       </button>
@@ -195,7 +243,7 @@ export default function LevelMapPage() {
                             className={`w-full flex items-center gap-2 p-3 rounded-xl border-2 border-dashed mt-3 transition-all ${
                               !d.allDone ? 'opacity-40 cursor-not-allowed' : 'hover:shadow-md cursor-pointer'
                             }`}
-                            style={{ borderColor: `hsl(${config.hue}, 50%, 75%)`, background: `hsl(${config.hue}, 80%, 98%)` }}
+                            style={{ borderColor: 'hsl(var(--neon-violet) / 0.5)', background: 'hsl(var(--neon-violet) / 0.1)' }}
                           >
                             <span className="text-xl">{d.quizPassed ? '🏆' : d.allDone ? '📝' : '🔒'}</span>
                             <div className="flex-1 text-left">
@@ -216,7 +264,7 @@ export default function LevelMapPage() {
         </div>
 
         {/* Bottom nav */}
-        <div className="flex gap-2 mt-6 justify-center">
+        <div className="flex gap-2 mt-6 mb-24 justify-center">
           <button onClick={() => navigate('/')} className="px-4 py-2 rounded-full border border-border text-sm hover:bg-card transition-colors">
             ← {tt('go_home')}
           </button>
@@ -225,6 +273,14 @@ export default function LevelMapPage() {
           </button>
         </div>
       </div>
+
+      {/* Floating voice practice orb */}
+      <button onClick={() => navigate('/conversation')} aria-label={tt('conversation')}
+        className="fixed right-5 bottom-24 z-[280] w-16 h-16 rounded-full flex items-center justify-center text-2xl transition-transform hover:scale-110 active:scale-95"
+        style={{ background: 'linear-gradient(135deg, hsl(var(--neon-cyan)), hsl(var(--neon-violet)) 55%, hsl(var(--neon-pink)))', boxShadow: '0 0 34px hsl(var(--neon-cyan) / 0.55)' }}>
+        <span className="absolute inset-0 rounded-full animate-node-ping" style={{ border: '2px solid hsl(var(--neon-cyan))' }} />
+        🎙️
+      </button>
     </div>
   );
 }

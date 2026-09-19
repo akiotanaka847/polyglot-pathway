@@ -102,7 +102,7 @@ export default function StoryPage() {
             </div>
           </div>
 
-          <div className="p-3 rounded-r-[10px] rounded-l-none border-l-[3px] text-sm leading-relaxed mb-4" style={{ background: `hsl(${config.hue}, 80%, 96%)`, borderLeftColor: `hsl(${config.hue}, 70%, 46%)` }}>
+          <div className="p-3 rounded-r-[10px] rounded-l-none border-l-[3px] text-sm leading-relaxed mb-4" style={{ background: `hsl(${config.hue}, 50%, 18%)`, borderLeftColor: `hsl(${config.hue}, 70%, 46%)` }}>
             📌 {sceneI18n?.lesson || tr(scene.lesson)}
           </div>
 
@@ -157,15 +157,15 @@ export default function StoryPage() {
           </div>
         </div>
 
-        <div className="rounded-[20px] p-5 mb-5 border" style={{ background: `hsl(${config.hue}, 80%, 96%)`, borderColor: `hsl(${config.hue}, 60%, 85%)` }}>
+        <div className="rounded-[20px] p-5 mb-5 border" style={{ background: `hsl(${config.hue}, 50%, 18%)`, borderColor: `hsl(${config.hue}, 70%, 48%)` }}>
           <div className="text-4xl mb-2">{story.avatar}</div>
-          <div className="font-serif text-2xl font-semibold" style={{ color: `hsl(${config.hue}, 70%, 40%)` }}>{story.protagonist}</div>
+          <div className="font-serif text-2xl font-semibold" style={{ color: `hsl(${config.hue}, 85%, 78%)` }}>{story.protagonist}</div>
           <div className="text-sm text-foreground-secondary mt-1">{i18n.subtitle(tr(story.subtitle))}</div>
         </div>
 
         {story.chapters.map((ch, ci) => (
           <div key={ci} className="mb-5">
-            <div className="text-[0.68rem] font-bold tracking-widest uppercase mb-2 pb-1 border-b border-border" style={{ color: `hsl(${config.hue}, 70%, 40%)` }}>
+            <div className="text-[0.68rem] font-bold tracking-widest uppercase mb-2 pb-1 border-b border-border" style={{ color: `hsl(${config.hue}, 85%, 78%)` }}>
               {tt('chapter')} {ci + 1} — {translateLessonTitle(i18n.chapterTitle(ci, tr(ch.title)), state.nativeLang)} <span className="opacity-60 font-normal">({ch.level})</span>
             </div>
             {ch.scenes.map((sc, si) => {
