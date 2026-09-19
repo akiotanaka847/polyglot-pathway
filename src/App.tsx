@@ -13,6 +13,7 @@ import DashboardPage from "./pages/DashboardPage";
 import StoryPage from "./pages/StoryPage";
 import CulturePage from "./pages/CulturePage";
 import ConversationPage from "./pages/ConversationPage";
+import SpeakingPage from "./pages/SpeakingPage";
 import RanksPage from "./pages/RanksPage";
 import PracticePage from "./pages/PracticePage";
 import ReferencePage from "./pages/ReferencePage";
@@ -66,8 +67,8 @@ function BottomNav() {
     { id: 'home', icon: '🏠', label: tt('home'), path: '/', color: 'hsl(263, 70%, 50%)' },
     { id: 'lessons', icon: '📚', label: tt('lessons'), path: `/levels/${lessonsLang}`, color: 'hsl(217, 91%, 60%)' },
     { id: 'progress', icon: '📊', label: tt('progress'), path: '/dashboard', color: 'hsl(152, 69%, 46%)' },
+    { id: 'speaking', icon: '🗣️', label: tt('speak') || '🗣️', path: '/speaking', color: 'hsl(187, 85%, 53%)' },
     { id: 'conversation', icon: '🎙️', label: tt('conversation'), path: '/conversation', color: 'hsl(25, 95%, 53%)' },
-    { id: 'reference', icon: '📖', label: tt('reference'), path: '/reference', color: 'hsl(330, 81%, 60%)' },
   ];
 
   if (path.startsWith('/lesson/') || path.startsWith('/quiz/')) return null;
@@ -106,6 +107,7 @@ function AppLayout() {
           <Route path="/story" element={<StoryPage />} />
           <Route path="/culture" element={<CulturePage />} />
           <Route path="/conversation" element={<ConversationPage />} />
+          <Route path="/speaking" element={<SpeakingPage />} />
           <Route path="/ranks" element={<RanksPage />} />
           <Route path="/practice" element={<PracticePage />} />
           <Route path="/reference" element={<ReferencePage />} />
