@@ -57,8 +57,11 @@ export default function SpeakingPage() {
     try { return JSON.parse(localStorage.getItem(STORE) || '[]'); } catch { return []; }
   });
   const [showSaved, setShowSaved] = useState(false);
-  const { transcript, isListening, isSupported, start, stop, setTranscript } = useSpeechRecognition(lang);
+  const { transcript, isListening, isSupported, start, stop, setTranscript, micError } = useSpeechRecognition(lang);
   const spokenRef = useRef('');
+  const heardRef = useRef('');
+  const [typed, setTyped] = useState('');
+  useEffect(() => { heardRef.current = transcript; }, [transcript]);
 
   useEffect(() => {
     try { localStorage.setItem(STORE, JSON.stringify(saved.slice(-120))); } catch { /* ignore */ }
@@ -236,7 +239,12 @@ export default function SpeakingPage() {
           {isSupported ? (
             <button
               disabled={loading}
-              onClick={() => { if (isListening) { stop(); send(transcript); } else { setCoach(null); start(); } }}
+              onClick={() => {
+                if (isListening) {
+                  stop();
+                  setTimeout(() => send(heardRef.current), 350);
+                } else { setCoach(null); start(); }
+              }}
               className={`px-8 py-3.5 rounded-full text-sm font-bold transition-transform active:scale-95 ${isListening ? 'animate-pulse' : ''}`}
               style={{
                 background: isListening ? 'hsl(var(--destructive))' : 'linear-gradient(135deg, hsl(var(--neon-cyan)), hsl(var(--neon-violet)))',
@@ -251,6 +259,21 @@ export default function SpeakingPage() {
           {transcript && !isListening && !loading && (
             <button onClick={() => send(transcript)} className="text-[0.75rem] underline text-foreground-muted">{u('retry')}</button>
           )}
+          {micError && (
+            <p className="text-[0.72rem] text-destructive text-center max-w-[300px]">🎤 {u('nomic')} ({micError})</p>
+          )}
+          <div className="w-full flex items-center gap-2 mt-1">
+            <input
+              value={typed}
+              onChange={e => setTyped(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter' && typed.trim()) { send(typed); setTyped(''); } }}
+              placeholder="⌨️ …"
+              className="flex-1 px-3 py-2 rounded-full bg-card border border-border text-sm outline-none" />
+            <button
+              disabled={loading || !typed.trim()}
+              onClick={() => { setCoach(null); send(typed); setTyped(''); }}
+              className="px-4 py-2 rounded-full border border-border text-sm disabled:opacity-40">↑</button>
+          </div>
         </div>
       </div>
     </div>
