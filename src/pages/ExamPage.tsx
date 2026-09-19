@@ -159,7 +159,7 @@ export default function ExamPage() {
         <div className="max-w-[500px] mx-auto px-4 py-8">
           <div className="text-center mb-6">
             <div className="w-20 h-20 rounded-2xl mx-auto mb-3 flex items-center justify-center text-4xl shadow-md"
-              style={{ background: `linear-gradient(135deg, hsl(${config.hue}, 80%, 96%), hsl(${config.hue}, 60%, 88%))` }}>
+              style={{ background: `linear-gradient(135deg, hsl(${config.hue}, 50%, 18%), hsl(${config.hue}, 45%, 26%))` }}>
               {config.flag}
             </div>
             <h1 className="text-2xl font-bold font-serif">{translateExamTitle(exam.title, nativeLang)}</h1>
@@ -170,7 +170,7 @@ export default function ExamPage() {
             {exam.sections.map((s, i) => (
               <div key={i} className="border border-border rounded-xl p-3.5 bg-card flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold"
-                  style={{ background: `hsl(${config.hue}, 80%, 95%)`, color: `hsl(${config.hue}, 70%, 40%)` }}>
+                  style={{ background: `hsl(${config.hue}, 50%, 20%)`, color: `hsl(${config.hue}, 85%, 78%)` }}>
                   {i + 1}
                 </div>
                 <div className="flex-1">
@@ -296,7 +296,7 @@ export default function ExamPage() {
             {/* Reading passage */}
             {q.t === 'rd' && (
               <div className="bg-background rounded-xl p-4 mb-4 text-sm leading-relaxed border border-border">
-                <p className="font-bold text-xs mb-1.5" style={{ color: `hsl(${config.hue}, 70%, 40%)` }}>{(q as ReadingStep).title}</p>
+                <p className="font-bold text-xs mb-1.5" style={{ color: `hsl(${config.hue}, 85%, 78%)` }}>{(q as ReadingStep).title}</p>
                 <p>{tl((q as ReadingStep).passage)}</p>
               </div>
             )}
@@ -337,7 +337,7 @@ export default function ExamPage() {
                   <button key={i} onClick={() => submit(i)}
                     className="w-full text-left px-4 py-3.5 rounded-xl border-[1.5px] border-border hover:border-foreground/30 hover:shadow-sm transition-all text-sm bg-background">
                     <span className="inline-flex items-center justify-center w-6 h-6 rounded-md text-[0.65rem] font-bold mr-2.5"
-                      style={{ background: `hsl(${config.hue}, 80%, 95%)`, color: `hsl(${config.hue}, 70%, 40%)` }}>
+                      style={{ background: `hsl(${config.hue}, 50%, 20%)`, color: `hsl(${config.hue}, 85%, 78%)` }}>
                       {['A','B','C','D'][i]}
                     </span>
                     {aiTr(o) !== o ? aiTr(o) : translateOption(o, nativeLang)}

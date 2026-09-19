@@ -232,7 +232,7 @@ export default function LessonPage() {
       <div ref={containerRef} className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-fade-in relative overflow-hidden">
         {/* Celebration */}
         <div className="w-24 h-24 rounded-full flex items-center justify-center text-5xl mb-4 animate-pop-in shadow-lg"
-          style={{ background: `linear-gradient(135deg, hsl(${config.hue}, 80%, 96%), hsl(${config.hue}, 60%, 88%))` }}>
+          style={{ background: `linear-gradient(135deg, hsl(${config.hue}, 50%, 18%), hsl(${config.hue}, 45%, 26%))` }}>
           {medal.icon}
         </div>
         <h2 className="font-serif text-3xl font-light mb-1">{medal.label}</h2>
@@ -303,7 +303,7 @@ export default function LessonPage() {
             <div key={i} className={`w-7 h-7 rounded-full flex items-center justify-center text-sm transition-all duration-300 ${
               i >= hearts ? 'opacity-20 scale-75 grayscale' : ''
             }`}
-              style={i < hearts ? { background: 'hsl(0, 80%, 95%)' } : undefined}>
+              style={i < hearts ? { background: 'hsl(0, 50%, 20%)' } : undefined}>
               ❤️
             </div>
           ))}
@@ -333,14 +333,14 @@ export default function LessonPage() {
         {/* Topic illustration banner */}
         {stepIdx === 0 && (
           <div className="flex items-center gap-3 p-3 rounded-2xl mb-3 border border-border"
-            style={{ background: `linear-gradient(135deg, hsl(${config.hue}, 80%, 96%), hsl(${config.hue}, 60%, 92%))` }}>
+            style={{ background: `linear-gradient(135deg, hsl(${config.hue}, 50%, 18%), hsl(${config.hue}, 45%, 24%))` }}>
             <div className="flex gap-1">
               {getLessonIllustration(lesson).map((emoji, i) => (
                 <span key={i} className="text-2xl animate-pop-in" style={{ animationDelay: `${i * 100}ms` }}>{emoji}</span>
               ))}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="font-serif text-sm font-semibold truncate" style={{ color: `hsl(${config.hue}, 70%, 35%)` }}>
+              <div className="font-serif text-sm font-semibold truncate" style={{ color: `hsl(${config.hue}, 85%, 80%)` }}>
                 {tlTitle(lesson.title)}
               </div>
               {lesson.unit && (
@@ -354,7 +354,7 @@ export default function LessonPage() {
         {step.t === 'th' && (
           <div className="bg-card border border-border rounded-2xl p-5 mb-3 shadow-sm">
             <div className="text-center p-4 rounded-xl mb-3 text-[2.2rem] leading-tight"
-              style={{ background: `linear-gradient(135deg, hsl(${config.hue}, 80%, 96%), hsl(${config.hue}, 60%, 90%))`, color: `hsl(${config.hue}, 70%, 35%)` }}>
+              style={{ background: `linear-gradient(135deg, hsl(${config.hue}, 50%, 18%), hsl(${config.hue}, 45%, 24%))`, color: `hsl(${config.hue}, 85%, 80%)` }}>
               <span className={fontClass}>{step.char}</span>
             </div>
             <div className="text-center font-bold text-base mb-0.5">{step.rd}</div>
@@ -365,7 +365,7 @@ export default function LessonPage() {
               <div className="mt-3 flex flex-col gap-1.5">
                 {step.ex.map((e, i) => (
                   <div key={i} className="flex items-baseline gap-2 text-sm">
-                    <span className={fontClass} style={{ color: `hsl(${config.hue}, 70%, 40%)` }}>{e.j || e.f || e.w}</span>
+                    <span className={fontClass} style={{ color: `hsl(${config.hue}, 85%, 78%)` }}>{e.j || e.f || e.w}</span>
                     <span className="text-foreground-muted">→ {tl(e.m)}</span>
                   </div>
                 ))}
@@ -404,8 +404,8 @@ export default function LessonPage() {
                   const labels = ['A', 'B', 'C', 'D'];
                   let cls = 'bg-background border-border hover:border-foreground/30 hover:shadow-sm';
                   if (locked) {
-                    if (i === step.ans) cls = 'bg-green-50 border-green-400 text-green-700 shadow-sm';
-                    else if (i === selectedChoice && !feedback?.correct) cls = 'bg-red-50 border-red-400 text-red-600 animate-shake';
+                    if (i === step.ans) cls = 'bg-green-500/15 border-green-400 text-green-300 shadow-sm';
+                    else if (i === selectedChoice && !feedback?.correct) cls = 'bg-red-500/15 border-red-400 text-red-300 animate-shake';
                     else cls = 'bg-background border-border opacity-50';
                   } else if (i === selectedChoice) cls = 'border-2 shadow-md bg-background';
                   return (
@@ -413,7 +413,7 @@ export default function LessonPage() {
                       className={`flex items-center gap-2.5 p-3 border-[1.5px] rounded-xl text-sm text-left transition-all ${cls}`}
                       style={!locked && i === selectedChoice ? { borderColor: `hsl(${config.hue}, 70%, 46%)` } : undefined}>
                       <span className="w-6 h-6 rounded-lg flex items-center justify-center text-[0.65rem] font-bold shrink-0"
-                        style={{ background: `hsl(${config.hue}, 80%, 95%)`, color: `hsl(${config.hue}, 70%, 40%)` }}>
+                        style={{ background: `hsl(${config.hue}, 50%, 20%)`, color: `hsl(${config.hue}, 85%, 78%)` }}>
                         {labels[i]}
                       </span>
                       <span className="flex-1">{tl(opt)}</span>
@@ -431,13 +431,13 @@ export default function LessonPage() {
                     onKeyDown={e => e.key === 'Enter' && canCheck && nextAction()} disabled={locked}
                     placeholder={tt('write_answer')}
                     className={`w-full p-3.5 pr-12 border-2 rounded-xl text-sm bg-background outline-none transition-all ${
-                      locked ? (feedback?.correct ? 'border-green-400 bg-green-50' : 'border-red-400 bg-red-50 animate-shake') : 'border-border focus:border-foreground/40'
+                      locked ? (feedback?.correct ? 'border-green-400 bg-green-500/15' : 'border-red-400 bg-red-500/15 animate-shake') : 'border-border focus:border-foreground/40'
                     }`} />
                   {/* Microphone button */}
                   {speech.isSupported && !locked && (
                     <button onClick={() => speech.isListening ? speech.stop() : speech.start()}
                       className={`absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-sm transition-all ${
-                        speech.isListening ? 'bg-red-100 text-red-600 animate-pulse' : 'bg-background border border-border hover:bg-card'
+                        speech.isListening ? 'bg-red-100 text-red-300 animate-pulse' : 'bg-background border border-border hover:bg-card'
                       }`}>
                       {speech.isListening ? '⏹' : '🎤'}
                     </button>
@@ -445,7 +445,7 @@ export default function LessonPage() {
                 </div>
                 {speech.isListening && (
                   <div className="flex items-center gap-2 text-[0.7rem] text-foreground-muted animate-fade-in">
-                    <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                    <span className="w-2 h-2 rounded-full bg-red-500/150 animate-pulse" />
                     {tt('listen')}...
                   </div>
                 )}
@@ -457,7 +457,7 @@ export default function LessonPage() {
             {step.t === 'or' && (
               <>
                 <div className={`min-h-[50px] p-2.5 border-2 border-dashed rounded-xl flex flex-wrap gap-2 mb-3 transition-all ${
-                  locked ? (feedback?.correct ? 'border-green-400 bg-green-50' : 'border-red-400 bg-red-50 animate-shake') : 'border-border'
+                  locked ? (feedback?.correct ? 'border-green-400 bg-green-500/15' : 'border-red-400 bg-red-500/15 animate-shake') : 'border-border'
                 }`}>
                   {orderPlaced.map((wi, pi) => (
                     <span key={pi} onClick={() => { if (locked) return; setOrderPlaced(p => p.filter((_, j) => j !== pi)); }}
@@ -488,18 +488,18 @@ export default function LessonPage() {
             {step.t === 'la' && (
               <div className="space-y-3">
                 <div className="text-center p-5 rounded-xl mb-2"
-                  style={{ background: `linear-gradient(135deg, hsl(${config.hue}, 80%, 96%), hsl(${config.hue}, 60%, 90%))` }}>
+                  style={{ background: `linear-gradient(135deg, hsl(${config.hue}, 50%, 18%), hsl(${config.hue}, 45%, 24%))` }}>
                   <button onClick={() => speakText(step.audio, l)}
                     className="w-16 h-16 rounded-full flex items-center justify-center text-3xl mx-auto mb-2 shadow-md transition-transform hover:scale-110 active:scale-95 bg-card border border-border">
                     🔊
                   </button>
-                  <p className="text-sm font-medium" style={{ color: `hsl(${config.hue}, 70%, 35%)` }}>{tt('what_did_you_hear')}</p>
+                  <p className="text-sm font-medium" style={{ color: `hsl(${config.hue}, 85%, 80%)` }}>{tt('what_did_you_hear')}</p>
                   <button onClick={() => setShowSubtitle(s => !s)}
                     className="mt-2 px-3 py-1 rounded-full border border-border bg-card text-[0.65rem] hover:bg-background transition-colors">
                     {showSubtitle ? '🙈' : '👁️'} {tt('hint')}
                   </button>
                   {showSubtitle && (
-                    <p className={`mt-2 text-lg font-bold ${fontClass}`} style={{ color: `hsl(${config.hue}, 70%, 35%)` }}>{step.audio}</p>
+                    <p className={`mt-2 text-lg font-bold ${fontClass}`} style={{ color: `hsl(${config.hue}, 85%, 80%)` }}>{step.audio}</p>
                   )}
                 </div>
                 <div className="relative">
@@ -507,7 +507,7 @@ export default function LessonPage() {
                     onKeyDown={e => e.key === 'Enter' && canCheck && nextAction()} disabled={locked}
                     placeholder={tt('write_answer')}
                     className={`w-full p-3.5 border-2 rounded-xl text-sm bg-background outline-none transition-all ${
-                      locked ? (feedback?.correct ? 'border-green-400 bg-green-50' : 'border-red-400 bg-red-50 animate-shake') : 'border-border focus:border-foreground/40'
+                      locked ? (feedback?.correct ? 'border-green-400 bg-green-500/15' : 'border-red-400 bg-red-500/15 animate-shake') : 'border-border focus:border-foreground/40'
                     }`} />
                 </div>
                 {step.hint && <div className="text-[0.7rem] text-foreground-muted">💡 {tt('hint')}: {step.hint}</div>}
@@ -518,7 +518,7 @@ export default function LessonPage() {
             {step.t === 'sp' && (
               <div className="space-y-3">
                 <div className="text-center p-5 rounded-xl mb-2"
-                  style={{ background: `linear-gradient(135deg, hsl(${config.hue}, 80%, 96%), hsl(${config.hue}, 60%, 90%))` }}>
+                  style={{ background: `linear-gradient(135deg, hsl(${config.hue}, 50%, 18%), hsl(${config.hue}, 45%, 24%))` }}>
                   <p className="text-sm mb-1 text-foreground-muted">{tt('say_word')}</p>
                   <VoiceOrb
                     mode={speech.isListening ? 'listening' : 'idle'}
@@ -526,7 +526,7 @@ export default function LessonPage() {
                     label={tt('tap_to_speak')}
                     onClick={() => { if (!locked && speech.isSupported) speech.isListening ? speech.stop() : speech.start(); }}
                   />
-                  <p className={`text-2xl font-bold ${fontClass}`} style={{ color: `hsl(${config.hue}, 70%, 35%)` }}>{step.hint}</p>
+                  <p className={`text-2xl font-bold ${fontClass}`} style={{ color: `hsl(${config.hue}, 85%, 80%)` }}>{step.hint}</p>
                   <button onClick={() => speakText(step.hint || step.expected, l)}
                     className="mt-2 px-3 py-1 rounded-full border border-border bg-card text-xs hover:bg-background transition-colors">
                     🔊 {tt('listen')}
@@ -554,7 +554,7 @@ export default function LessonPage() {
                       onKeyDown={e => e.key === 'Enter' && canCheck && nextAction()} disabled={locked}
                       placeholder={tt('write_answer')}
                       className={`w-full p-3.5 border-2 rounded-xl text-sm bg-background outline-none transition-all ${
-                        locked ? (feedback?.correct ? 'border-green-400 bg-green-50' : 'border-red-400 bg-red-50 animate-shake') : 'border-border focus:border-foreground/40'
+                        locked ? (feedback?.correct ? 'border-green-400 bg-green-500/15' : 'border-red-400 bg-red-500/15 animate-shake') : 'border-border focus:border-foreground/40'
                       }`} />
                   </div>
                 )}
@@ -564,7 +564,7 @@ export default function LessonPage() {
             {/* Feedback */}
             {feedback && (
               <div className={`p-4 rounded-xl text-sm mt-4 animate-scale-in border ${
-                feedback.correct ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-600 border-red-200'
+                feedback.correct ? 'bg-green-500/15 text-green-300 border-green-500/40' : 'bg-red-500/15 text-red-300 border-red-500/40'
               }`}>
                 <strong className="block mb-0.5 text-base">{feedback.correct ? `✅ ${tt('correct')}` : `❌ ${tt('incorrect')}`}</strong>
                 {feedback.correct ? tt('excellent') : `${tt('answer_was')}: ${feedback.answer}`}

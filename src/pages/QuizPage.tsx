@@ -157,7 +157,7 @@ export default function QuizPage() {
 
       <div className="flex-1 overflow-y-auto max-w-[600px] w-full mx-auto px-4 py-6">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[0.71rem] font-semibold mb-2"
-          style={{ background: `hsl(${config.hue}, 80%, 96%)`, color: `hsl(${config.hue}, 70%, 40%)` }}>
+          style={{ background: `hsl(${config.hue}, 50%, 18%)`, color: `hsl(${config.hue}, 85%, 78%)` }}>
           {config.flag} {tt('final_quiz')} — {lvl}
         </div>
         <div className="text-[0.65rem] font-semibold tracking-widest uppercase text-foreground-muted mb-3">

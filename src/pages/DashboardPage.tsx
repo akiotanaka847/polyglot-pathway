@@ -39,9 +39,9 @@ export default function DashboardPage() {
             const xp = state.xp[code] || 0;
             return (
               <div key={code} className="rounded-[16px] p-3.5 border-[1.5px]"
-                style={{ background: `hsl(${config.hue}, 80%, 96%)`, borderColor: `hsl(${config.hue}, 60%, 80%)` }}>
+                style={{ background: `hsl(${config.hue}, 50%, 18%)`, borderColor: `hsl(${config.hue}, 70%, 48%)` }}>
                 <div className="text-2xl">{r.icon}</div>
-                <div className="font-serif text-base font-semibold" style={{ color: `hsl(${config.hue}, 70%, 40%)` }}>
+                <div className="font-serif text-base font-semibold" style={{ color: `hsl(${config.hue}, 85%, 78%)` }}>
                   {config.flag} {r.title}
                 </div>
                 <div className="text-[0.67rem] text-foreground-secondary mb-1.5">{xp} XP · {r.meaning}</div>
@@ -80,7 +80,7 @@ export default function DashboardPage() {
               return (
                 <button key={`${s.lang}-${s.lvl}-${s.idx}`} onClick={() => navigate(`/lesson/${s.lang}/${s.lvl}/${s.idx}`)} className="w-full flex items-center gap-2 p-2 rounded-xl hover:bg-background border border-transparent hover:border-border transition-all text-left mb-1">
                   <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm"
-                    style={{ background: `hsl(${config.hue}, 80%, 96%)` }}>
+                    style={{ background: `hsl(${config.hue}, 50%, 18%)` }}>
                     {config.flag}
                   </div>
                   <div>
