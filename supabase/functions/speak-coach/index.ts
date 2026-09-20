@@ -116,6 +116,7 @@ Reply ONLY with JSON in exactly this shape, no markdown:
     try { out = JSON.parse(content); } catch { out = {}; }
 
     return new Response(JSON.stringify({
+      noSpeech: !!body.noSpeech,
       score: typeof out.score === "number" ? out.score : 70,
       better: typeof out.better === "string" ? out.better : said,
       corrections: Array.isArray(out.corrections) ? out.corrections.slice(0, 5) : [],
