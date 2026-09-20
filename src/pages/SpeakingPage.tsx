@@ -257,8 +257,8 @@ export default function SpeakingPage() {
           )}
 
           {transcript && <p className="text-sm text-center opacity-80">“{transcript}”</p>}
-          {isTranscribing && <p className="text-sm text-foreground-muted animate-pulse">🎙️ Transcribiendo…</p>}
-          {loading && !isTranscribing && <p className="text-sm text-foreground-muted animate-pulse">💬 Preparando respuesta…</p>}
+          {isTranscribing && <p className="text-sm text-foreground-muted animate-pulse">🎙️ {u('thinking')}</p>}
+          {loading && !isTranscribing && <p className="text-sm text-foreground-muted animate-pulse">💬 {u('thinking')}</p>}
           {error && <p className="text-sm text-destructive text-center">{error}</p>}
 
           {coach && !loading && (
@@ -270,6 +270,12 @@ export default function SpeakingPage() {
                 {coach.replyMeaning && <div className="text-[0.75rem] italic text-foreground-muted mt-1">{coach.replyMeaning}</div>}
               </div>
 
+              {coach.noSpeech ? (
+                <div className={`p-3 ${glass}`} style={{ boxShadow: '0 0 20px hsl(var(--neon-violet) / 0.15)' }}>
+                  <div className="text-[0.85rem]">{coach.tip}</div>
+                  <div className="text-[0.75rem] text-foreground-muted mt-1.5">🔁 {u('retry')}: <button onClick={() => speakText(coach.better, lang)} className="font-semibold">🔊 {coach.better}</button></div>
+                </div>
+              ) : (
               <div className="p-3 rounded-2xl border" style={{
                 borderColor: coach.corrections.length ? 'hsl(var(--gold))' : 'hsl(var(--success))',
                 background: coach.corrections.length ? 'hsl(45 45% 16%)' : 'hsl(165 45% 14%)',
