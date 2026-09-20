@@ -237,12 +237,14 @@ export function useSpeechRecognition(
     const mimeType = recording.mimeType || 'audio/webm';
     const audio = new Blob(recording.chunks, { type: mimeType });
     if (!recording.heardVoice) {
-      setMicError('No detecté voz. Acércate al micrófono e inténtalo otra vez.');
+      setLastOutcome('no-speech');
+      setMicError(msgsRef.current.noVoice);
       stoppingRef.current = false;
       return '';
     }
     if (audio.size < 1200) {
-      setMicError('No escuché nada. Habla un poco más cerca del micrófono.');
+      setLastOutcome('too-short');
+      setMicError(msgsRef.current.tooShort);
       stoppingRef.current = false;
       return '';
     }
@@ -267,12 +269,14 @@ export function useSpeechRecognition(
       const payload = data as { text?: string; error?: string } | null;
       if (payload?.error) throw new Error(payload.error);
       const text = typeof payload?.text === 'string' ? payload.text.trim() : '';
-      if (!text) throw new Error('No pude entender el audio. Inténtalo otra vez.');
+      if (!text) throw new Error(msgsRef.current.notUnderstood);
       setTranscript(text);
+      setLastOutcome('ok');
       await onTranscriptRef.current?.(text);
       return text;
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
+      setLastOutcome('error');
       setMicError(message);
       return '';
     } finally {
