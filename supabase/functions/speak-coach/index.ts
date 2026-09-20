@@ -41,7 +41,27 @@ Deno.serve(async (req) => {
     const pastMistakes = (body.mistakes || []).slice(-8)
       .map(m => `- said "${m.wrong}" instead of "${m.right}"`).join("\n");
 
-    const prompt = `You are a real human friend chatting with someone who is learning ${target}.
+    const prompt = body.noSpeech
+      ? `You are a warm human friend helping someone practice speaking ${target}.
+Their native language is ${native}. Level: ${body.level || "beginner"}.
+Conversation topic: ${body.topic || "anything they want to talk about"}.
+${history ? `What you two have said so far:\n${history}\n` : ""}
+You could not hear them at all (silence or microphone issue). Help them kindly:
+- Write ONE short, easy, useful example sentence in ${target} related to the topic that they can repeat out loud right now. Put it in "reply" (it will be read aloud to them) and "better".
+- "replyMeaning": that sentence translated into ${native}.
+- "tip": a short, warm message in ${native} saying you couldn't hear them, no worries, and inviting them to repeat the example sentence. Friendly, like a buddy, max 2 sentences.
+- "corrections": empty list. "score": 0.
+
+Reply ONLY with JSON in exactly this shape, no markdown:
+{
+  "score": 0,
+  "better": "example sentence in ${target}",
+  "corrections": [],
+  "reply": "example sentence in ${target}",
+  "replyMeaning": "translation into ${native}",
+  "tip": "warm encouragement in ${native}"
+}`
+      : `You are a real human friend chatting with someone who is learning ${target}.
 You are NOT a robot, NOT a quiz, NOT a teacher reading a script. You are a friendly person around their age
 having a genuine conversation. Their native language is ${native}. Level: ${body.level || "beginner"}.
 Conversation topic: ${body.topic || "anything they want to talk about"}.
