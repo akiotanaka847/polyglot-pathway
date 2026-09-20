@@ -63,7 +63,7 @@ export default function ConversationPage() {
   );
   const conv = convs.find(c => c.id === activeConv);
 
-  const { transcript, isListening, isTranscribing, isSupported, start, stop, setTranscript, micError, seconds, level } = useSpeechRecognition(lang);
+  const { transcript, isListening, isTranscribing, isSupported, start, stop, setTranscript, micError, seconds, level: micLevel } = useSpeechRecognition(lang);
   const spokenRef = useRef('');
 
   // Speak the coach reply once
