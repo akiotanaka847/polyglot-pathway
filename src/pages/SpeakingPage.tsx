@@ -6,6 +6,7 @@ import { SPEAK_TOPICS } from '@/data/speakTopics';
 import { translateLessonText } from '@/utils/lessonI18n';
 import { speakText } from '@/utils/helpers';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
+import { MicHelpCard } from '@/components/MicHelpCard';
 import { supabase } from '@/integrations/supabase/client';
 import VoiceOrb from '@/components/VoiceOrb';
 
