@@ -163,7 +163,15 @@ export function useSpeechRecognition(lang: string) {
       ]);
       if (timedOut) return '';
       const { data, error } = result;
-      if (error) throw new Error(error.message);
+      if (error) {
+        // Surface the server's real message (supabase-js hides the body behind a generic one)
+        let serverMsg = '';
+        try {
+          const ctx = (error as { context?: Response }).context;
+          if (ctx) serverMsg = (await ctx.json() as { error?: string })?.error || '';
+        } catch { /* body unreadable */ }
+        throw new Error(serverMsg || error.message);
+      }
       const payload = data as { text?: string; error?: string } | null;
       if (payload?.error) throw new Error(payload.error);
       const text = typeof payload?.text === 'string' ? payload.text.trim() : '';
