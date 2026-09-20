@@ -48,6 +48,9 @@ export function useSpeechRecognition(lang: string, onTranscript?: (text: string)
   const [isListening, setIsListening] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [micError, setMicError] = useState<string | null>(null);
+  const [micBlock, setMicBlock] = useState<'insecure' | 'denied' | 'nodevice' | 'busy' | 'unsupported' | null>(
+    typeof window !== 'undefined' && window.isSecureContext === false ? 'insecure' : null,
+  );
   const [seconds, setSeconds] = useState(0);
   const [level, setLevel] = useState(0); // 0..1 live mic volume
   const recorderRef = useRef<RecorderState | null>(null);
