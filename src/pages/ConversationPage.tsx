@@ -7,6 +7,7 @@ import { getLangConfig } from '@/data/languages';
 import { translateLessonText } from '@/utils/lessonI18n';
 import { speakText } from '@/utils/helpers';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
+import { MicHelpCard } from '@/components/MicHelpCard';
 import { supabase } from '@/integrations/supabase/client';
 import VoiceOrb from '@/components/VoiceOrb';
 
@@ -63,7 +64,7 @@ export default function ConversationPage() {
   );
   const conv = convs.find(c => c.id === activeConv);
 
-  const { transcript, isListening, isTranscribing, isSupported, start, stop, setTranscript, micError, seconds, level: micLevel } = useSpeechRecognition(lang, send);
+  const { transcript, isListening, isTranscribing, isSupported, start, stop, setTranscript, micError, micBlock, seconds, level: micLevel } = useSpeechRecognition(lang, send);
   const spokenRef = useRef('');
 
   // Speak the coach reply once
@@ -215,7 +216,12 @@ export default function ConversationPage() {
 
           {/* Reply controls */}
           <div className="pb-5 pt-3">
-            {typing ? (
+            {micBlock && (
+              <div className="flex justify-center mb-2">
+                <MicHelpCard reason={micBlock} nativeLang={nativeLang} glass={glass} />
+              </div>
+            )}
+            {typing || !isSupported ? (
               <div className="flex gap-2 items-center">
                 <input
                   autoFocus

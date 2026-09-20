@@ -24,3 +24,7 @@
 - [x] Modo Historia: overlay inglés solo para nativos en inglés.
 - [x] Narrativas largas y textos C1/C2 traducidos con IA y cacheados.
 - [x] Traducción con IA (Lovable Cloud) para narrativas largas y explicaciones avanzadas, con caché compartida en la base de datos + teléfono.
+
+## Micrófono en PC / Windows
+- [x] Diagnóstico de micrófono: permiso denegado, sin dispositivo, ocupado, HTTP inseguro o navegador sin soporte.
+- [x] Tarjeta de ayuda visible (MicHelpCard) en Solo hablar y Conversación, traducida a los 11 idiomas, con pasos para Windows y alternativa de escritura.

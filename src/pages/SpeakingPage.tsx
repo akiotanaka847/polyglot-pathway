@@ -6,6 +6,7 @@ import { SPEAK_TOPICS } from '@/data/speakTopics';
 import { translateLessonText } from '@/utils/lessonI18n';
 import { speakText } from '@/utils/helpers';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
+import { MicHelpCard } from '@/components/MicHelpCard';
 import { supabase } from '@/integrations/supabase/client';
 import VoiceOrb from '@/components/VoiceOrb';
 
@@ -59,7 +60,7 @@ export default function SpeakingPage() {
     try { return JSON.parse(localStorage.getItem(STORE) || '[]'); } catch { return []; }
   });
   const [showSaved, setShowSaved] = useState(false);
-  const { transcript, isListening, isTranscribing, isSupported, start, stop, setTranscript, micError, seconds, level: micLevel } = useSpeechRecognition(lang, send);
+  const { transcript, isListening, isTranscribing, isSupported, start, stop, setTranscript, micError, micBlock, seconds, level: micLevel } = useSpeechRecognition(lang, send);
   const spokenRef = useRef('');
   const [typed, setTyped] = useState('');
 
@@ -274,6 +275,7 @@ export default function SpeakingPage() {
         </div>
 
         <div className="pb-6 pt-3 flex flex-col items-center gap-2">
+          {micBlock && <MicHelpCard reason={micBlock} nativeLang={nativeLang} glass={glass} />}
           {isSupported ? (
             <button
               disabled={loading || isTranscribing}

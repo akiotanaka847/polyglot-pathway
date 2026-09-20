@@ -48,6 +48,9 @@ export function useSpeechRecognition(lang: string, onTranscript?: (text: string)
   const [isListening, setIsListening] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [micError, setMicError] = useState<string | null>(null);
+  const [micBlock, setMicBlock] = useState<'insecure' | 'denied' | 'nodevice' | 'busy' | 'unsupported' | null>(
+    typeof window !== 'undefined' && window.isSecureContext === false ? 'insecure' : null,
+  );
   const [seconds, setSeconds] = useState(0);
   const [level, setLevel] = useState(0); // 0..1 live mic volume
   const recorderRef = useRef<RecorderState | null>(null);
@@ -60,8 +63,29 @@ export function useSpeechRecognition(lang: string, onTranscript?: (text: string)
   useEffect(() => { onTranscriptRef.current = onTranscript; }, [onTranscript]);
 
   const isSupported = typeof window !== 'undefined'
+    && window.isSecureContext !== false
     && !!navigator.mediaDevices?.getUserMedia
     && typeof MediaRecorder !== 'undefined';
+
+  // Pre-check the permission where the browser supports it (Chrome/Edge on Windows do),
+  // so a previously denied mic shows actionable help before the user even tries.
+  useEffect(() => {
+    if (!isSupported) {
+      setMicBlock(window.isSecureContext === false ? 'insecure' : 'unsupported');
+      return;
+    }
+    let cancelled = false;
+    try {
+      navigator.permissions?.query({ name: 'microphone' as PermissionName }).then(status => {
+        if (cancelled) return;
+        if (status.state === 'denied') setMicBlock('denied');
+        status.onchange = () => {
+          if (!cancelled) setMicBlock(status.state === 'denied' ? 'denied' : null);
+        };
+      }).catch(() => undefined);
+    } catch { /* permissions API optional */ }
+    return () => { cancelled = true; };
+  }, [isSupported]);
 
   const cleanupMeters = useCallback(() => {
     if (timerRef.current !== null) { window.clearInterval(timerRef.current); timerRef.current = null; }
@@ -84,6 +108,7 @@ export function useSpeechRecognition(lang: string, onTranscript?: (text: string)
     if (!isSupported || recorderRef.current) return;
     setTranscript('');
     setMicError(null);
+    setMicBlock(null);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
@@ -155,9 +180,16 @@ export function useSpeechRecognition(lang: string, onTranscript?: (text: string)
       setIsListening(true);
     } catch (err) {
       console.warn('Audio recording start failed:', err);
-      setMicError(err instanceof DOMException && err.name === 'NotAllowedError'
-        ? 'Permiso del micrófono denegado. Actívalo en tu navegador.'
-        : 'No pude abrir el micrófono. Revisa los permisos.');
+      const name = err instanceof DOMException ? err.name : '';
+      if (name === 'NotAllowedError' || name === 'SecurityError') {
+        setMicBlock('denied');
+      } else if (name === 'NotFoundError' || name === 'OverconstrainedError') {
+        setMicBlock('nodevice');
+      } else if (name === 'NotReadableError' || name === 'AbortError') {
+        setMicBlock('busy');
+      } else {
+        setMicError(`No pude abrir el micrófono (${name || 'error desconocido'}).`);
+      }
       setIsListening(false);
       cleanupMeters();
     }
@@ -230,5 +262,5 @@ export function useSpeechRecognition(lang: string, onTranscript?: (text: string)
 
   stopRef.current = stop;
 
-  return { transcript, isListening, isTranscribing, isSupported, start, stop, setTranscript, micError, seconds, level };
+  return { transcript, isListening, isTranscribing, isSupported, start, stop, setTranscript, micError, micBlock, seconds, level };
 }
