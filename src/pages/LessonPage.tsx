@@ -10,6 +10,7 @@ import { useAiTranslate } from '@/hooks/useAiTranslate';
 import RecallBars from '@/components/RecallBars';
 import VoiceOrb from '@/components/VoiceOrb';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
+import { micMessages } from '@/data/micMessages';
 
 // Topic-related emoji illustrations for visual association
 const TOPIC_ILLUSTRATIONS: Record<string, string[]> = {
