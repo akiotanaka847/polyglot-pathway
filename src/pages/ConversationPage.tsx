@@ -221,7 +221,7 @@ export default function ConversationPage() {
                 <MicHelpCard reason={micBlock} nativeLang={nativeLang} glass={glass} />
               </div>
             )}
-            {typing || micBlock ? (
+            {typing || !isSupported ? (
               <div className="flex gap-2 items-center">
                 <input
                   autoFocus
