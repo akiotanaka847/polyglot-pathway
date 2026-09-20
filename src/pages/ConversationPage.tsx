@@ -216,7 +216,12 @@ export default function ConversationPage() {
 
           {/* Reply controls */}
           <div className="pb-5 pt-3">
-            {typing ? (
+            {micBlock && (
+              <div className="flex justify-center mb-2">
+                <MicHelpCard reason={micBlock} nativeLang={nativeLang} glass={glass} />
+              </div>
+            )}
+            {typing || micBlock ? (
               <div className="flex gap-2 items-center">
                 <input
                   autoFocus
