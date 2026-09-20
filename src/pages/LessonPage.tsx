@@ -85,7 +85,7 @@ export default function LessonPage() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Speech recognition
-  const speech = useSpeechRecognition(l);
+  const speech = useSpeechRecognition(l, undefined, micMessages(nativeLang));
   
   // Sync speech transcript to text input
   useEffect(() => {
