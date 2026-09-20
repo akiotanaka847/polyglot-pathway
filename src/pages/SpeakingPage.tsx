@@ -275,20 +275,20 @@ export default function SpeakingPage() {
         <div className="pb-6 pt-3 flex flex-col items-center gap-2">
           {isSupported ? (
             <button
-              disabled={loading}
+              disabled={loading || isTranscribing}
                onClick={async () => {
                 if (isListening) {
                    const heard = await stop();
                    if (heard) await send(heard);
-                 } else { setCoach(null); await start(); }
+                  } else { setCoach(null); await start(); }
               }}
-              className={`px-8 py-3.5 rounded-full text-sm font-bold transition-transform active:scale-95 ${isListening ? 'animate-pulse' : ''}`}
+              className={`px-8 py-3.5 rounded-full text-sm font-bold transition-transform active:scale-95 disabled:opacity-50 ${isListening ? 'animate-pulse' : ''}`}
               style={{
                 background: isListening ? 'hsl(var(--destructive))' : 'linear-gradient(135deg, hsl(var(--neon-cyan)), hsl(var(--neon-violet)))',
                 color: isListening ? 'hsl(var(--destructive-foreground))' : 'hsl(var(--background))',
                 boxShadow: '0 0 28px hsl(var(--neon-cyan) / 0.45)',
               }}>
-              {isListening ? `⏹ ${u('stop')}` : `🎤 ${u('speak')}`}
+              {isTranscribing ? `🎙️ …` : isListening ? `⏹ ${u('stop')}` : `🎤 ${u('speak')}`}
             </button>
           ) : (
             <p className="text-[0.75rem] text-foreground-muted text-center">🎤 {u('nomic')}</p>
