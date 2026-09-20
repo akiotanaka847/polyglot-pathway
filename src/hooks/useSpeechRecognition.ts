@@ -108,6 +108,7 @@ export function useSpeechRecognition(lang: string, onTranscript?: (text: string)
     if (!isSupported || recorderRef.current) return;
     setTranscript('');
     setMicError(null);
+    setMicBlock(null);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
