@@ -275,6 +275,7 @@ export default function SpeakingPage() {
         </div>
 
         <div className="pb-6 pt-3 flex flex-col items-center gap-2">
+          {micBlock && <MicHelpCard reason={micBlock} nativeLang={nativeLang} glass={glass} />}
           {isSupported ? (
             <button
               disabled={loading || isTranscribing}
