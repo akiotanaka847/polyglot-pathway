@@ -262,5 +262,5 @@ export function useSpeechRecognition(lang: string, onTranscript?: (text: string)
 
   stopRef.current = stop;
 
-  return { transcript, isListening, isTranscribing, isSupported, start, stop, setTranscript, micError, seconds, level };
+  return { transcript, isListening, isTranscribing, isSupported, start, stop, setTranscript, micError, micBlock, seconds, level };
 }
