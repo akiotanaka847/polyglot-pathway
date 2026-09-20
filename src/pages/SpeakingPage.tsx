@@ -106,6 +106,30 @@ export default function SpeakingPage() {
     }
   }
 
+  // Nothing was heard for ~5s: the coach still answers with encouragement and
+  // an example phrase the learner can repeat right away.
+  async function sendNoSpeech() {
+    if (loading) return;
+    setLoading(true); setError(null); setCoach(null);
+    try {
+      const { data, error: err } = await supabase.functions.invoke('speak-coach', {
+        body: { noSpeech: true, lang, native: nativeLang, topic: topic || customTopic, level, history: turns.slice(-8) },
+      });
+      if (err || (data as any)?.error) throw new Error(err?.message || (data as any).error);
+      const r = data as CoachReply;
+      setCoach(r);
+      setTurns(t => [...t, { role: 'coach', text: r.reply, meaning: r.replyMeaning }]);
+    } catch { /* the mic hint below the button is enough if the coach is unreachable */ }
+    finally { setLoading(false); }
+  }
+  const noSpeechHandledRef = useRef(0);
+  useEffect(() => {
+    if (lastOutcome !== 'no-speech') return;
+    noSpeechHandledRef.current += 1;
+    void sendNoSpeech();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastOutcome]);
+
   // ---------- Saved corrections review ----------
   if (showSaved) {
     const mine = saved.filter(c => c.lang === lang).slice().reverse();
