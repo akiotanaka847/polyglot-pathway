@@ -8,13 +8,14 @@ import { translateLessonText } from '@/utils/lessonI18n';
 import { speakText } from '@/utils/helpers';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
 import { MicHelpCard } from '@/components/MicHelpCard';
+import { micMessages } from '@/data/micMessages';
 import { supabase } from '@/integrations/supabase/client';
 import VoiceOrb from '@/components/VoiceOrb';
 
 type Correction = { wrong: string; right: string; why: string };
 type CoachReply = {
   score: number; better: string; corrections: Correction[];
-  reply: string; replyMeaning: string; tip: string;
+  reply: string; replyMeaning: string; tip: string; noSpeech?: boolean;
 };
 type Turn = { role: 'user' | 'coach'; text: string; meaning?: string };
 
@@ -64,7 +65,7 @@ export default function ConversationPage() {
   );
   const conv = convs.find(c => c.id === activeConv);
 
-  const { transcript, isListening, isTranscribing, isSupported, start, stop, setTranscript, micError, micBlock, seconds, level: micLevel } = useSpeechRecognition(lang, send);
+  const { transcript, isListening, isTranscribing, isSupported, start, stop, setTranscript, micError, micBlock, lastOutcome, seconds, level: micLevel } = useSpeechRecognition(lang, send, micMessages(nativeLang));
   const spokenRef = useRef('');
 
   // Speak the coach reply once
