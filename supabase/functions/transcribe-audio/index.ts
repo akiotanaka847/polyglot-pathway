@@ -23,8 +23,7 @@ Deno.serve(async req => {
     const file = form.get("file");
     const language = String(form.get("language") || "");
     if (!(file instanceof File) || file.size === 0) return json({ error: "La grabación está vacía. Inténtalo de nuevo." }, 400);
-    if (file.type !== "audio/wav") return json({ error: "El formato de audio no es válido." }, 400);
-    if (file.size > 14 * 1024 * 1024) return json({ error: "La grabación es demasiado larga. Inténtalo en partes más cortas." }, 413);
+    if (file.size > 20 * 1024 * 1024) return json({ error: "La grabación es demasiado larga. Inténtalo en partes más cortas." }, 413);
 
     const aiKey = Deno.env.get("LOVABLE_API_KEY");
     if (!aiKey) return json({ error: "La transcripción no está configurada." }, 500);
