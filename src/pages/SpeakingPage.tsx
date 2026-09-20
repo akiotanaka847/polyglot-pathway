@@ -59,7 +59,7 @@ export default function SpeakingPage() {
     try { return JSON.parse(localStorage.getItem(STORE) || '[]'); } catch { return []; }
   });
   const [showSaved, setShowSaved] = useState(false);
-  const { transcript, isListening, isTranscribing, isSupported, start, stop, setTranscript, micError, seconds, level: micLevel } = useSpeechRecognition(lang);
+  const { transcript, isListening, isTranscribing, isSupported, start, stop, setTranscript, micError, seconds, level: micLevel } = useSpeechRecognition(lang, send);
   const spokenRef = useRef('');
   const [typed, setTyped] = useState('');
 
@@ -231,7 +231,8 @@ export default function SpeakingPage() {
           )}
 
           {transcript && <p className="text-sm text-center opacity-80">“{transcript}”</p>}
-          {(loading || isTranscribing) && <p className="text-sm text-foreground-muted animate-pulse">🎙️ {u('thinking')}</p>}
+          {isTranscribing && <p className="text-sm text-foreground-muted animate-pulse">🎙️ Transcribiendo…</p>}
+          {loading && !isTranscribing && <p className="text-sm text-foreground-muted animate-pulse">💬 Preparando respuesta…</p>}
           {error && <p className="text-sm text-destructive text-center">{error}</p>}
 
           {coach && !loading && (
@@ -277,10 +278,8 @@ export default function SpeakingPage() {
             <button
               disabled={loading || isTranscribing}
                onClick={async () => {
-                if (isListening) {
-                   const heard = await stop();
-                   if (heard) await send(heard);
-                  } else { setCoach(null); await start(); }
+                if (isListening) await stop();
+                else { setCoach(null); await start(); }
               }}
               className={`px-8 py-3.5 rounded-full text-sm font-bold transition-transform active:scale-95 disabled:opacity-50 ${isListening ? 'animate-pulse' : ''}`}
               style={{
