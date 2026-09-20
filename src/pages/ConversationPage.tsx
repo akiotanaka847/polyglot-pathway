@@ -176,7 +176,7 @@ export default function ConversationPage() {
               <p className={`text-sm text-center px-4 py-2 ${glass}`}>💬 {u('prompt')}</p>
             )}
 
-            {loading && <p className="text-sm opacity-70 animate-pulse">{u('thinking')}</p>}
+            {loading && !isTranscribing && <p className="text-sm opacity-70 animate-pulse">{u('thinking')}</p>}
 
             {coach && !loading && (
               <div className="w-full space-y-2">
@@ -243,7 +243,7 @@ export default function ConversationPage() {
                 {isSupported ? (
                   <button
                     onClick={() => { if (isListening) void stopAndSend(); else { setTranscript(''); void start(); } }}
-                    disabled={loading}
+                    disabled={loading || isTranscribing}
                     className={`px-8 py-3 rounded-full text-sm font-bold transition-transform active:scale-95 disabled:opacity-50 ${isListening ? 'animate-pulse' : ''}`}
                     style={isListening
                       ? { background: 'hsl(var(--destructive))', color: 'hsl(var(--destructive-foreground))', boxShadow: '0 0 26px hsl(var(--destructive) / 0.5)' }
