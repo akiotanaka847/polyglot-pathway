@@ -187,13 +187,13 @@ export default function ConversationPage() {
               </div>
             )}
 
-            {isTranscribing && <p className="text-sm opacity-70 animate-pulse">🎙️ Transcribiendo…</p>}
+            {isTranscribing && <p className="text-sm opacity-70 animate-pulse">🎙️ {u('thinking')}</p>}
 
             {!turns.length && !loading && (
               <p className={`text-sm text-center px-4 py-2 ${glass}`}>💬 {u('prompt')}</p>
             )}
 
-            {loading && !isTranscribing && <p className="text-sm opacity-70 animate-pulse">💬 Preparando respuesta…</p>}
+            {loading && !isTranscribing && <p className="text-sm opacity-70 animate-pulse">💬 {u('thinking')}</p>}
 
             {coach && !loading && (
               <div className="w-full space-y-2">
@@ -203,6 +203,12 @@ export default function ConversationPage() {
                     <p className="text-[0.8rem] opacity-60 mt-1 italic">{coach.replyMeaning}</p>
                   )}
                 </div>
+                {coach.noSpeech ? (
+                  <div className={`${glass} px-3 py-2 text-[0.85rem] space-y-1`} style={{ boxShadow: '0 0 18px hsl(var(--neon-violet) / 0.18)' }}>
+                    <div>{coach.tip}</div>
+                    <div className="opacity-80">🔁 {u('retry')}: <button onClick={() => speakText(coach.better, lang)} className="font-semibold">🔊 {coach.better}</button></div>
+                  </div>
+                ) : (
                 <div
                   className={`${glass} px-3 py-2 text-[0.8rem] space-y-1`}
                   style={{ boxShadow: coach.corrections?.length ? '0 0 18px hsl(var(--neon-pink) / 0.15)' : '0 0 18px hsl(var(--neon-cyan) / 0.18)' }}
@@ -224,6 +230,7 @@ export default function ConversationPage() {
                   {coach.better && <div className="opacity-90">✨ {u('better')}: <em>{coach.better}</em></div>}
                   {coach.tip && <div className="opacity-70">💡 {u('tip')}: {coach.tip}</div>}
                 </div>
+                )}
               </div>
             )}
 
