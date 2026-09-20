@@ -542,6 +542,13 @@ export default function LessonPage() {
                       style={!speech.isListening ? { background: `hsl(${config.hue}, 70%, 46%)` } : undefined}>
                       {speech.isListening ? `⏹ ${tt('recording')}` : `🎤 ${tt('tap_to_speak')}`}
                     </button>
+                    {speech.isTranscribing && <p className="text-center text-xs text-foreground-muted animate-pulse">🎙️ …</p>}
+                    {speech.lastOutcome === 'no-speech' && !speech.isListening && (
+                      <div className="p-3 rounded-xl border border-border bg-background text-xs space-y-1">
+                        <p className="text-foreground-muted">{speech.micError}</p>
+                        <p>🔁 {tt('listen')} <button onClick={() => speakText(step.hint || step.expected, l)} className="font-semibold underline">🔊 {step.hint}</button> — {tt('say_word')}</p>
+                      </div>
+                    )}
                     {textInput && (
                       <div className="p-3 rounded-xl bg-background border border-border text-sm">
                         <span className="text-foreground-muted text-xs">{tt('write_answer')}:</span>
