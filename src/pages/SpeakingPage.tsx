@@ -297,7 +297,7 @@ export default function SpeakingPage() {
             <button onClick={() => send(transcript)} className="text-[0.75rem] underline text-foreground-muted">{u('retry')}</button>
           )}
           {micError && (
-            <p className="text-[0.72rem] text-destructive text-center max-w-[300px]">🎤 {u('nomic')} ({micError})</p>
+            <p className="text-[0.72rem] text-destructive text-center max-w-[300px]">🎤 {micError}</p>
           )}
           <div className="w-full flex items-center gap-2 mt-1">
             <input
