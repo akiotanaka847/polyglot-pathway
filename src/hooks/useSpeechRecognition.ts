@@ -22,8 +22,22 @@ const CANDIDATE_TYPES = [
 ];
 
 const SILENCE_AFTER_SPEECH_MS = 1_600;
-const NO_SPEECH_MS = 12_000;
+const NO_SPEECH_MS = 5_000;
 const MAX_RECORDING_MS = 45_000;
+
+export type MicOutcome = 'ok' | 'no-speech' | 'too-short' | 'error';
+
+export type MicMessages = {
+  noVoice: string;      // nothing heard within NO_SPEECH_MS
+  tooShort: string;     // recording too small / silent
+  notUnderstood: string; // transcription came back empty
+};
+
+const DEFAULT_MESSAGES: MicMessages = {
+  noVoice: 'No detecté voz. Acércate al micrófono e inténtalo otra vez.',
+  tooShort: 'No escuché nada. Habla un poco más cerca del micrófono.',
+  notUnderstood: 'No pude entender el audio. Inténtalo otra vez.',
+};
 
 function pickMimeType(): string {
   if (typeof MediaRecorder === 'undefined') return '';
@@ -43,8 +57,15 @@ function extensionFor(mimeType: string): string {
   return 'webm';
 }
 
-export function useSpeechRecognition(lang: string, onTranscript?: (text: string) => void | Promise<void>) {
+export function useSpeechRecognition(
+  lang: string,
+  onTranscript?: (text: string) => void | Promise<void>,
+  messages?: Partial<MicMessages>,
+) {
+  const msgsRef = useRef<MicMessages>({ ...DEFAULT_MESSAGES, ...messages });
+  useEffect(() => { msgsRef.current = { ...DEFAULT_MESSAGES, ...messages }; }, [messages]);
   const [transcript, setTranscript] = useState('');
+  const [lastOutcome, setLastOutcome] = useState<MicOutcome | null>(null);
   const [isListening, setIsListening] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [micError, setMicError] = useState<string | null>(null);
