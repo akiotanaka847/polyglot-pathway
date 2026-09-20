@@ -8,6 +8,8 @@ type RecorderState = {
   mimeType: string;
   stopped: Promise<void>;
   audioCtx: AudioContext | null;
+  heardVoice: boolean;
+  lastVoiceAt: number;
 };
 
 const CANDIDATE_TYPES = [
@@ -19,8 +21,9 @@ const CANDIDATE_TYPES = [
   'audio/ogg',
 ];
 
-// Generous ceiling: transcription of long clips can take a while; only a true hang should surface an error.
-const TRANSCRIBE_TIMEOUT_MS = 120_000;
+const SILENCE_AFTER_SPEECH_MS = 1_600;
+const NO_SPEECH_MS = 12_000;
+const MAX_RECORDING_MS = 45_000;
 
 function pickMimeType(): string {
   if (typeof MediaRecorder === 'undefined') return '';
@@ -40,7 +43,7 @@ function extensionFor(mimeType: string): string {
   return 'webm';
 }
 
-export function useSpeechRecognition(lang: string) {
+export function useSpeechRecognition(lang: string, onTranscript?: (text: string) => void | Promise<void>) {
   const [transcript, setTranscript] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
@@ -50,6 +53,11 @@ export function useSpeechRecognition(lang: string) {
   const recorderRef = useRef<RecorderState | null>(null);
   const timerRef = useRef<number | null>(null);
   const rafRef = useRef<number | null>(null);
+  const stopRef = useRef<() => Promise<string>>(async () => '');
+  const stoppingRef = useRef(false);
+  const onTranscriptRef = useRef(onTranscript);
+
+  useEffect(() => { onTranscriptRef.current = onTranscript; }, [onTranscript]);
 
   const isSupported = typeof window !== 'undefined'
     && !!navigator.mediaDevices?.getUserMedia
@@ -87,7 +95,8 @@ export function useSpeechRecognition(lang: string) {
       const stopped = new Promise<void>(resolve => {
         recorder.onstop = () => resolve();
       });
-      recorder.start(250);
+      // A single complete container is more reliable than timed fragments on iOS Safari.
+      recorder.start();
 
       // Live volume meter so the user can see the mic is picking up their voice.
       let audioCtx: AudioContext | null = null;
@@ -106,15 +115,43 @@ export function useSpeechRecognition(lang: string) {
             sum += v * v;
           }
           const rms = Math.sqrt(sum / buf.length);
-          setLevel(Math.min(1, rms * 3.2));
+          const normalized = Math.min(1, rms * 3.2);
+          setLevel(normalized);
+          const active = recorderRef.current;
+          if (active && normalized > 0.045) {
+            active.heardVoice = true;
+            active.lastVoiceAt = Date.now();
+          }
           rafRef.current = requestAnimationFrame(tick);
         };
         rafRef.current = requestAnimationFrame(tick);
       } catch { audioCtx = null; /* meter is optional */ }
 
-      recorderRef.current = { recorder, stream, chunks, mimeType: recorder.mimeType || mimeType, stopped, audioCtx };
+      recorderRef.current = {
+        recorder,
+        stream,
+        chunks,
+        mimeType: recorder.mimeType || mimeType,
+        stopped,
+        audioCtx,
+        heardVoice: false,
+        lastVoiceAt: Date.now(),
+      };
+      const startedAt = Date.now();
       setSeconds(0);
-      timerRef.current = window.setInterval(() => setSeconds(s => s + 1), 1000);
+      timerRef.current = window.setInterval(() => {
+        setSeconds(s => s + 1);
+        const active = recorderRef.current;
+        if (!active || stoppingRef.current) return;
+        const now = Date.now();
+        if ((active.heardVoice && now - active.lastVoiceAt >= SILENCE_AFTER_SPEECH_MS)
+          || now - startedAt >= MAX_RECORDING_MS) {
+          void stopRef.current();
+        } else if (!active.heardVoice && now - startedAt >= NO_SPEECH_MS) {
+          setMicError('No detecté voz. Acércate al micrófono e inténtalo otra vez.');
+          void stopRef.current();
+        }
+      }, 250);
       setIsListening(true);
     } catch (err) {
       console.warn('Audio recording start failed:', err);
@@ -128,22 +165,32 @@ export function useSpeechRecognition(lang: string) {
 
   const stop = useCallback(async () => {
     const recording = recorderRef.current;
-    if (!recording) return '';
+    if (!recording || stoppingRef.current) return '';
+    stoppingRef.current = true;
     recorderRef.current = null;
     setIsListening(false);
     cleanupMeters();
 
     try {
       if (recording.recorder.state !== 'inactive') recording.recorder.stop();
-      await recording.stopped;
+      await Promise.race([
+        recording.stopped,
+        new Promise<void>(resolve => window.setTimeout(resolve, 3_000)),
+      ]);
     } catch { /* already stopped */ }
     recording.stream.getTracks().forEach(track => track.stop());
     recording.audioCtx?.close().catch(() => undefined);
 
     const mimeType = recording.mimeType || 'audio/webm';
     const audio = new Blob(recording.chunks, { type: mimeType });
+    if (!recording.heardVoice) {
+      setMicError('No detecté voz. Acércate al micrófono e inténtalo otra vez.');
+      stoppingRef.current = false;
+      return '';
+    }
     if (audio.size < 1200) {
       setMicError('No escuché nada. Habla un poco más cerca del micrófono.');
+      stoppingRef.current = false;
       return '';
     }
 
@@ -153,15 +200,7 @@ export function useSpeechRecognition(lang: string) {
       form.append('file', audio, `recording.${extensionFor(mimeType)}`);
       form.append('language', lang);
 
-      let timedOut = false;
-      const timeout = new Promise<never>((_, reject) => {
-        window.setTimeout(() => { timedOut = true; reject(new Error('La conexión está lenta. Inténtalo de nuevo.')); }, TRANSCRIBE_TIMEOUT_MS);
-      });
-      const result = await Promise.race([
-        supabase.functions.invoke('transcribe-audio', { body: form }),
-        timeout,
-      ]);
-      if (timedOut) return '';
+      const result = await supabase.functions.invoke('transcribe-audio', { body: form });
       const { data, error } = result;
       if (error) {
         // Surface the server's real message (supabase-js hides the body behind a generic one)
@@ -177,6 +216,7 @@ export function useSpeechRecognition(lang: string) {
       const text = typeof payload?.text === 'string' ? payload.text.trim() : '';
       if (!text) throw new Error('No pude entender el audio. Inténtalo otra vez.');
       setTranscript(text);
+      await onTranscriptRef.current?.(text);
       return text;
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
@@ -184,8 +224,11 @@ export function useSpeechRecognition(lang: string) {
       return '';
     } finally {
       setIsTranscribing(false);
+      stoppingRef.current = false;
     }
   }, [lang, cleanupMeters]);
+
+  stopRef.current = stop;
 
   return { transcript, isListening, isTranscribing, isSupported, start, stop, setTranscript, micError, seconds, level };
 }
