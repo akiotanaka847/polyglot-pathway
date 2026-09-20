@@ -63,7 +63,7 @@ export default function ConversationPage() {
   );
   const conv = convs.find(c => c.id === activeConv);
 
-  const { transcript, isListening, isSupported, start, stop, setTranscript, micError } = useSpeechRecognition(lang);
+  const { transcript, isListening, isTranscribing, isSupported, start, stop, setTranscript, micError, seconds, level: micLevel } = useSpeechRecognition(lang);
   const spokenRef = useRef('');
 
   // Speak the coach reply once
@@ -139,17 +139,44 @@ export default function ConversationPage() {
 
           <div className="flex-1 flex flex-col items-center justify-center gap-4">
             <VoiceOrb
-              mode={isListening ? 'listening' : loading ? 'speaking' : 'idle'}
+              mode={isListening ? 'listening' : (loading || isTranscribing) ? 'speaking' : 'idle'}
               hue={config.hue}
               onClick={() => coach?.reply && speakText(coach.reply, lang)}
               label={tt('listen') || 'Escuchar'}
             />
 
+            {isListening && (
+              <div className={`flex items-center gap-3 px-4 py-2 ${glass}`}>
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500" />
+                </span>
+                <span className="text-sm font-mono tabular-nums">
+                  {String(Math.floor(seconds / 60)).padStart(2, '0')}:{String(seconds % 60).padStart(2, '0')}
+                </span>
+                <div className="flex items-end gap-[3px] h-5" aria-hidden>
+                  {[0.25, 0.5, 0.75, 1, 0.75, 0.5, 0.25].map((th, i) => (
+                    <span
+                      key={i}
+                      className="w-1 rounded-full transition-all duration-100"
+                      style={{
+                        height: `${6 + i % 3 * 5}px`,
+                        background: micLevel >= th * 0.6 ? 'hsl(var(--neon-cyan))' : 'hsl(0 0% 100% / 0.2)',
+                        boxShadow: micLevel >= th * 0.6 ? '0 0 8px hsl(var(--neon-cyan) / 0.7)' : 'none',
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {isTranscribing && <p className="text-sm opacity-70 animate-pulse">🎙️ {u('thinking')}</p>}
+
             {!turns.length && !loading && (
               <p className={`text-sm text-center px-4 py-2 ${glass}`}>💬 {u('prompt')}</p>
             )}
 
-            {loading && <p className="text-sm opacity-70 animate-pulse">{u('thinking')}</p>}
+            {loading && !isTranscribing && <p className="text-sm opacity-70 animate-pulse">{u('thinking')}</p>}
 
             {coach && !loading && (
               <div className="w-full space-y-2">
@@ -216,7 +243,7 @@ export default function ConversationPage() {
                 {isSupported ? (
                   <button
                     onClick={() => { if (isListening) void stopAndSend(); else { setTranscript(''); void start(); } }}
-                    disabled={loading}
+                    disabled={loading || isTranscribing}
                     className={`px-8 py-3 rounded-full text-sm font-bold transition-transform active:scale-95 disabled:opacity-50 ${isListening ? 'animate-pulse' : ''}`}
                     style={isListening
                       ? { background: 'hsl(var(--destructive))', color: 'hsl(var(--destructive-foreground))', boxShadow: '0 0 26px hsl(var(--destructive) / 0.5)' }
