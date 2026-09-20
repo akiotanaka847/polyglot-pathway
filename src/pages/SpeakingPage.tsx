@@ -301,6 +301,7 @@ export default function SpeakingPage() {
                 )}
                 {coach.tip && <div className="text-[0.72rem] mt-2 text-foreground-secondary">💡 {u('tip')}: {coach.tip}</div>}
               </div>
+              )}
             </div>
           )}
         </div>
