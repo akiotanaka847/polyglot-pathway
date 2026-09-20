@@ -111,6 +111,26 @@ export default function ConversationPage() {
     setTranscript(''); setError(null); spokenRef.current = '';
   };
 
+  // Nothing heard for ~5s: coach still answers with encouragement + an example phrase to repeat.
+  async function sendNoSpeech() {
+    if (loading || !conv) return;
+    setLoading(true); setError(null); setCoach(null);
+    try {
+      const { data, error: err } = await supabase.functions.invoke('speak-coach', {
+        body: { noSpeech: true, lang, native: nativeLang, topic: `${conv.title} — ${conv.scenario}`, level, history: turns.slice(-8) },
+      });
+      if (err || (data as { error?: string })?.error) throw new Error(err?.message || (data as { error?: string }).error);
+      const r = data as CoachReply;
+      setCoach(r);
+      setTurns(t => [...t, { role: 'coach', text: r.reply, meaning: r.replyMeaning }]);
+    } catch { /* mic hint below is enough if coach unreachable */ }
+    finally { setLoading(false); }
+  }
+  useEffect(() => {
+    if (lastOutcome === 'no-speech') void sendNoSpeech();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastOutcome]);
+
   // ---------- Live conversation (AI coach, free speaking) ----------
   if (conv) {
     return (
