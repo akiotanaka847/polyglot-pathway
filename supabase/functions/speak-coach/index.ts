@@ -20,13 +20,13 @@ Deno.serve(async (req) => {
   try {
     const body = await req.json() as {
       said?: string; lang?: string; native?: string; topic?: string;
-      level?: string; history?: Turn[];
+      level?: string; history?: Turn[]; noSpeech?: boolean;
       mistakes?: { wrong?: string; right?: string }[];
     };
     const said = (body.said || "").trim();
     const target = LANG_NAMES[body.lang || ""] || "English";
     const native = LANG_NAMES[body.native || ""] || "Spanish";
-    if (!said) {
+    if (!said && !body.noSpeech) {
       return new Response(JSON.stringify({ error: "said is required" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
