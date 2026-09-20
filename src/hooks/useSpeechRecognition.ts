@@ -63,8 +63,29 @@ export function useSpeechRecognition(lang: string, onTranscript?: (text: string)
   useEffect(() => { onTranscriptRef.current = onTranscript; }, [onTranscript]);
 
   const isSupported = typeof window !== 'undefined'
+    && window.isSecureContext !== false
     && !!navigator.mediaDevices?.getUserMedia
     && typeof MediaRecorder !== 'undefined';
+
+  // Pre-check the permission where the browser supports it (Chrome/Edge on Windows do),
+  // so a previously denied mic shows actionable help before the user even tries.
+  useEffect(() => {
+    if (!isSupported) {
+      setMicBlock(window.isSecureContext === false ? 'insecure' : 'unsupported');
+      return;
+    }
+    let cancelled = false;
+    try {
+      navigator.permissions?.query({ name: 'microphone' as PermissionName }).then(status => {
+        if (cancelled) return;
+        if (status.state === 'denied') setMicBlock('denied');
+        status.onchange = () => {
+          if (!cancelled) setMicBlock(status.state === 'denied' ? 'denied' : null);
+        };
+      }).catch(() => undefined);
+    } catch { /* permissions API optional */ }
+    return () => { cancelled = true; };
+  }, [isSupported]);
 
   const cleanupMeters = useCallback(() => {
     if (timerRef.current !== null) { window.clearInterval(timerRef.current); timerRef.current = null; }
