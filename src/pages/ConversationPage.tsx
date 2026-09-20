@@ -8,13 +8,14 @@ import { translateLessonText } from '@/utils/lessonI18n';
 import { speakText } from '@/utils/helpers';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
 import { MicHelpCard } from '@/components/MicHelpCard';
+import { micMessages } from '@/data/micMessages';
 import { supabase } from '@/integrations/supabase/client';
 import VoiceOrb from '@/components/VoiceOrb';
 
 type Correction = { wrong: string; right: string; why: string };
 type CoachReply = {
   score: number; better: string; corrections: Correction[];
-  reply: string; replyMeaning: string; tip: string;
+  reply: string; replyMeaning: string; tip: string; noSpeech?: boolean;
 };
 type Turn = { role: 'user' | 'coach'; text: string; meaning?: string };
 
@@ -64,7 +65,7 @@ export default function ConversationPage() {
   );
   const conv = convs.find(c => c.id === activeConv);
 
-  const { transcript, isListening, isTranscribing, isSupported, start, stop, setTranscript, micError, micBlock, seconds, level: micLevel } = useSpeechRecognition(lang, send);
+  const { transcript, isListening, isTranscribing, isSupported, start, stop, setTranscript, micError, micBlock, lastOutcome, seconds, level: micLevel } = useSpeechRecognition(lang, send, micMessages(nativeLang));
   const spokenRef = useRef('');
 
   // Speak the coach reply once
@@ -109,6 +110,26 @@ export default function ConversationPage() {
     setActiveConv(null); setTurns([]); setCoach(null); setInput('');
     setTranscript(''); setError(null); spokenRef.current = '';
   };
+
+  // Nothing heard for ~5s: coach still answers with encouragement + an example phrase to repeat.
+  async function sendNoSpeech() {
+    if (loading || !conv) return;
+    setLoading(true); setError(null); setCoach(null);
+    try {
+      const { data, error: err } = await supabase.functions.invoke('speak-coach', {
+        body: { noSpeech: true, lang, native: nativeLang, topic: `${conv.title} — ${conv.scenario}`, level, history: turns.slice(-8) },
+      });
+      if (err || (data as { error?: string })?.error) throw new Error(err?.message || (data as { error?: string }).error);
+      const r = data as CoachReply;
+      setCoach(r);
+      setTurns(t => [...t, { role: 'coach', text: r.reply, meaning: r.replyMeaning }]);
+    } catch { /* mic hint below is enough if coach unreachable */ }
+    finally { setLoading(false); }
+  }
+  useEffect(() => {
+    if (lastOutcome === 'no-speech') void sendNoSpeech();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastOutcome]);
 
   // ---------- Live conversation (AI coach, free speaking) ----------
   if (conv) {
@@ -166,13 +187,13 @@ export default function ConversationPage() {
               </div>
             )}
 
-            {isTranscribing && <p className="text-sm opacity-70 animate-pulse">🎙️ Transcribiendo…</p>}
+            {isTranscribing && <p className="text-sm opacity-70 animate-pulse">🎙️ {u('thinking')}</p>}
 
             {!turns.length && !loading && (
               <p className={`text-sm text-center px-4 py-2 ${glass}`}>💬 {u('prompt')}</p>
             )}
 
-            {loading && !isTranscribing && <p className="text-sm opacity-70 animate-pulse">💬 Preparando respuesta…</p>}
+            {loading && !isTranscribing && <p className="text-sm opacity-70 animate-pulse">💬 {u('thinking')}</p>}
 
             {coach && !loading && (
               <div className="w-full space-y-2">
@@ -182,6 +203,12 @@ export default function ConversationPage() {
                     <p className="text-[0.8rem] opacity-60 mt-1 italic">{coach.replyMeaning}</p>
                   )}
                 </div>
+                {coach.noSpeech ? (
+                  <div className={`${glass} px-3 py-2 text-[0.85rem] space-y-1`} style={{ boxShadow: '0 0 18px hsl(var(--neon-violet) / 0.18)' }}>
+                    <div>{coach.tip}</div>
+                    <div className="opacity-80">🔁 {u('retry')}: <button onClick={() => speakText(coach.better, lang)} className="font-semibold">🔊 {coach.better}</button></div>
+                  </div>
+                ) : (
                 <div
                   className={`${glass} px-3 py-2 text-[0.8rem] space-y-1`}
                   style={{ boxShadow: coach.corrections?.length ? '0 0 18px hsl(var(--neon-pink) / 0.15)' : '0 0 18px hsl(var(--neon-cyan) / 0.18)' }}
@@ -203,6 +230,7 @@ export default function ConversationPage() {
                   {coach.better && <div className="opacity-90">✨ {u('better')}: <em>{coach.better}</em></div>}
                   {coach.tip && <div className="opacity-70">💡 {u('tip')}: {coach.tip}</div>}
                 </div>
+                )}
               </div>
             )}
 

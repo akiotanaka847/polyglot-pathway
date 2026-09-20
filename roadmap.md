@@ -28,3 +28,10 @@
 ## Micrófono en PC / Windows
 - [x] Diagnóstico de micrófono: permiso denegado, sin dispositivo, ocupado, HTTP inseguro o navegador sin soporte.
 - [x] Tarjeta de ayuda visible (MicHelpCard) en Solo hablar y Conversación, traducida a los 11 idiomas, con pasos para Windows y alternativa de escritura.
+
+## Completado: auto-parada por silencio (5 s)
+- useSpeechRecognition: sin voz en 5 s → detiene solo; silencio tras hablar 1.6 s; lastOutcome ('ok'|'no-speech'|'too-short'|'error').
+- Mensajes de micrófono traducidos a 11 idiomas (src/data/micMessages.ts).
+- speak-coach acepta noSpeech: responde con frase de ejemplo + traducción + ánimo en idioma nativo (desplegada y probada).
+- SpeakingPage/ConversationPage: coach ayuda tras silencio sin mostrar puntuación; LessonPage (sp): guía para repetir.
+- Verificado con Playwright (micrófono silencioso): auto-stop + respuesta en francés correcta.

@@ -22,8 +22,22 @@ const CANDIDATE_TYPES = [
 ];
 
 const SILENCE_AFTER_SPEECH_MS = 1_600;
-const NO_SPEECH_MS = 12_000;
+const NO_SPEECH_MS = 5_000;
 const MAX_RECORDING_MS = 45_000;
+
+export type MicOutcome = 'ok' | 'no-speech' | 'too-short' | 'error';
+
+export type MicMessages = {
+  noVoice: string;      // nothing heard within NO_SPEECH_MS
+  tooShort: string;     // recording too small / silent
+  notUnderstood: string; // transcription came back empty
+};
+
+const DEFAULT_MESSAGES: MicMessages = {
+  noVoice: 'No detecté voz. Acércate al micrófono e inténtalo otra vez.',
+  tooShort: 'No escuché nada. Habla un poco más cerca del micrófono.',
+  notUnderstood: 'No pude entender el audio. Inténtalo otra vez.',
+};
 
 function pickMimeType(): string {
   if (typeof MediaRecorder === 'undefined') return '';
@@ -43,8 +57,15 @@ function extensionFor(mimeType: string): string {
   return 'webm';
 }
 
-export function useSpeechRecognition(lang: string, onTranscript?: (text: string) => void | Promise<void>) {
+export function useSpeechRecognition(
+  lang: string,
+  onTranscript?: (text: string) => void | Promise<void>,
+  messages?: Partial<MicMessages>,
+) {
+  const msgsRef = useRef<MicMessages>({ ...DEFAULT_MESSAGES, ...messages });
+  useEffect(() => { msgsRef.current = { ...DEFAULT_MESSAGES, ...messages }; }, [messages]);
   const [transcript, setTranscript] = useState('');
+  const [lastOutcome, setLastOutcome] = useState<MicOutcome | null>(null);
   const [isListening, setIsListening] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [micError, setMicError] = useState<string | null>(null);
@@ -109,6 +130,7 @@ export function useSpeechRecognition(lang: string, onTranscript?: (text: string)
     setTranscript('');
     setMicError(null);
     setMicBlock(null);
+    setLastOutcome(null);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
@@ -173,7 +195,6 @@ export function useSpeechRecognition(lang: string, onTranscript?: (text: string)
           || now - startedAt >= MAX_RECORDING_MS) {
           void stopRef.current();
         } else if (!active.heardVoice && now - startedAt >= NO_SPEECH_MS) {
-          setMicError('No detecté voz. Acércate al micrófono e inténtalo otra vez.');
           void stopRef.current();
         }
       }, 250);
@@ -216,12 +237,14 @@ export function useSpeechRecognition(lang: string, onTranscript?: (text: string)
     const mimeType = recording.mimeType || 'audio/webm';
     const audio = new Blob(recording.chunks, { type: mimeType });
     if (!recording.heardVoice) {
-      setMicError('No detecté voz. Acércate al micrófono e inténtalo otra vez.');
+      setLastOutcome('no-speech');
+      setMicError(msgsRef.current.noVoice);
       stoppingRef.current = false;
       return '';
     }
     if (audio.size < 1200) {
-      setMicError('No escuché nada. Habla un poco más cerca del micrófono.');
+      setLastOutcome('too-short');
+      setMicError(msgsRef.current.tooShort);
       stoppingRef.current = false;
       return '';
     }
@@ -246,12 +269,14 @@ export function useSpeechRecognition(lang: string, onTranscript?: (text: string)
       const payload = data as { text?: string; error?: string } | null;
       if (payload?.error) throw new Error(payload.error);
       const text = typeof payload?.text === 'string' ? payload.text.trim() : '';
-      if (!text) throw new Error('No pude entender el audio. Inténtalo otra vez.');
+      if (!text) throw new Error(msgsRef.current.notUnderstood);
       setTranscript(text);
+      setLastOutcome('ok');
       await onTranscriptRef.current?.(text);
       return text;
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
+      setLastOutcome('error');
       setMicError(message);
       return '';
     } finally {
@@ -262,5 +287,5 @@ export function useSpeechRecognition(lang: string, onTranscript?: (text: string)
 
   stopRef.current = stop;
 
-  return { transcript, isListening, isTranscribing, isSupported, start, stop, setTranscript, micError, micBlock, seconds, level };
+  return { transcript, isListening, isTranscribing, isSupported, start, stop, setTranscript, micError, micBlock, lastOutcome, seconds, level };
 }

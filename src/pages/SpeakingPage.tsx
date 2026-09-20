@@ -7,13 +7,14 @@ import { translateLessonText } from '@/utils/lessonI18n';
 import { speakText } from '@/utils/helpers';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
 import { MicHelpCard } from '@/components/MicHelpCard';
+import { micMessages } from '@/data/micMessages';
 import { supabase } from '@/integrations/supabase/client';
 import VoiceOrb from '@/components/VoiceOrb';
 
 type Correction = { wrong: string; right: string; why: string };
 type CoachReply = {
   score: number; better: string; corrections: Correction[];
-  reply: string; replyMeaning: string; tip: string;
+  reply: string; replyMeaning: string; tip: string; noSpeech?: boolean;
 };
 type Turn = { role: 'user' | 'coach'; text: string; meaning?: string };
 
@@ -60,7 +61,7 @@ export default function SpeakingPage() {
     try { return JSON.parse(localStorage.getItem(STORE) || '[]'); } catch { return []; }
   });
   const [showSaved, setShowSaved] = useState(false);
-  const { transcript, isListening, isTranscribing, isSupported, start, stop, setTranscript, micError, micBlock, seconds, level: micLevel } = useSpeechRecognition(lang, send);
+  const { transcript, isListening, isTranscribing, isSupported, start, stop, setTranscript, micError, micBlock, lastOutcome, seconds, level: micLevel } = useSpeechRecognition(lang, send, micMessages(nativeLang));
   const spokenRef = useRef('');
   const [typed, setTyped] = useState('');
 
@@ -104,6 +105,30 @@ export default function SpeakingPage() {
       setTranscript('');
     }
   }
+
+  // Nothing was heard for ~5s: the coach still answers with encouragement and
+  // an example phrase the learner can repeat right away.
+  async function sendNoSpeech() {
+    if (loading) return;
+    setLoading(true); setError(null); setCoach(null);
+    try {
+      const { data, error: err } = await supabase.functions.invoke('speak-coach', {
+        body: { noSpeech: true, lang, native: nativeLang, topic: topic || customTopic, level, history: turns.slice(-8) },
+      });
+      if (err || (data as any)?.error) throw new Error(err?.message || (data as any).error);
+      const r = data as CoachReply;
+      setCoach(r);
+      setTurns(t => [...t, { role: 'coach', text: r.reply, meaning: r.replyMeaning }]);
+    } catch { /* the mic hint below the button is enough if the coach is unreachable */ }
+    finally { setLoading(false); }
+  }
+  const noSpeechHandledRef = useRef(0);
+  useEffect(() => {
+    if (lastOutcome !== 'no-speech') return;
+    noSpeechHandledRef.current += 1;
+    void sendNoSpeech();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastOutcome]);
 
   // ---------- Saved corrections review ----------
   if (showSaved) {
@@ -232,8 +257,8 @@ export default function SpeakingPage() {
           )}
 
           {transcript && <p className="text-sm text-center opacity-80">“{transcript}”</p>}
-          {isTranscribing && <p className="text-sm text-foreground-muted animate-pulse">🎙️ Transcribiendo…</p>}
-          {loading && !isTranscribing && <p className="text-sm text-foreground-muted animate-pulse">💬 Preparando respuesta…</p>}
+          {isTranscribing && <p className="text-sm text-foreground-muted animate-pulse">🎙️ {u('thinking')}</p>}
+          {loading && !isTranscribing && <p className="text-sm text-foreground-muted animate-pulse">💬 {u('thinking')}</p>}
           {error && <p className="text-sm text-destructive text-center">{error}</p>}
 
           {coach && !loading && (
@@ -245,6 +270,12 @@ export default function SpeakingPage() {
                 {coach.replyMeaning && <div className="text-[0.75rem] italic text-foreground-muted mt-1">{coach.replyMeaning}</div>}
               </div>
 
+              {coach.noSpeech ? (
+                <div className={`p-3 ${glass}`} style={{ boxShadow: '0 0 20px hsl(var(--neon-violet) / 0.15)' }}>
+                  <div className="text-[0.85rem]">{coach.tip}</div>
+                  <div className="text-[0.75rem] text-foreground-muted mt-1.5">🔁 {u('retry')}: <button onClick={() => speakText(coach.better, lang)} className="font-semibold">🔊 {coach.better}</button></div>
+                </div>
+              ) : (
               <div className="p-3 rounded-2xl border" style={{
                 borderColor: coach.corrections.length ? 'hsl(var(--gold))' : 'hsl(var(--success))',
                 background: coach.corrections.length ? 'hsl(45 45% 16%)' : 'hsl(165 45% 14%)',
@@ -270,6 +301,7 @@ export default function SpeakingPage() {
                 )}
                 {coach.tip && <div className="text-[0.72rem] mt-2 text-foreground-secondary">💡 {u('tip')}: {coach.tip}</div>}
               </div>
+              )}
             </div>
           )}
         </div>
