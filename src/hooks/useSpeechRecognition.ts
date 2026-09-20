@@ -130,6 +130,7 @@ export function useSpeechRecognition(
     setTranscript('');
     setMicError(null);
     setMicBlock(null);
+    setLastOutcome(null);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
@@ -194,7 +195,6 @@ export function useSpeechRecognition(
           || now - startedAt >= MAX_RECORDING_MS) {
           void stopRef.current();
         } else if (!active.heardVoice && now - startedAt >= NO_SPEECH_MS) {
-          setMicError('No detecté voz. Acércate al micrófono e inténtalo otra vez.');
           void stopRef.current();
         }
       }, 250);
