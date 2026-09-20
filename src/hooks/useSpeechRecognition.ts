@@ -180,9 +180,16 @@ export function useSpeechRecognition(lang: string, onTranscript?: (text: string)
       setIsListening(true);
     } catch (err) {
       console.warn('Audio recording start failed:', err);
-      setMicError(err instanceof DOMException && err.name === 'NotAllowedError'
-        ? 'Permiso del micrófono denegado. Actívalo en tu navegador.'
-        : 'No pude abrir el micrófono. Revisa los permisos.');
+      const name = err instanceof DOMException ? err.name : '';
+      if (name === 'NotAllowedError' || name === 'SecurityError') {
+        setMicBlock('denied');
+      } else if (name === 'NotFoundError' || name === 'OverconstrainedError') {
+        setMicBlock('nodevice');
+      } else if (name === 'NotReadableError' || name === 'AbortError') {
+        setMicBlock('busy');
+      } else {
+        setMicError(`No pude abrir el micrófono (${name || 'error desconocido'}).`);
+      }
       setIsListening(false);
       cleanupMeters();
     }
