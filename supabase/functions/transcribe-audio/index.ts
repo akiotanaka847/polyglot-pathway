@@ -30,7 +30,7 @@ Deno.serve(async req => {
 
     const upstream = new FormData();
     upstream.append("model", "google/gemini-3.5-transcribe");
-    upstream.append("file", file, "recording.wav");
+    upstream.append("file", file, file.name || "recording.webm");
     upstream.append("stream", "true");
     const code = LANGUAGE_CODES[language];
     if (code) upstream.append("language", code);
