@@ -59,7 +59,7 @@ export default function SpeakingPage() {
     try { return JSON.parse(localStorage.getItem(STORE) || '[]'); } catch { return []; }
   });
   const [showSaved, setShowSaved] = useState(false);
-  const { transcript, isListening, isSupported, start, stop, setTranscript, micError } = useSpeechRecognition(lang);
+  const { transcript, isListening, isTranscribing, isSupported, start, stop, setTranscript, micError, seconds, level: micLevel } = useSpeechRecognition(lang);
   const spokenRef = useRef('');
   const [typed, setTyped] = useState('');
 
@@ -198,15 +198,40 @@ export default function SpeakingPage() {
         </div>
 
         <div className="flex-1 flex flex-col items-center justify-center gap-4">
-          <VoiceOrb mode={isListening ? 'listening' : loading ? 'speaking' : 'idle'} hue={config.hue}
+          <VoiceOrb mode={isListening ? 'listening' : (loading || isTranscribing) ? 'speaking' : 'idle'} hue={config.hue}
             onClick={() => coach?.reply && speakText(coach.reply, lang)} label={u('speak')} />
 
-          {turns.length === 0 && !loading && (
+          {isListening && (
+            <div className={`flex items-center gap-3 px-4 py-2 ${glass}`}>
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500" />
+              </span>
+              <span className="text-sm font-mono tabular-nums">
+                {String(Math.floor(seconds / 60)).padStart(2, '0')}:{String(seconds % 60).padStart(2, '0')}
+              </span>
+              <div className="flex items-end gap-[3px] h-5" aria-hidden>
+                {[0.25, 0.5, 0.75, 1, 0.75, 0.5, 0.25].map((th, i) => (
+                  <span
+                    key={i}
+                    className="w-1 rounded-full transition-all duration-100"
+                    style={{
+                      height: `${6 + i % 3 * 5}px`,
+                      background: micLevel >= th * 0.6 ? 'hsl(var(--neon-cyan))' : 'hsl(0 0% 100% / 0.2)',
+                      boxShadow: micLevel >= th * 0.6 ? '0 0 8px hsl(var(--neon-cyan) / 0.7)' : 'none',
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {turns.length === 0 && !loading && !isListening && (
             <p className={`text-sm text-center px-4 py-2 max-w-[320px] ${glass}`}>{tl(activeTopic)}</p>
           )}
 
           {transcript && <p className="text-sm text-center opacity-80">“{transcript}”</p>}
-          {loading && <p className="text-sm text-foreground-muted animate-pulse">{u('thinking')}</p>}
+          {(loading || isTranscribing) && <p className="text-sm text-foreground-muted animate-pulse">🎙️ {u('thinking')}</p>}
           {error && <p className="text-sm text-destructive text-center">{error}</p>}
 
           {coach && !loading && (
