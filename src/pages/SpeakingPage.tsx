@@ -154,9 +154,10 @@ export default function SpeakingPage() {
         <header className="mb-8 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
             <Button variant="ghost" size="sm" onClick={() => navigate('/')} className="mb-5"><ArrowLeft />{u('back')}</Button>
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-secondary/30 bg-secondary/10 px-3 py-1 text-xs font-bold text-secondary">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-secondary" />{u('learning')} {config.flag} {config.nativeName}
+            <div className="mb-2 inline-flex items-center gap-2 text-xs font-bold text-secondary">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-secondary" />{u('learning')}
             </div>
+            <div className="mb-4"><LearningLangSwitcher current={lang} onChange={() => { setTurns([]); setCoach(null); setError(null); }} /></div>
             <h1 className="max-w-2xl font-display text-4xl font-extrabold leading-tight md:text-5xl">{u('title')}</h1>
             <p className="mt-2 max-w-xl text-foreground-secondary">{u('sub')}</p>
           </div>
