@@ -60,7 +60,7 @@ function BottomNav() {
 
   const activeLangs = [...new Set(state.activeLangs || [])].filter(c => c !== state.nativeLang);
   const lessonsLang = activeLangs.length > 0
-    ? [...activeLangs].sort((a, b) => (state.xp[b] || 0) - (state.xp[a] || 0))[0]
+    ? (activeLangs.includes(state.currentLearningLang) ? state.currentLearningLang : activeLangs[activeLangs.length - 1])
     : 'jp';
 
   const tabs = [

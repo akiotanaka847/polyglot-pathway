@@ -85,7 +85,7 @@ export default function HomePage() {
                   const lc = getLangConfig(code);
                   const r = getRank(code);
                   return (
-                    <button key={code} onClick={() => navigate(`/levels/${code}`)}
+                    <button key={code} onClick={() => { addActiveLang(code); navigate(`/levels/${code}`); }}
                       className="flex items-center gap-2 px-4 py-2.5 rounded-2xl border-2 border-border bg-card hover:shadow-lg hover:-translate-y-1 transition-all"
                       style={{ borderColor: `hsl(${lc.hue}, 70%, 55%)`, background: `hsl(${lc.hue}, 45%, 18%)` }}>
                       <span className="text-xl">{lc.flag}</span>

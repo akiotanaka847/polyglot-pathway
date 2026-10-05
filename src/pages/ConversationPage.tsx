@@ -40,13 +40,7 @@ export default function ConversationPage() {
   const { state, addXP, markConvDone, tt, recordAnswer, getAbility } = useApp();
   const nativeLang = state.nativeLang || 'es';
   const u = (k: string) => UI[nativeLang]?.[k] || UI.es[k];
-  const activeLangs = useMemo(() => [...new Set(state.activeLangs || [])], [state.activeLangs]);
-  const convLangs = activeLangs.length ? activeLangs : Object.keys(CONVERSATION_DATA);
-  // Language being learned = active one with most XP (same rule as "Continuar" on Home)
-  const [lang, setLang] = useState<string>(() => {
-    const ls = activeLangs.length ? activeLangs : Object.keys(CONVERSATION_DATA);
-    return [...ls].sort((a, b) => (state.xp?.[b] || 0) - (state.xp?.[a] || 0))[0] || 'en';
-  });
+  const lang = state.currentLearningLang || state.activeLangs[state.activeLangs.length - 1] || 'en';
   const [activeConv, setActiveConv] = useState<string | null>(null);
   const [turns, setTurns] = useState<Turn[]>([]);
   const [coach, setCoach] = useState<CoachReply | null>(null);
@@ -308,17 +302,8 @@ export default function ConversationPage() {
         <div className="flex items-center gap-2 mb-4">
           <button onClick={() => navigate('/')} className={`px-3 py-1 rounded-full text-sm ${glass}`}>← {tt('go_home')}</button>
           <span className="flex-1 text-center font-display font-bold">💬 {tt('conversation')}</span>
-          <div className="flex gap-1">
-            {convLangs.map(l => (
-              <button
-                key={l}
-                onClick={() => setLang(l)}
-                className={`px-2 py-1 rounded-full text-sm font-semibold transition-all ${glass}`}
-                style={lang === l ? { boxShadow: '0 0 14px hsl(var(--neon-violet) / 0.5)', borderColor: 'hsl(var(--neon-violet))' } : undefined}
-              >
-                {getLangConfig(l).flag}
-              </button>
-            ))}
+          <div className={`px-3 py-1 rounded-full text-sm font-semibold ${glass}`}>
+            {config.flag} {config.nativeName}
           </div>
         </div>
 
