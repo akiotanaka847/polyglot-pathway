@@ -1,6 +1,7 @@
 # Roadmap Voxia
 
 ## En curso
+- [x] Speaking y Conversación usan el último idioma de aprendizaje elegido, nunca el idioma con más XP; temas orales localizados y Speaking renovado con Playful Glassmorphism.
 - [x] Reemplazado el reconocimiento de voz del navegador por grabación WAV y transcripción IA en conversación y práctica oral.
 - [x] Auditoría de idioma con traducción IA (historias, lecciones, cultura, slang, quiz, exámenes, repositorio). Restante: módulos avanzados (niveles 3-5, exámenes, referencia, cultura, slang, historias) muestran texto en español aunque el nativo sea otro. Ampliar cobertura de traducción y verificar consistencia en toda la app.
 

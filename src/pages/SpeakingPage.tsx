@@ -178,12 +178,16 @@ export default function SpeakingPage() {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {SPEAK_TOPICS.map((item, index) => {
             const difficulty = item.level === 1 ? u('beginner') : item.level === 2 ? u('intermediate') : u('advanced');
-            const accent = index % 3 === 0 ? 'secondary' : index % 3 === 1 ? 'primary' : 'coach';
+            const accent = [
+              { border: 'hover:border-secondary/50', icon: 'bg-secondary/10', arrow: 'text-secondary' },
+              { border: 'hover:border-primary/50', icon: 'bg-primary/10', arrow: 'text-primary' },
+              { border: 'hover:border-coach/50', icon: 'bg-coach/10', arrow: 'text-coach' },
+            ][index % 3];
             return <button key={item.id} onClick={() => { setTopic(item); setTurns([]); setCoach(null); }}
-              className={`group relative min-h-48 overflow-hidden rounded-2xl border border-glass-border bg-glass p-5 text-left shadow-lg transition duration-300 hover:-translate-y-1 hover:border-${accent}/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring`}>
-              <div className={`mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-${accent}/10 text-3xl transition-transform group-hover:scale-110`}>{item.emoji}</div>
+              className={`group relative min-h-48 overflow-hidden rounded-2xl border border-glass-border bg-glass p-5 text-left shadow-lg transition duration-300 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${accent.border}`}>
+              <div className={`mb-5 flex h-14 w-14 items-center justify-center rounded-2xl text-3xl transition-transform group-hover:scale-110 ${accent.icon}`}>{item.emoji}</div>
               <h3 className="font-display text-lg font-bold">{getSpeakTopicTitle(item.id, nativeLang)}</h3>
-              <div className="mt-5 flex items-center justify-between text-xs font-semibold text-foreground-muted"><span>{difficulty}</span><span className={`text-${accent}`}>→</span></div>
+              <div className="mt-5 flex items-center justify-between text-xs font-semibold text-foreground-muted"><span>{difficulty}</span><span className={accent.arrow}>→</span></div>
             </button>;
           })}
         </div>
