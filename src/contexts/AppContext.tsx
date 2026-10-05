@@ -6,6 +6,7 @@ import { getLangConfig, t } from '@/data/languages';
 const defaultState: AppState = {
   nativeLang: '',
   activeLangs: [],
+  currentLearningLang: '',
   xp: {},
   prog: {},
   streak: { count: 0, lastDate: null },
@@ -40,6 +41,9 @@ function migrateState(parsed: any): AppState {
   if (!s.activeLangs) s.activeLangs = [];
   // Always deduplicate activeLangs
   s.activeLangs = [...new Set(s.activeLangs)];
+  if (!s.currentLearningLang || s.currentLearningLang === s.nativeLang || !s.activeLangs.includes(s.currentLearningLang)) {
+    s.currentLearningLang = s.activeLangs[s.activeLangs.length - 1] || '';
+  }
   if (!s.recall) s.recall = {};
   if (!s.ability) s.ability = {};
   return s;
@@ -62,6 +66,7 @@ interface AppContextType {
   state: AppState;
   setNativeLang: (code: string) => void;
   addActiveLang: (code: string) => void;
+  setCurrentLearningLang: (code: string) => void;
   removeActiveLang: (code: string) => void;
   addXP: (lang: Lang, amount: number) => void;
   markLessonDone: (lang: Lang, level: string, lessonId: string) => void;
@@ -118,9 +123,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setState(s => {
       // Always deduplicate
       const deduped = [...new Set(s.activeLangs)].filter(c => c && c !== code);
-      const ns = { ...s, activeLangs: [...deduped, code] };
+      const ns = { ...s, activeLangs: [...deduped, code], currentLearningLang: code };
       return ensureLangProg(ns, code);
     });
+  }, []);
+
+  const setCurrentLearningLang = useCallback((code: string) => {
+    setState(s => ensureLangProg({
+      ...s,
+      currentLearningLang: code,
+      activeLangs: [...new Set([...s.activeLangs.filter(Boolean), code])],
+    }, code));
   }, []);
 
   const removeActiveLang = useCallback((code: string) => {
@@ -285,7 +298,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   return (
     <AppContext.Provider value={{
-      state, setNativeLang, addActiveLang, removeActiveLang,
+      state, setNativeLang, addActiveLang, setCurrentLearningLang, removeActiveLang,
       addXP, markLessonDone, markQuizPassed, unlockNextLevel,
       checkStreak, earnAchievement, markStoryDone,
       markCultureRead, markConvDone, getRank, getRankPct, tt,

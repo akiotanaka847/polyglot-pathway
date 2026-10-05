@@ -174,6 +174,7 @@ export interface VocabEntry {
 export interface AppState {
   nativeLang: string;
   activeLangs: string[];
+  currentLearningLang: string;
   xp: Record<string, number>;
   prog: Record<string, { cur: string; done: Record<string, Record<string, boolean>>; passed: Record<string, boolean> }>;
   streak: { count: number; lastDate: string | null };

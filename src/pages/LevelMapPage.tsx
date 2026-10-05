@@ -31,7 +31,7 @@ function CircleProgress({ pct, size = 64, stroke = 4, hue }: { pct: number; size
 export default function LevelMapPage() {
   const { lang } = useParams<{ lang: string }>();
   const navigate = useNavigate();
-  const { state, tt, addActiveLang } = useApp();
+  const { state, tt, setCurrentLearningLang } = useApp();
   const l = lang || 'jp';
   const config = getLangConfig(l);
   const levels = LEVELS[l] || config.levels;
@@ -39,7 +39,7 @@ export default function LevelMapPage() {
   const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!state.activeLangs.includes(l)) addActiveLang(l);
+    if (state.currentLearningLang !== l) setCurrentLearningLang(l);
   }, [l]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const groupByUnit = (lessons: Lesson[]): UnitGroup[] => {
