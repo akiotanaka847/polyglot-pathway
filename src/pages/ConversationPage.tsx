@@ -1,3 +1,4 @@
+import LearningLangSwitcher from '@/components/LearningLangSwitcher';
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';

@@ -1,3 +1,4 @@
+import LearningLangSwitcher from '@/components/LearningLangSwitcher';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, BookOpenCheck, Headphones, Mic, RotateCcw, Volume2 } from 'lucide-react';
