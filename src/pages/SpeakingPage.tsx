@@ -167,7 +167,7 @@ export default function SpeakingPage() {
         </header>
 
         <PromptInput onSubmit={({ text }) => { if (text.trim()) { setCustomTopic(text.trim()); setTurns([]); } }} className={`${glass} mb-6 rounded-2xl`}>
-          <PromptInputTextarea placeholder={u('own')} className="min-h-12" />
+          <PromptInputTextarea placeholder={u('own')} className="h-12 min-h-0 py-3" />
           <PromptInputFooter className="justify-end"><PromptInputSubmit aria-label={u('start')} /></PromptInputFooter>
         </PromptInput>
 
@@ -175,7 +175,7 @@ export default function SpeakingPage() {
           <h2 className="text-xs font-bold uppercase text-foreground-muted">{u('pick')}</h2>
           <Button variant="ghost" size="sm" onClick={() => setShowSaved(true)}><BookOpenCheck />{u('mine')} · {saved.filter(item => item.lang === lang).length}</Button>
         </div>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:gap-4">
           {SPEAK_TOPICS.map((item, index) => {
             const difficulty = item.level === 1 ? u('beginner') : item.level === 2 ? u('intermediate') : u('advanced');
             const accent = [
@@ -183,12 +183,14 @@ export default function SpeakingPage() {
               { border: 'hover:border-primary/50', icon: 'bg-primary/10', arrow: 'text-primary' },
               { border: 'hover:border-coach/50', icon: 'bg-coach/10', arrow: 'text-coach' },
             ][index % 3];
-            return <button key={item.id} onClick={() => { setTopic(item); setTurns([]); setCoach(null); }}
-              className={`group relative min-h-48 overflow-hidden rounded-2xl border border-glass-border bg-glass p-5 text-left shadow-lg transition duration-300 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${accent.border}`}>
-              <div className={`mb-5 flex h-14 w-14 items-center justify-center rounded-2xl text-3xl transition-transform group-hover:scale-110 ${accent.icon}`}>{item.emoji}</div>
-              <h3 className="font-display text-lg font-bold">{getSpeakTopicTitle(item.id, nativeLang)}</h3>
-              <div className="mt-5 flex items-center justify-between text-xs font-semibold text-foreground-muted"><span>{difficulty}</span><span className={accent.arrow}>→</span></div>
-            </button>;
+            return <Button key={item.id} variant="ghost" onClick={() => { setTopic(item); setTurns([]); setCoach(null); }}
+              className={`group relative h-auto min-h-36 justify-start overflow-hidden whitespace-normal rounded-2xl border border-glass-border bg-glass p-4 text-left shadow-lg transition duration-300 hover:-translate-y-1 hover:bg-glass-strong focus-visible:ring-2 ${accent.border}`}>
+              <span className="flex h-full w-full flex-col items-start">
+                <span className={`mb-3 flex h-11 w-11 items-center justify-center rounded-xl text-2xl transition-transform group-hover:scale-110 ${accent.icon}`}>{item.emoji}</span>
+                <span className="font-display text-base font-bold">{getSpeakTopicTitle(item.id, nativeLang)}</span>
+                <span className="mt-auto flex w-full items-center justify-between pt-3 text-xs font-semibold text-foreground-muted"><span>{difficulty}</span><span className={accent.arrow}>→</span></span>
+              </span>
+            </Button>;
           })}
         </div>
       </div>
