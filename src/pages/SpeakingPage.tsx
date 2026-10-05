@@ -1,57 +1,56 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, BookOpenCheck, Headphones, Mic, RotateCcw, Volume2 } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import { getLangConfig } from '@/data/languages';
-import { SPEAK_TOPICS } from '@/data/speakTopics';
-import { translateLessonText } from '@/utils/lessonI18n';
+import { getSpeakTopicTitle, SPEAK_TOPICS, SpeakTopic } from '@/data/speakTopics';
 import { speakText } from '@/utils/helpers';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
 import { MicHelpCard } from '@/components/MicHelpCard';
 import { micMessages } from '@/data/micMessages';
 import { supabase } from '@/integrations/supabase/client';
 import VoiceOrb from '@/components/VoiceOrb';
+import { Button } from '@/components/ui/button';
+import { Conversation, ConversationContent, ConversationScrollButton } from '@/components/ai-elements/conversation';
+import { Message, MessageContent, MessageResponse } from '@/components/ai-elements/message';
+import { PromptInput, PromptInputFooter, PromptInputSubmit, PromptInputTextarea } from '@/components/ai-elements/prompt-input';
+import { Shimmer } from '@/components/ai-elements/shimmer';
 
-type Correction = { wrong: string; right: string; why: string };
-type CoachReply = {
+ type Correction = { wrong: string; right: string; why: string };
+ type CoachReply = {
   score: number; better: string; corrections: Correction[];
   reply: string; replyMeaning: string; tip: string; noSpeech?: boolean;
 };
-type Turn = { role: 'user' | 'coach'; text: string; meaning?: string };
+ type Turn = { role: 'user' | 'coach'; text: string; meaning?: string };
 
 const STORE = 'voxia-speak-corrections';
 
 const UI: Record<string, Record<string, string>> = {
-  es: { title: 'Solo hablar', sub: 'Habla de lo que quieras y te corrijo', pick: 'Elige un tema', own: 'Escribe tu propio tema…', speak: 'Hablar', stop: 'Terminar', thinking: 'Escuchando y corrigiendo…', corrections: 'Correcciones', none: '¡Sin errores! Muy bien', better: 'Mejor así', mine: 'Mis correcciones', clear: 'Borrar', back: 'Inicio', start: 'Empezar', change: 'Cambiar tema', nomic: 'Tu navegador no permite el micrófono', retry: 'Repetir', tip: 'Consejo' },
-  en: { title: 'Speaking only', sub: 'Talk about anything and I correct you', pick: 'Pick a topic', own: 'Type your own topic…', speak: 'Speak', stop: 'Finish', thinking: 'Listening and correcting…', corrections: 'Corrections', none: 'No mistakes! Great', better: 'Better like this', mine: 'My corrections', clear: 'Clear', back: 'Home', start: 'Start', change: 'Change topic', nomic: 'Your browser does not allow the microphone', retry: 'Repeat', tip: 'Tip' },
-  fr: { title: 'Parler seulement', sub: 'Parle de ce que tu veux, je te corrige', pick: 'Choisis un thème', own: 'Écris ton propre thème…', speak: 'Parler', stop: 'Terminer', thinking: 'J’écoute et je corrige…', corrections: 'Corrections', none: 'Aucune erreur ! Bravo', better: 'Mieux ainsi', mine: 'Mes corrections', clear: 'Effacer', back: 'Accueil', start: 'Commencer', change: 'Changer de thème', nomic: 'Ton navigateur ne permet pas le micro', retry: 'Répéter', tip: 'Conseil' },
-  pt: { title: 'Só falar', sub: 'Fale do que quiser e eu corrijo', pick: 'Escolha um tema', own: 'Escreva seu próprio tema…', speak: 'Falar', stop: 'Terminar', thinking: 'Ouvindo e corrigindo…', corrections: 'Correções', none: 'Sem erros! Muito bem', better: 'Melhor assim', mine: 'Minhas correções', clear: 'Apagar', back: 'Início', start: 'Começar', change: 'Mudar tema', nomic: 'Seu navegador não permite o microfone', retry: 'Repetir', tip: 'Dica' },
-  zh: { title: '只练口语', sub: '随便聊，我来纠正你', pick: '选择话题', own: '输入你的话题…', speak: '说话', stop: '结束', thinking: '正在听并纠正…', corrections: '纠正', none: '没有错误！很好', better: '更自然的说法', mine: '我的纠正', clear: '清空', back: '首页', start: '开始', change: '换话题', nomic: '你的浏览器不支持麦克风', retry: '再说一次', tip: '建议' },
-  jp: { title: '会話だけ', sub: '好きな話題で話して、直します', pick: 'トピックを選ぶ', own: '自分のトピックを書く…', speak: '話す', stop: '終わる', thinking: '聞いて直しています…', corrections: '訂正', none: '間違いなし！すばらしい', better: 'こう言うと自然', mine: '私の訂正', clear: '消す', back: 'ホーム', start: 'はじめる', change: 'トピック変更', nomic: 'このブラウザはマイクを使えません', retry: 'もう一度', tip: 'アドバイス' },
-  ko: { title: '말하기만', sub: '무엇이든 말하면 교정해 줘요', pick: '주제 선택', own: '직접 주제 입력…', speak: '말하기', stop: '끝내기', thinking: '듣고 교정 중…', corrections: '교정', none: '실수 없음! 잘했어요', better: '이렇게가 더 자연스러워요', mine: '내 교정', clear: '지우기', back: '홈', start: '시작', change: '주제 변경', nomic: '이 브라우저는 마이크를 지원하지 않아요', retry: '다시', tip: '팁' },
-  ru: { title: 'Только говорение', sub: 'Говори о чём хочешь — я исправлю', pick: 'Выбери тему', own: 'Напиши свою тему…', speak: 'Говорить', stop: 'Закончить', thinking: 'Слушаю и исправляю…', corrections: 'Исправления', none: 'Ошибок нет! Отлично', better: 'Лучше так', mine: 'Мои исправления', clear: 'Очистить', back: 'Главная', start: 'Начать', change: 'Сменить тему', nomic: 'Браузер не поддерживает микрофон', retry: 'Повторить', tip: 'Совет' },
-  ar: { title: 'التحدث فقط', sub: 'تحدث عن أي شيء وسأصحح لك', pick: 'اختر موضوعًا', own: 'اكتب موضوعك…', speak: 'تحدث', stop: 'إنهاء', thinking: 'أستمع وأصحح…', corrections: 'التصحيحات', none: 'لا أخطاء! رائع', better: 'الأفضل هكذا', mine: 'تصحيحاتي', clear: 'حذف', back: 'الرئيسية', start: 'ابدأ', change: 'تغيير الموضوع', nomic: 'متصفحك لا يدعم الميكروفون', retry: 'أعد', tip: 'نصيحة' },
-  hi: { title: 'केवल बोलना', sub: 'कुछ भी बोलें, मैं सुधार करूँगा', pick: 'विषय चुनें', own: 'अपना विषय लिखें…', speak: 'बोलें', stop: 'समाप्त', thinking: 'सुन रहा हूँ और सुधार रहा हूँ…', corrections: 'सुधार', none: 'कोई गलती नहीं! बहुत अच्छा', better: 'ऐसे बेहतर है', mine: 'मेरे सुधार', clear: 'मिटाएँ', back: 'होम', start: 'शुरू करें', change: 'विषय बदलें', nomic: 'आपका ब्राउज़र माइक्रोफ़ोन नहीं देता', retry: 'फिर से', tip: 'सुझाव' },
-  ro: { title: 'Doar vorbit', sub: 'Vorbește despre orice și te corectez', pick: 'Alege o temă', own: 'Scrie tema ta…', speak: 'Vorbește', stop: 'Termină', thinking: 'Ascult și corectez…', corrections: 'Corecturi', none: 'Fără greșeli! Bravo', better: 'Mai bine așa', mine: 'Corecturile mele', clear: 'Șterge', back: 'Acasă', start: 'Începe', change: 'Schimbă tema', nomic: 'Browserul tău nu permite microfonul', retry: 'Repetă', tip: 'Sfat' },
+  es: { title: '¿De qué hablamos hoy?', sub: 'Elegí un tema y practicá con un amigo que te ayuda', pick: 'Elegí un tema', own: 'O escribí tu propio tema…', speak: 'Hablar', stop: 'Terminar', thinking: 'Tu coach está preparando una respuesta…', corrections: 'Pequeño ajuste', none: '¡Sonó natural!', better: 'Una forma más natural', mine: 'Mis correcciones', clear: 'Borrar', back: 'Inicio', start: 'Empezar', change: 'Cambiar tema', nomic: 'Tu navegador no permite el micrófono', retry: 'Repetir', tip: 'Consejo', learning: 'Practicando', help: 'Ayuda en', beginner: 'Fácil', intermediate: 'Intermedio', advanced: 'Desafío', heard: 'Te entendí', coach: 'Tu amigo de práctica', write: 'También podés escribir…' },
+  en: { title: 'What shall we talk about?', sub: 'Pick a topic and practise with a friend who helps you', pick: 'Pick a topic', own: 'Or type your own topic…', speak: 'Speak', stop: 'Finish', thinking: 'Your coach is preparing a reply…', corrections: 'Small adjustment', none: 'That sounded natural!', better: 'A more natural way', mine: 'My corrections', clear: 'Clear', back: 'Home', start: 'Start', change: 'Change topic', nomic: 'Your browser does not allow the microphone', retry: 'Repeat', tip: 'Tip', learning: 'Practising', help: 'Help in', beginner: 'Easy', intermediate: 'Intermediate', advanced: 'Challenge', heard: 'I heard', coach: 'Your practice friend', write: 'You can also type…' },
+  fr: { title: 'De quoi parlons-nous ?', sub: 'Choisis un thème et entraîne-toi avec un ami qui t’aide', pick: 'Choisis un thème', own: 'Ou écris ton propre thème…', speak: 'Parler', stop: 'Terminer', thinking: 'Ton coach prépare une réponse…', corrections: 'Petit ajustement', none: 'C’était naturel !', better: 'Une façon plus naturelle', mine: 'Mes corrections', clear: 'Effacer', back: 'Accueil', start: 'Commencer', change: 'Changer de thème', nomic: 'Ton navigateur ne permet pas le micro', retry: 'Répéter', tip: 'Conseil', learning: 'Pratique', help: 'Aide en', beginner: 'Facile', intermediate: 'Intermédiaire', advanced: 'Défi', heard: 'J’ai entendu', coach: 'Ton ami de pratique', write: 'Tu peux aussi écrire…' },
+  pt: { title: 'Sobre o que vamos falar?', sub: 'Escolha um tema e pratique com um amigo que ajuda você', pick: 'Escolha um tema', own: 'Ou escreva seu próprio tema…', speak: 'Falar', stop: 'Terminar', thinking: 'Seu coach está preparando uma resposta…', corrections: 'Pequeno ajuste', none: 'Soou natural!', better: 'Uma forma mais natural', mine: 'Minhas correções', clear: 'Apagar', back: 'Início', start: 'Começar', change: 'Mudar tema', nomic: 'Seu navegador não permite o microfone', retry: 'Repetir', tip: 'Dica', learning: 'Praticando', help: 'Ajuda em', beginner: 'Fácil', intermediate: 'Intermediário', advanced: 'Desafio', heard: 'Eu ouvi', coach: 'Seu amigo de prática', write: 'Você também pode escrever…' },
+  zh: { title: '今天聊什么？', sub: '选择一个话题，和会帮助你的朋友一起练习', pick: '选择话题', own: '或输入自己的话题…', speak: '说话', stop: '结束', thinking: '你的口语伙伴正在准备回答…', corrections: '小调整', none: '听起来很自然！', better: '更自然的说法', mine: '我的纠正', clear: '清空', back: '首页', start: '开始', change: '换话题', nomic: '你的浏览器不支持麦克风', retry: '再说一次', tip: '建议', learning: '正在练习', help: '帮助语言', beginner: '简单', intermediate: '中等', advanced: '挑战', heard: '我听到', coach: '你的口语伙伴', write: '也可以打字…' },
+  jp: { title: '今日は何を話す？', sub: 'トピックを選んで、助けてくれる友達と練習しよう', pick: 'トピックを選ぶ', own: 'または自由に入力…', speak: '話す', stop: '終わる', thinking: '会話パートナーが返事を考えています…', corrections: 'ちょっとした修正', none: '自然に言えました！', better: 'もっと自然な言い方', mine: '私の訂正', clear: '消す', back: 'ホーム', start: '始める', change: 'トピック変更', nomic: 'このブラウザはマイクを使えません', retry: 'もう一度', tip: 'アドバイス', learning: '練習中', help: '説明言語', beginner: 'やさしい', intermediate: '中級', advanced: 'チャレンジ', heard: '聞こえた文', coach: '会話の友達', write: '文字でも入力できます…' },
+  ko: { title: '오늘은 무슨 이야기를 할까요?', sub: '주제를 고르고 도와주는 친구와 연습해 보세요', pick: '주제 선택', own: '또는 직접 주제 입력…', speak: '말하기', stop: '끝내기', thinking: '말하기 친구가 답변을 준비하고 있어요…', corrections: '작은 수정', none: '아주 자연스러웠어요!', better: '더 자연스러운 표현', mine: '내 교정', clear: '지우기', back: '홈', start: '시작', change: '주제 변경', nomic: '이 브라우저는 마이크를 지원하지 않아요', retry: '다시', tip: '팁', learning: '연습 중', help: '도움말 언어', beginner: '쉬움', intermediate: '중급', advanced: '도전', heard: '들은 문장', coach: '말하기 친구', write: '글로 써도 돼요…' },
+  ru: { title: 'О чём поговорим?', sub: 'Выбери тему и практикуйся с другом, который помогает', pick: 'Выбери тему', own: 'Или напиши свою тему…', speak: 'Говорить', stop: 'Закончить', thinking: 'Твой собеседник готовит ответ…', corrections: 'Небольшая правка', none: 'Звучало естественно!', better: 'Более естественный вариант', mine: 'Мои исправления', clear: 'Очистить', back: 'Главная', start: 'Начать', change: 'Сменить тему', nomic: 'Браузер не поддерживает микрофон', retry: 'Повторить', tip: 'Совет', learning: 'Практика', help: 'Помощь на', beginner: 'Легко', intermediate: 'Средне', advanced: 'Вызов', heard: 'Я услышал', coach: 'Твой друг для практики', write: 'Можно также написать…' },
+  ar: { title: 'عمّ نتحدث اليوم؟', sub: 'اختر موضوعًا وتدرّب مع صديق يساعدك', pick: 'اختر موضوعًا', own: 'أو اكتب موضوعك…', speak: 'تحدث', stop: 'إنهاء', thinking: 'صديقك يحضّر الرد…', corrections: 'تعديل بسيط', none: 'بدا كلامك طبيعيًا!', better: 'طريقة أكثر طبيعية', mine: 'تصحيحاتي', clear: 'حذف', back: 'الرئيسية', start: 'ابدأ', change: 'تغيير الموضوع', nomic: 'متصفحك لا يدعم الميكروفون', retry: 'أعد', tip: 'نصيحة', learning: 'تتدرّب على', help: 'المساعدة بـ', beginner: 'سهل', intermediate: 'متوسط', advanced: 'تحدٍّ', heard: 'سمعت', coach: 'صديقك للتدريب', write: 'يمكنك الكتابة أيضًا…' },
+  hi: { title: 'आज किस बारे में बात करें?', sub: 'विषय चुनें और मददगार दोस्त के साथ अभ्यास करें', pick: 'विषय चुनें', own: 'या अपना विषय लिखें…', speak: 'बोलें', stop: 'समाप्त', thinking: 'आपका साथी जवाब तैयार कर रहा है…', corrections: 'छोटा सुधार', none: 'बहुत स्वाभाविक लगा!', better: 'ज़्यादा स्वाभाविक तरीका', mine: 'मेरे सुधार', clear: 'मिटाएँ', back: 'होम', start: 'शुरू करें', change: 'विषय बदलें', nomic: 'आपका ब्राउज़र माइक्रोफ़ोन नहीं देता', retry: 'फिर से', tip: 'सुझाव', learning: 'अभ्यास', help: 'मदद की भाषा', beginner: 'आसान', intermediate: 'मध्यम', advanced: 'चुनौती', heard: 'मैंने सुना', coach: 'आपका अभ्यास साथी', write: 'आप लिख भी सकते हैं…' },
+  ro: { title: 'Despre ce vorbim azi?', sub: 'Alege o temă și exersează cu un prieten care te ajută', pick: 'Alege o temă', own: 'Sau scrie propria temă…', speak: 'Vorbește', stop: 'Termină', thinking: 'Partenerul tău pregătește răspunsul…', corrections: 'Mică ajustare', none: 'A sunat natural!', better: 'O variantă mai naturală', mine: 'Corecturile mele', clear: 'Șterge', back: 'Acasă', start: 'Începe', change: 'Schimbă tema', nomic: 'Browserul tău nu permite microfonul', retry: 'Repetă', tip: 'Sfat', learning: 'Exersezi', help: 'Ajutor în', beginner: 'Ușor', intermediate: 'Intermediar', advanced: 'Provocare', heard: 'Am auzit', coach: 'Partenerul tău', write: 'Poți și să scrii…' },
 };
 
-const glass = 'rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md';
+const glass = 'border border-glass-border bg-glass/80 backdrop-blur-xl';
 
 export default function SpeakingPage() {
   const navigate = useNavigate();
   const { state, addXP, recordAnswer, getAbility } = useApp();
   const nativeLang = state.nativeLang || 'es';
-  const u = (k: string) => UI[nativeLang]?.[k] || UI.es[k];
-  const tl = (s: string) => translateLessonText(s, nativeLang) || s;
-
-  const activeLangs = useMemo(() => [...new Set(state.activeLangs || [])], [state.activeLangs]);
-  // The language you're learning = the active one with most XP (same as "Continuar" en Home)
-  const lang = useMemo(() => {
-    if (!activeLangs.length) return 'en';
-    return [...activeLangs].sort((a, b) => (state.xp?.[b] || 0) - (state.xp?.[a] || 0))[0];
-  }, [activeLangs, state.xp]);
+  const u = (key: string) => UI[nativeLang]?.[key] || UI.es[key];
+  const lang = state.currentLearningLang || state.activeLangs[state.activeLangs.length - 1] || 'en';
   const config = getLangConfig(lang);
+  const nativeConfig = getLangConfig(nativeLang);
 
-  const [topic, setTopic] = useState<string | null>(null);
+  const [topic, setTopic] = useState<SpeakTopic | null>(null);
   const [customTopic, setCustomTopic] = useState('');
   const [turns, setTurns] = useState<Turn[]>([]);
   const [coach, setCoach] = useState<CoachReply | null>(null);
@@ -61,67 +60,61 @@ export default function SpeakingPage() {
     try { return JSON.parse(localStorage.getItem(STORE) || '[]'); } catch { return []; }
   });
   const [showSaved, setShowSaved] = useState(false);
-  const { transcript, isListening, isTranscribing, isSupported, start, stop, setTranscript, micError, micBlock, lastOutcome, seconds, level: micLevel } = useSpeechRecognition(lang, send, micMessages(nativeLang));
   const spokenRef = useRef('');
-  const [typed, setTyped] = useState('');
 
-  useEffect(() => {
-    try { localStorage.setItem(STORE, JSON.stringify(saved.slice(-120))); } catch { /* ignore */ }
-  }, [saved]);
-
-  // Speak the coach reply once
-  useEffect(() => {
-    if (!coach?.reply || spokenRef.current === coach.reply) return;
-    spokenRef.current = coach.reply;
-    speakText(coach.reply, lang);
-  }, [coach, lang]);
-
-  const level = (() => {
-    const a = getAbility(lang);
-    return a > 0.75 ? 'advanced' : a > 0.45 ? 'intermediate' : 'beginner';
-  })();
+  const activeTopic = topic ? `${topic.id}: ${topic.prompt}` : customTopic;
+  const topicTitle = topic ? getSpeakTopicTitle(topic.id, nativeLang) : customTopic;
+  const level = getAbility(lang) > 0.75 ? 'advanced' : getAbility(lang) > 0.45 ? 'intermediate' : 'beginner';
 
   async function send(said: string) {
-    if (!said.trim()) return;
+    const text = said.trim();
+    if (!text) return;
     setLoading(true); setError(null); setCoach(null);
     const history = turns.slice(-8);
-    setTurns(t => [...t, { role: 'user', text: said }]);
+    setTurns(current => [...current, { role: 'user', text }]);
     try {
-      const { data, error: err } = await supabase.functions.invoke('speak-coach', {
-        body: { said, lang, native: nativeLang, topic: topic || customTopic, level, history, mistakes: saved.slice(-8) },
+      const { data, error: invokeError } = await supabase.functions.invoke('speak-coach', {
+        body: { said: text, lang, native: nativeLang, topic: activeTopic, level, history, mistakes: saved.slice(-8) },
       });
-      if (err || (data as any)?.error) throw new Error(err?.message || (data as any).error);
-      const r = data as CoachReply;
-      setCoach(r);
-      setTurns(t => [...t, { role: 'coach', text: r.reply, meaning: r.replyMeaning }]);
-      const clean = !r.corrections?.length;
+      if (invokeError || (data as { error?: string })?.error) throw new Error(invokeError?.message || (data as { error?: string }).error);
+      const reply = data as CoachReply;
+      setCoach(reply);
+      setTurns(current => [...current, { role: 'coach', text: reply.reply, meaning: reply.replyMeaning }]);
+      const clean = !reply.corrections?.length;
       recordAnswer(lang, clean);
       addXP(lang, clean ? 40 : 25);
-      if (r.corrections?.length) setSaved(s => [...s, ...r.corrections.map(c => ({ ...c, lang }))]);
-    } catch (e) {
-      setError(String((e as Error).message || e));
+      if (reply.corrections?.length) setSaved(current => [...current, ...reply.corrections.map(correction => ({ ...correction, lang }))]);
+    } catch (caught) {
+      setError(String((caught as Error).message || caught));
     } finally {
       setLoading(false);
       setTranscript('');
     }
   }
 
-  // Nothing was heard for ~5s: the coach still answers with encouragement and
-  // an example phrase the learner can repeat right away.
+  const { transcript, isListening, isTranscribing, isSupported, start, stop, setTranscript, micError, micBlock, lastOutcome, seconds, level: micLevel } = useSpeechRecognition(lang, send, micMessages(nativeLang));
+
   async function sendNoSpeech() {
     if (loading) return;
     setLoading(true); setError(null); setCoach(null);
     try {
-      const { data, error: err } = await supabase.functions.invoke('speak-coach', {
-        body: { noSpeech: true, lang, native: nativeLang, topic: topic || customTopic, level, history: turns.slice(-8) },
+      const { data, error: invokeError } = await supabase.functions.invoke('speak-coach', {
+        body: { noSpeech: true, lang, native: nativeLang, topic: activeTopic, level, history: turns.slice(-8) },
       });
-      if (err || (data as any)?.error) throw new Error(err?.message || (data as any).error);
-      const r = data as CoachReply;
-      setCoach(r);
-      setTurns(t => [...t, { role: 'coach', text: r.reply, meaning: r.replyMeaning }]);
-    } catch { /* the mic hint below the button is enough if the coach is unreachable */ }
+      if (invokeError || (data as { error?: string })?.error) throw new Error(invokeError?.message || (data as { error?: string }).error);
+      const reply = data as CoachReply;
+      setCoach(reply);
+      setTurns(current => [...current, { role: 'coach', text: reply.reply, meaning: reply.replyMeaning }]);
+    } catch { /* microphone guidance remains visible */ }
     finally { setLoading(false); }
   }
+
+  useEffect(() => { try { localStorage.setItem(STORE, JSON.stringify(saved.slice(-120))); } catch { /* ignore */ } }, [saved]);
+  useEffect(() => {
+    if (!coach?.reply || spokenRef.current === coach.reply) return;
+    spokenRef.current = coach.reply;
+    speakText(coach.reply, lang);
+  }, [coach, lang]);
   const noSpeechHandledRef = useRef(0);
   useEffect(() => {
     if (lastOutcome !== 'no-speech') return;
@@ -130,223 +123,131 @@ export default function SpeakingPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastOutcome]);
 
-  // ---------- Saved corrections review ----------
+  const resetSession = () => {
+    setTopic(null); setCustomTopic(''); setTurns([]); setCoach(null); setError(null); setTranscript(''); spokenRef.current = '';
+  };
+
   if (showSaved) {
-    const mine = saved.filter(c => c.lang === lang).slice().reverse();
-    return (
-      <div className="animate-fade-in flex-1 overflow-y-auto relative">
-        <div className="pointer-events-none absolute -top-24 -left-24 w-72 h-72 rounded-full blur-[110px] opacity-20" style={{ background: 'hsl(var(--neon-violet))' }} />
-        <div className="max-w-[560px] mx-auto px-4 py-5 relative z-10">
-          <div className="flex items-center gap-2 mb-4">
-            <button onClick={() => setShowSaved(false)} className={`px-3 py-1 rounded-full text-sm ${glass}`}>←</button>
-            <span className="flex-1 text-center font-display font-bold">📝 {u('mine')}</span>
-            <button onClick={() => setSaved(s => s.filter(c => c.lang !== lang))} className={`px-3 py-1 rounded-full text-[0.7rem] ${glass}`}>{u('clear')}</button>
-          </div>
-          {mine.length === 0 && <p className="text-sm text-foreground-muted text-center py-10">{u('none')}</p>}
-          {mine.map((c, i) => (
-            <div key={i} className={`mb-3 p-3 ${glass}`}>
-              <div className="text-sm line-through opacity-60">{c.wrong}</div>
-              <button onClick={() => speakText(c.right, lang)} className="text-sm font-bold mt-0.5 text-left" style={{ color: 'hsl(var(--neon-cyan))' }}>
-                🔊 {c.right}
-              </button>
-              <div className="text-[0.75rem] text-foreground-secondary mt-1">{c.why}</div>
-            </div>
-          ))}
+    const mine = saved.filter(correction => correction.lang === lang).slice().reverse();
+    return <div className="flex-1 overflow-y-auto px-4 py-6">
+      <div className="mx-auto max-w-2xl">
+        <div className="mb-6 flex items-center justify-between">
+          <Button variant="ghost" size="icon" onClick={() => setShowSaved(false)} aria-label={u('back')}><ArrowLeft /></Button>
+          <h1 className="font-display text-xl font-bold">{u('mine')}</h1>
+          <Button variant="ghost" size="sm" onClick={() => setSaved(items => items.filter(item => item.lang !== lang))}>{u('clear')}</Button>
+        </div>
+        <div className="space-y-3">
+          {!mine.length && <p className="py-12 text-center text-foreground-muted">{u('none')}</p>}
+          {mine.map((correction, index) => <div key={`${correction.wrong}-${index}`} className={`${glass} rounded-2xl p-4`}>
+            <p className="text-sm text-foreground-muted line-through">{correction.wrong}</p>
+            <Button variant="ghost" className="mt-1 h-auto justify-start px-0 text-left text-secondary" onClick={() => speakText(correction.right, lang)}><Volume2 />{correction.right}</Button>
+            <p className="mt-2 text-sm text-foreground-secondary">{correction.why}</p>
+          </div>)}
         </div>
       </div>
-    );
+    </div>;
   }
 
-  // ---------- Topic picker ----------
   if (!topic && !customTopic.trim()) {
-    return (
-      <div className="animate-fade-in flex-1 overflow-y-auto relative">
-        {/* Ambient neon glows */}
-        <div className="pointer-events-none absolute -top-24 -left-24 w-72 h-72 rounded-full blur-[110px] opacity-20" style={{ background: 'hsl(var(--neon-violet))' }} />
-        <div className="pointer-events-none absolute top-1/2 -right-24 w-72 h-72 rounded-full blur-[110px] opacity-15" style={{ background: 'hsl(var(--neon-cyan))' }} />
-
-        <div className="max-w-[560px] mx-auto px-4 py-5 relative z-10">
-          <div className="flex items-center gap-2 mb-4">
-            <button onClick={() => navigate('/')} className={`px-3 py-1 rounded-full text-sm ${glass}`}>← {u('back')}</button>
-            <span className="flex-1 text-center font-display font-bold">🗣️ {u('title')}</span>
-            <span className={`px-3 py-1 rounded-full text-sm ${glass}`} title={config.nativeName}
-              style={{ boxShadow: '0 0 14px hsl(var(--neon-violet) / 0.4)' }}>
-              {config.flag}
-            </span>
+    return <div className="flex-1 overflow-y-auto px-4 py-6 md:px-8 md:py-10">
+      <div className="mx-auto max-w-5xl">
+        <header className="mb-8 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+          <div>
+            <Button variant="ghost" size="sm" onClick={() => navigate('/')} className="mb-5"><ArrowLeft />{u('back')}</Button>
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-secondary/30 bg-secondary/10 px-3 py-1 text-xs font-bold text-secondary">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-secondary" />{u('learning')} {config.flag} {config.nativeName}
+            </div>
+            <h1 className="max-w-2xl font-display text-4xl font-extrabold leading-tight md:text-5xl">{u('title')}</h1>
+            <p className="mt-2 max-w-xl text-foreground-secondary">{u('sub')}</p>
           </div>
-
-          <h2 className="font-display text-2xl font-bold mb-1 bg-gradient-to-r from-[hsl(var(--neon-cyan))] to-[hsl(var(--neon-violet))] bg-clip-text text-transparent">
-            {u('title')}
-          </h2>
-          <p className="text-sm text-foreground-secondary mb-4">{u('sub')} · {config.flag} {config.nativeName}</p>
-
-          <div className="flex gap-2 mb-5">
-            <input value={customTopic} onChange={e => setCustomTopic(e.target.value)}
-              placeholder={u('own')}
-              className={`flex-1 rounded-2xl px-4 py-3 text-sm outline-none focus:border-[hsl(var(--neon-cyan))] ${glass}`} />
-            <button onClick={() => setTurns([])} className="px-4 py-3 rounded-2xl font-bold text-sm text-background transition-transform active:scale-95"
-              style={{ background: 'linear-gradient(135deg, hsl(var(--neon-cyan)), hsl(var(--neon-violet)))', boxShadow: '0 0 22px hsl(var(--neon-cyan) / 0.45)' }}>{u('start')}</button>
+          <div className={`${glass} flex items-center gap-3 rounded-2xl p-4`}>
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-muted text-2xl">{nativeConfig.flag}</div>
+            <div><p className="text-[0.65rem] font-bold uppercase text-foreground-muted">{u('help')}</p><p className="font-semibold">{nativeConfig.nativeName}</p></div>
           </div>
+        </header>
 
-          <button onClick={() => setShowSaved(true)} className={`w-full mb-5 p-3 text-sm font-semibold transition-all hover:-translate-y-0.5 ${glass}`}>
-            📝 {u('mine')} · {saved.filter(c => c.lang === lang).length}
-          </button>
+        <PromptInput onSubmit={({ text }) => { if (text.trim()) { setCustomTopic(text.trim()); setTurns([]); } }} className={`${glass} mb-6 rounded-2xl`}>
+          <PromptInputTextarea placeholder={u('own')} className="min-h-12" />
+          <PromptInputFooter className="justify-end"><PromptInputSubmit aria-label={u('start')} /></PromptInputFooter>
+        </PromptInput>
 
-          <div className="text-[0.7rem] font-bold uppercase tracking-widest text-foreground-muted mb-2">{u('pick')}</div>
-          <div className="grid grid-cols-2 gap-2.5">
-            {SPEAK_TOPICS.map(t => (
-              <button key={t.id} onClick={() => { setTopic(t.prompt); setTurns([]); setCoach(null); }}
-                className={`p-3 text-left transition-all hover:-translate-y-0.5 hover:border-[hsl(var(--neon-violet))] ${glass}`}
-                style={{ boxShadow: '0 6px 20px hsl(var(--neon-violet) / 0.08)' }}>
-                <div className="text-2xl mb-1">{t.emoji}</div>
-                <div className="text-sm font-bold">{tl(t.title)}</div>
-                <div className="text-[0.65rem] text-foreground-muted mt-0.5">{'🌱🌿🌳'.slice(0, t.level * 2)}</div>
-              </button>
-            ))}
-          </div>
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <h2 className="text-xs font-bold uppercase text-foreground-muted">{u('pick')}</h2>
+          <Button variant="ghost" size="sm" onClick={() => setShowSaved(true)}><BookOpenCheck />{u('mine')} · {saved.filter(item => item.lang === lang).length}</Button>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {SPEAK_TOPICS.map((item, index) => {
+            const difficulty = item.level === 1 ? u('beginner') : item.level === 2 ? u('intermediate') : u('advanced');
+            const accent = index % 3 === 0 ? 'secondary' : index % 3 === 1 ? 'primary' : 'coach';
+            return <button key={item.id} onClick={() => { setTopic(item); setTurns([]); setCoach(null); }}
+              className={`group relative min-h-48 overflow-hidden rounded-2xl border border-glass-border bg-glass p-5 text-left shadow-lg transition duration-300 hover:-translate-y-1 hover:border-${accent}/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring`}>
+              <div className={`mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-${accent}/10 text-3xl transition-transform group-hover:scale-110`}>{item.emoji}</div>
+              <h3 className="font-display text-lg font-bold">{getSpeakTopicTitle(item.id, nativeLang)}</h3>
+              <div className="mt-5 flex items-center justify-between text-xs font-semibold text-foreground-muted"><span>{difficulty}</span><span className={`text-${accent}`}>→</span></div>
+            </button>;
+          })}
         </div>
       </div>
-    );
+    </div>;
   }
 
-  // ---------- Talking view ----------
-  const activeTopic = topic || customTopic;
-  return (
-    <div className="flex-1 flex flex-col animate-fade-in relative overflow-hidden">
-      <div className="pointer-events-none absolute -top-24 -left-24 w-72 h-72 rounded-full blur-[110px] opacity-25" style={{ background: 'hsl(var(--neon-violet))' }} />
-      <div className="pointer-events-none absolute -bottom-24 -right-24 w-72 h-72 rounded-full blur-[110px] opacity-20" style={{ background: 'hsl(var(--neon-cyan))' }} />
-      <div className="max-w-[560px] w-full mx-auto px-4 py-4 flex-1 flex flex-col relative z-10">
-        <div className="flex items-center gap-2 mb-3">
-          <button onClick={() => { setTopic(null); setCustomTopic(''); setTurns([]); setCoach(null); }}
-            className={`px-3 py-1 rounded-full text-sm ${glass}`}>←</button>
-          <span className="flex-1 text-center text-sm text-foreground-secondary">{tl(activeTopic)}</span>
-          <button onClick={() => setShowSaved(true)} className={`px-3 py-1 rounded-full text-[0.7rem] ${glass}`}>📝</button>
-        </div>
+  return <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-3 py-3 md:px-6 md:py-5">
+    <div className="mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col">
+      <header className="mb-3 flex items-center gap-3">
+        <Button variant="ghost" size="icon" onClick={resetSession} aria-label={u('change')}><ArrowLeft /></Button>
+        <div className="min-w-0 flex-1"><p className="truncate font-display font-bold">{topic?.emoji} {topicTitle}</p><p className="text-xs text-foreground-muted">{config.flag} {config.nativeName}</p></div>
+        <Button variant="ghost" size="icon" onClick={() => setShowSaved(true)} aria-label={u('mine')}><BookOpenCheck /></Button>
+      </header>
 
-        <div className="flex-1 flex flex-col items-center justify-center gap-4">
-          <VoiceOrb mode={isListening ? 'listening' : (loading || isTranscribing) ? 'speaking' : 'idle'} hue={config.hue}
-            onClick={() => coach?.reply && speakText(coach.reply, lang)} label={u('speak')} />
+      <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+        <section className={`${glass} flex min-h-[320px] flex-col items-center justify-center rounded-3xl p-5 text-center`}>
+          <div className="mb-2 flex items-center gap-2 text-xs font-bold text-coach"><span className="h-2 w-2 rounded-full bg-coach" />{u('coach')}</div>
+          <VoiceOrb mode={isListening ? 'listening' : (loading || isTranscribing) ? 'speaking' : 'idle'} hue={config.hue} onClick={() => coach?.reply && speakText(coach.reply, lang)} label={u('speak')} />
+          {isListening && <div className="mt-3 flex items-end justify-center gap-1" aria-label={u('speak')}>
+            {[.25,.5,.75,1,.65,.4,.8].map((threshold, index) => <span key={index} className="animate-speaking-wave w-1 rounded-full bg-secondary" style={{ height: `${12 + Math.max(micLevel, threshold) * 24}px`, animationDelay: `${index * -90}ms` }} />)}
+          </div>}
+          <p className="mt-3 text-sm text-foreground-secondary">{isListening ? `${u('speak')} · ${seconds}s` : isTranscribing ? u('thinking') : topicTitle}</p>
+          <Button disabled={loading || isTranscribing} onClick={async () => { if (isListening) await stop(); else { setCoach(null); await start(); } }}
+            variant={isListening ? 'destructive' : 'secondary'} size="lg" className="mt-5 min-w-40 rounded-2xl font-bold shadow-lg">
+            {isListening ? <><RotateCcw />{u('stop')}</> : <><Mic />{u('speak')}</>}
+          </Button>
+          {!isSupported && <p className="mt-3 text-xs text-foreground-muted">{u('nomic')}</p>}
+          {micBlock && <div className="mt-4 w-full"><MicHelpCard reason={micBlock} nativeLang={nativeLang} glass={glass} /></div>}
+          {micError && <p className="mt-3 text-xs text-destructive">{micError}</p>}
+        </section>
 
-          {isListening && (
-            <div className={`flex items-center gap-3 px-4 py-2 ${glass}`}>
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500" />
-              </span>
-              <span className="text-sm font-mono tabular-nums">
-                {String(Math.floor(seconds / 60)).padStart(2, '0')}:{String(seconds % 60).padStart(2, '0')}
-              </span>
-              <div className="flex items-end gap-[3px] h-5" aria-hidden>
-                {[0.25, 0.5, 0.75, 1, 0.75, 0.5, 0.25].map((th, i) => (
-                  <span
-                    key={i}
-                    className="w-1 rounded-full transition-all duration-100"
-                    style={{
-                      height: `${6 + i % 3 * 5}px`,
-                      background: micLevel >= th * 0.6 ? 'hsl(var(--neon-cyan))' : 'hsl(0 0% 100% / 0.2)',
-                      boxShadow: micLevel >= th * 0.6 ? '0 0 8px hsl(var(--neon-cyan) / 0.7)' : 'none',
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
+        <section className={`${glass} flex min-h-[360px] flex-col overflow-hidden rounded-3xl`}>
+          <Conversation className="min-h-0">
+            <ConversationContent className="gap-4 p-5">
+              {!turns.length && !loading && <div className="flex min-h-52 flex-col items-center justify-center text-center text-foreground-muted"><Headphones className="mb-3 h-8 w-8 text-secondary" /><p className="max-w-xs text-sm">{u('sub')}</p></div>}
+              {turns.slice(-6).map((turn, index) => <Message key={`${turn.role}-${index}`} from={turn.role === 'coach' ? 'assistant' : 'user'}>
+                <MessageContent className={turn.role === 'user' ? 'bg-primary text-primary-foreground' : ''}>
+                  <MessageResponse>{turn.text}</MessageResponse>
+                  {turn.meaning && <p className="text-xs italic text-foreground-muted">{turn.meaning}</p>}
+                </MessageContent>
+              </Message>)}
+              {(loading || isTranscribing) && <Message from="assistant"><MessageContent><Shimmer>{u('thinking')}</Shimmer></MessageContent></Message>}
+              {transcript && <p className="text-xs text-foreground-muted">{u('heard')}: “{transcript}”</p>}
+              {error && <p className="text-sm text-destructive">{error}</p>}
+            </ConversationContent>
+            <ConversationScrollButton />
+          </Conversation>
 
-          {turns.length === 0 && !loading && !isListening && (
-            <p className={`text-sm text-center px-4 py-2 max-w-[320px] ${glass}`}>{tl(activeTopic)}</p>
-          )}
+          {coach && !loading && <div className="mx-4 mb-3 rounded-2xl border border-coach/30 bg-coach/10 p-4">
+            <div className="mb-2 flex items-center justify-between gap-3"><span className="text-xs font-bold uppercase text-coach">{coach.corrections.length ? u('corrections') : u('none')}</span>{!coach.noSpeech && <span className="font-display text-lg font-black">{coach.score}%</span>}</div>
+            {coach.corrections.map((correction, index) => <div key={index} className="mb-2 text-sm"><span className="text-foreground-muted line-through">{correction.wrong}</span><span> → </span><Button variant="ghost" className="h-auto px-1 font-bold" onClick={() => speakText(correction.right, lang)}><Volume2 />{correction.right}</Button><p className="mt-1 text-xs text-foreground-secondary">{correction.why}</p></div>)}
+            {coach.better && <p className="text-sm"><span className="text-foreground-muted">{u('better')}: </span><Button variant="ghost" className="h-auto px-1 font-semibold" onClick={() => speakText(coach.better, lang)}><Volume2 />{coach.better}</Button></p>}
+            {coach.tip && <p className="mt-2 text-xs text-foreground-secondary">{u('tip')}: {coach.tip}</p>}
+          </div>}
 
-          {transcript && <p className="text-sm text-center opacity-80">“{transcript}”</p>}
-          {isTranscribing && <p className="text-sm text-foreground-muted animate-pulse">🎙️ {u('thinking')}</p>}
-          {loading && !isTranscribing && <p className="text-sm text-foreground-muted animate-pulse">💬 {u('thinking')}</p>}
-          {error && <p className="text-sm text-destructive text-center">{error}</p>}
-
-          {coach && !loading && (
-            <div className="w-full space-y-3">
-              <div className={`p-3 ${glass}`} style={{ boxShadow: '0 0 20px hsl(var(--neon-cyan) / 0.12)' }}>
-                <button onClick={() => speakText(coach.reply, lang)} className="text-left text-[0.95rem] font-semibold">
-                  🔊 {coach.reply}
-                </button>
-                {coach.replyMeaning && <div className="text-[0.75rem] italic text-foreground-muted mt-1">{coach.replyMeaning}</div>}
-              </div>
-
-              {coach.noSpeech ? (
-                <div className={`p-3 ${glass}`} style={{ boxShadow: '0 0 20px hsl(var(--neon-violet) / 0.15)' }}>
-                  <div className="text-[0.85rem]">{coach.tip}</div>
-                  <div className="text-[0.75rem] text-foreground-muted mt-1.5">🔁 {u('retry')}: <button onClick={() => speakText(coach.better, lang)} className="font-semibold">🔊 {coach.better}</button></div>
-                </div>
-              ) : (
-              <div className="p-3 rounded-2xl border" style={{
-                borderColor: coach.corrections.length ? 'hsl(var(--gold))' : 'hsl(var(--success))',
-                background: coach.corrections.length ? 'hsl(45 45% 16%)' : 'hsl(165 45% 14%)',
-              }}>
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[0.7rem] font-bold uppercase tracking-wider">
-                    {coach.corrections.length ? `✏️ ${u('corrections')}` : `✅ ${u('none')}`}
-                  </span>
-                  <span className="text-sm font-black">{coach.score}%</span>
-                </div>
-                {coach.corrections.map((c, i) => (
-                  <div key={i} className="text-[0.8rem] mb-2">
-                    <span className="line-through opacity-60">{c.wrong}</span>{' → '}
-                    <button onClick={() => speakText(c.right, lang)} className="font-bold">🔊 {c.right}</button>
-                    <div className="text-[0.72rem] text-foreground-secondary">{c.why}</div>
-                  </div>
-                ))}
-                {coach.better && (
-                  <div className="text-[0.8rem] mt-1">
-                    <span className="text-foreground-muted">{u('better')}: </span>
-                    <button onClick={() => speakText(coach.better, lang)} className="font-semibold">🔊 {coach.better}</button>
-                  </div>
-                )}
-                {coach.tip && <div className="text-[0.72rem] mt-2 text-foreground-secondary">💡 {u('tip')}: {coach.tip}</div>}
-              </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        <div className="pb-6 pt-3 flex flex-col items-center gap-2">
-          {micBlock && <MicHelpCard reason={micBlock} nativeLang={nativeLang} glass={glass} />}
-          {isSupported ? (
-            <button
-              disabled={loading || isTranscribing}
-               onClick={async () => {
-                if (isListening) await stop();
-                else { setCoach(null); await start(); }
-              }}
-              className={`px-8 py-3.5 rounded-full text-sm font-bold transition-transform active:scale-95 disabled:opacity-50 ${isListening ? 'animate-pulse' : ''}`}
-              style={{
-                background: isListening ? 'hsl(var(--destructive))' : 'linear-gradient(135deg, hsl(var(--neon-cyan)), hsl(var(--neon-violet)))',
-                color: isListening ? 'hsl(var(--destructive-foreground))' : 'hsl(var(--background))',
-                boxShadow: '0 0 28px hsl(var(--neon-cyan) / 0.45)',
-              }}>
-              {isTranscribing ? `🎙️ …` : isListening ? `⏹ ${u('stop')}` : `🎤 ${u('speak')}`}
-            </button>
-          ) : (
-            <p className="text-[0.75rem] text-foreground-muted text-center">🎤 {u('nomic')}</p>
-          )}
-          {transcript && !isListening && !loading && (
-            <button onClick={() => send(transcript)} className="text-[0.75rem] underline text-foreground-muted">{u('retry')}</button>
-          )}
-          {micError && (
-            <p className="text-[0.72rem] text-destructive text-center max-w-[300px]">🎤 {micError}</p>
-          )}
-          <div className="w-full flex items-center gap-2 mt-1">
-            <input
-              value={typed}
-              onChange={e => setTyped(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter' && typed.trim()) { send(typed); setTyped(''); } }}
-              placeholder="⌨️ …"
-              className={`flex-1 px-3 py-2 rounded-full text-sm outline-none ${glass}`} />
-            <button
-              disabled={loading || !typed.trim()}
-              onClick={() => { setCoach(null); send(typed); setTyped(''); }}
-              className="px-4 py-2 rounded-full text-sm font-bold text-background disabled:opacity-40"
-              style={{ background: 'linear-gradient(135deg, hsl(var(--neon-cyan)), hsl(var(--neon-violet)))' }}>↑</button>
+          <div className="border-t border-glass-border p-3">
+            <PromptInput onSubmit={({ text }) => { if (text.trim()) void send(text); }} className="rounded-2xl border-glass-border bg-glass-strong">
+              <PromptInputTextarea placeholder={u('write')} className="min-h-12" />
+              <PromptInputFooter className="justify-end"><PromptInputSubmit status={loading ? 'submitted' : error ? 'error' : 'ready'} disabled={loading} aria-label={u('start')} /></PromptInputFooter>
+            </PromptInput>
           </div>
-        </div>
+        </section>
       </div>
     </div>
-  );
+  </div>;
 }
