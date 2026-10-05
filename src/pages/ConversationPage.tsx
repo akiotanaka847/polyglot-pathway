@@ -1,3 +1,4 @@
+import LearningLangSwitcher from '@/components/LearningLangSwitcher';
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
@@ -302,10 +303,8 @@ export default function ConversationPage() {
         <div className="flex items-center gap-2 mb-4">
           <button onClick={() => navigate('/')} className={`px-3 py-1 rounded-full text-sm ${glass}`}>← {tt('go_home')}</button>
           <span className="flex-1 text-center font-display font-bold">💬 {tt('conversation')}</span>
-          <div className={`px-3 py-1 rounded-full text-sm font-semibold ${glass}`}>
-            {config.flag} {config.nativeName}
-          </div>
         </div>
+        <div className="mb-4"><LearningLangSwitcher current={lang} onChange={() => { setTurns([]); setCoach(null); setError(null); }} /></div>
 
         <h2 className="font-display text-2xl font-bold mb-1 bg-gradient-to-r from-[hsl(var(--neon-cyan))] to-[hsl(var(--neon-violet))] bg-clip-text text-transparent">
           {tt('practice_conv')}
