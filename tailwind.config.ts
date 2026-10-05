@@ -49,6 +49,12 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        glass: {
+          DEFAULT: "hsl(var(--glass-surface))",
+          strong: "hsl(var(--glass-surface-strong))",
+          border: "hsl(var(--glass-border))",
+        },
+        coach: "hsl(var(--coach))",
         jp: {
           DEFAULT: "hsl(var(--jp))",
           light: "hsl(var(--jp-light))",
