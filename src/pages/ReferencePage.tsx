@@ -34,7 +34,7 @@ function getCatLabel(nativeLang: string, cat: string) {
 
 export default function ReferencePage() {
   const navigate = useNavigate();
-  const { state, tt, getRecall } = useApp();
+  const { state, setCurrentLearningLang, tt, getRecall } = useApp();
   const activeLangs = [...new Set(state.activeLangs || [])];
 
   const refLangs = [...new Set([
@@ -43,7 +43,7 @@ export default function ReferencePage() {
     ...Object.keys(VOCAB_REF).filter(k => VALID_LANG_CODES.has(k)),
   ])].filter(k => VALID_LANG_CODES.has(k) && k !== state.nativeLang);
 
-  const [lang, setLang] = useState<string>(refLangs[0] || 'jp');
+  const [lang, setLang] = useState<string>(refLangs.includes(state.currentLearningLang) ? state.currentLearningLang : (refLangs[0] || 'jp'));
   const [tab, setTab] = useState<'grammar' | 'vocab'>('grammar');
   const [search, setSearch] = useState('');
   const [openLevel, setOpenLevel] = useState<string | null>(null);
@@ -124,7 +124,7 @@ export default function ReferencePage() {
             return (
               <button
                 key={l}
-                onClick={() => { setLang(l); setOpenLevel(null); setExpandedEntry(null); }}
+                onClick={() => { setLang(l); if (state.activeLangs.includes(l)) setCurrentLearningLang(l); setOpenLevel(null); setExpandedEntry(null); }}
                 className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl border-2 text-sm font-medium transition-all whitespace-nowrap shrink-0 ${
                   isActive ? 'shadow-md -translate-y-0.5' : 'border-border hover:border-foreground/20'
                 }`}

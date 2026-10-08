@@ -24,11 +24,11 @@ function useStoryI18n(storyLang: string, nativeLang: string) {
 
 export default function StoryPage() {
   const navigate = useNavigate();
-  const { state, addXP, markStoryDone, earnAchievement, tt } = useApp();
+  const { state, setCurrentLearningLang, addXP, markStoryDone, earnAchievement, tt } = useApp();
   const activeLangs = [...new Set(state.activeLangs || [])];
   const validLangs = new Set(LANGUAGES.filter(l => l.code !== state.nativeLang).map(l => l.code));
   const storyLangs = [...new Set([...activeLangs, ...Object.keys(STORIES)])].filter(l => STORIES[l] && validLangs.has(l));
-  const [lang, setLang] = useState<string>(storyLangs[0] || 'jp');
+  const [lang, setLang] = useState<string>(storyLangs.includes(state.currentLearningLang) ? state.currentLearningLang : (storyLangs[0] || 'jp'));
   const [activeScene, setActiveScene] = useState<{ ci: number; si: number } | null>(null);
   const [quizFb, setQuizFb] = useState<string | null>(null);
   const config = getLangConfig(lang);
@@ -149,7 +149,7 @@ export default function StoryPage() {
             {storyLangs.map(l => {
               const lc = getLangConfig(l);
               return (
-                <button key={l} onClick={() => setLang(l)} className={`px-2 py-1 rounded-full border text-sm font-semibold ${lang === l ? 'border-foreground/40 bg-background' : 'border-border'}`}>
+                <button key={l} onClick={() => { setLang(l); if (state.activeLangs.includes(l)) setCurrentLearningLang(l); }} className={`px-2 py-1 rounded-full border text-sm font-semibold ${lang === l ? 'border-foreground/40 bg-background' : 'border-border'}`}>
                   {lc.flag}
                 </button>
               );
