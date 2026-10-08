@@ -467,12 +467,13 @@ function buildExamFromLessons(lang: string, level: string): Exam | null {
   const steps = (LESSON_DATA[lang]?.[level] || []).flatMap(l => l.steps || []);
   const seen = new Set<string>();
   const pick = (t: 'mc' | 'tx', n: number) => steps.filter(s => s.t === t && !seen.has((s as any).q) && seen.add((s as any).q)).filter((_, i, a) => i % Math.max(1, Math.floor(a.length / n)) === 0).slice(0, n) as Exam['sections'][number]['qs'];
-  const mc = pick('mc', 25); const tx = pick('tx', 10);
+  const mc = pick('mc', 26); const tx = pick('tx', 10);
   if (mc.length < 5) return null;
   const sys = getLangConfig(lang).levelSystem;
-  return { title: `${sys} ${level}`, sections: [
-    { name: 'Vocabulario y gramática', time: 900, qs: mc },
-    ...(tx.length ? [{ name: 'Expresión escrita', time: 600, qs: tx }] : []),
+  return { title: level.startsWith(sys) ? level : `${sys} ${level}`, sections: [
+    { name: 'Vocabulario', time: 8, qs: mc.slice(0, 13) },
+    { name: 'Gramática', time: 8, qs: mc.slice(13) },
+    ...(tx.length ? [{ name: 'Expresión escrita', time: 10, qs: tx }] : []),
   ] };
 }
 
