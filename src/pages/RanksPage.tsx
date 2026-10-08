@@ -7,6 +7,7 @@ import { getLangConfig } from '@/data/languages';
 export default function RanksPage() {
   const navigate = useNavigate();
   const { state, getRank, getRankPct, tt } = useApp();
+  const { tr: trA } = useAiTranslate(ACHIEVEMENTS.flatMap(a => [a.title, a.desc]), state.nativeLang || 'es');
   const totalXp = Object.values(state.xp).reduce((a, b) => a + b, 0);
   const activeLangs = [...new Set(state.activeLangs || [])].filter((c, i, arr) => c && c !== state.nativeLang && arr.indexOf(c) === i);
 
