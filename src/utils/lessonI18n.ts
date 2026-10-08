@@ -819,9 +819,18 @@ export function translateExplanation(text: string, nativeLang: string): string {
   return text;
 }
 
+const SECTION_NAME_I18N: Record<string, Record<string, string>> = {
+  'Expresión escrita': { en: 'Writing', fr: 'Production écrite', pt: 'Expressão escrita', zh: '写作', jp: '作文', ko: '쓰기', ru: 'Письмо', ar: 'التعبير الكتابي', hi: 'लेखन', ro: 'Exprimare scrisă' },
+  'Comprensión auditiva': { en: 'Listening', fr: 'Compréhension orale', pt: 'Compreensão auditiva', zh: '听力', jp: '聴解', ko: '듣기', ru: 'Аудирование', ar: 'الفهم السمعي', hi: 'श्रवण', ro: 'Înțelegere orală' },
+  'Expresión oral': { en: 'Speaking', fr: 'Production orale', pt: 'Expressão oral', zh: '口语', jp: 'スピーキング', ko: '말하기', ru: 'Говорение', ar: 'التعبير الشفهي', hi: 'बोलना', ro: 'Exprimare orală' },
+  'Comprensión lectora': { en: 'Reading', fr: 'Compréhension écrite', pt: 'Compreensão leitora', zh: '阅读', jp: '読解', ko: '읽기', ru: 'Чтение', ar: 'فهم المقروء', hi: 'पठन', ro: 'Înțelegerea textului' },
+};
+
 // Translate exam section names
 export function translateSectionName(name: string, nativeLang: string): string {
   if (nativeLang === 'es') return name;
+  const fixed = SECTION_NAME_I18N[name.trim()]?.[nativeLang];
+  if (fixed) return fixed;
   const patterns = QUESTION_PATTERNS[nativeLang];
   if (patterns) return applyPatterns(name, patterns);
   if (nativeLang !== 'en') {
