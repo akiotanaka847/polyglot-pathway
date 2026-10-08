@@ -1,3 +1,4 @@
+import { useAiTranslate } from '@/hooks/useAiTranslate';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { ACHIEVEMENTS, RANKS } from '@/data/achievements';
@@ -80,8 +81,8 @@ export default function RanksPage() {
             return (
               <div key={a.id} className={`border-[1.5px] rounded-[14px] p-3 text-center bg-card transition-all ${earned ? 'border-gold bg-gold-light' : 'border-border opacity-45 grayscale'}`}>
                 <div className="text-2xl mb-1">{a.icon}</div>
-                <div className="text-[0.74rem] font-semibold mb-0.5">{a.title}</div>
-                <div className="text-[0.68rem] text-foreground-secondary leading-snug">{a.desc}</div>
+                <div className="text-[0.74rem] font-semibold mb-0.5">{trA(a.title)}</div>
+                <div className="text-[0.68rem] text-foreground-secondary leading-snug">{trA(a.desc)}</div>
                 <div className="text-[0.67rem] text-gold font-bold mt-1">+{a.xp} XP</div>
               </div>
             );
