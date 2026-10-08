@@ -459,6 +459,23 @@ const BASE_EXAMS: Record<string, Record<string, Exam>> = {
 };
 
 import { enhanceExam } from './exams-enhance';
+import { LESSON_DATA } from './lessons';
+import { getLangConfig } from './languages';
+
+// Build a mock exam from the level's own lesson exercises when no hand-written exam exists.
+function buildExamFromLessons(lang: string, level: string): Exam | null {
+  const steps = (LESSON_DATA[lang]?.[level] || []).flatMap(l => l.steps || []);
+  const seen = new Set<string>();
+  const pick = (t: 'mc' | 'tx', n: number) => steps.filter(s => s.t === t && !seen.has((s as any).q) && seen.add((s as any).q)).filter((_, i, a) => i % Math.max(1, Math.floor(a.length / n)) === 0).slice(0, n) as Exam['sections'][number]['qs'];
+  const mc = pick('mc', 26); const tx = pick('tx', 10);
+  if (mc.length < 5) return null;
+  const sys = getLangConfig(lang).levelSystem;
+  return { title: level.startsWith(sys) ? level : `${sys} ${level}`, sections: [
+    { name: 'Vocabulario', time: 8, qs: mc.slice(0, 13) },
+    { name: 'Gramática', time: 8, qs: mc.slice(13) },
+    ...(tx.length ? [{ name: 'Expresión escrita', time: 10, qs: tx }] : []),
+  ] };
+}
 
 // Merge all exam sources — filter out removed languages, then enhance with listening/writing/speaking
 const VALID_LANGS = new Set(['jp', 'fr', 'zh', 'pt', 'ko', 'ru', 'ar', 'hi', 'en', 'es', 'ro']);
@@ -473,6 +490,14 @@ ALL_SOURCES.forEach(source => {
 
 // Enhance every exam with listening, writing, and speaking sections
 export const EXAM_DATA: Record<string, Record<string, Exam>> = {};
+VALID_LANGS.forEach(lang => {
+  RAW_DATA[lang] = RAW_DATA[lang] || {};
+  getLangConfig(lang).levels.forEach(level => {
+    if (RAW_DATA[lang][level]) return;
+    const built = buildExamFromLessons(lang, level);
+    if (built) RAW_DATA[lang][level] = built;
+  });
+});
 Object.keys(RAW_DATA).forEach(lang => {
   EXAM_DATA[lang] = {};
   Object.keys(RAW_DATA[lang]).forEach(level => {

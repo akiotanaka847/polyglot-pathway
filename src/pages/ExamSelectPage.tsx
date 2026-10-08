@@ -9,7 +9,7 @@ export default function ExamSelectPage() {
   const { state, tt } = useApp();
 
   // Show active languages first, then the rest
-  const activeLangs = LANGUAGES.filter(l => state.activeLangs.includes(l.code));
+  const activeLangs = LANGUAGES.filter(l => state.activeLangs.includes(l.code)).sort((a, b) => (b.code === state.currentLearningLang ? 1 : 0) - (a.code === state.currentLearningLang ? 1 : 0));
   const otherLangs = LANGUAGES.filter(l => !state.activeLangs.includes(l.code));
   const langs = [...activeLangs, ...otherLangs];
 

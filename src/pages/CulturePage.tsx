@@ -11,11 +11,11 @@ import { useMemo } from 'react';
 
 export default function CulturePage() {
   const navigate = useNavigate();
-  const { state, addXP, markCultureRead, earnAchievement, tt } = useApp();
+  const { state, setCurrentLearningLang, addXP, markCultureRead, earnAchievement, tt } = useApp();
   const activeLangs = state.activeLangs || [];
   const allLangs = [...new Set([...Object.keys(CULTURE_DATA), ...Object.keys(SLANG_DATA)])];
   const cultureLangs = [...new Set([...activeLangs, ...allLangs])].filter(l => (CULTURE_DATA[l]?.length > 0) || (SLANG_DATA[l]?.length > 0));
-  const [lang, setLang] = useState<string>(cultureLangs[0] || 'jp');
+  const [lang, setLang] = useState<string>(cultureLangs.includes(state.currentLearningLang) ? state.currentLearningLang : (cultureLangs[0] || 'jp'));
   const [tab, setTab] = useState<'culture' | 'slang'>('culture');
   const config = getLangConfig(lang);
   const cards = CULTURE_DATA[lang] || [];
@@ -65,7 +65,7 @@ export default function CulturePage() {
             {cultureLangs.map(l => {
               const lc = getLangConfig(l);
               return (
-                <button key={l} onClick={() => setLang(l)} className={`px-2 py-1 rounded-full border text-sm font-semibold ${lang === l ? 'border-foreground/40 bg-background' : 'border-border'}`}>
+                <button key={l} onClick={() => { setLang(l); if (state.activeLangs.includes(l)) setCurrentLearningLang(l); }} className={`px-2 py-1 rounded-full border text-sm font-semibold ${lang === l ? 'border-foreground/40 bg-background' : 'border-border'}`}>
                   {lc.flag}
                 </button>
               );

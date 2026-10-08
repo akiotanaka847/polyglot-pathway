@@ -36,3 +36,5 @@
 - speak-coach acepta noSpeech: responde con frase de ejemplo + traducción + ánimo en idioma nativo (desplegada y probada).
 - SpeakingPage/ConversationPage: coach ayuda tras silencio sin mostrar puntuación; LessonPage (sp): guía para repetir.
 - Verificado con Playwright (micrófono silencioso): auto-stop + respuesta en francés correcta.
+
+- [x] Auditoría oct 2026: idioma elegido en Historias/Cultura/Repositorio/Simulacros, simulacros para todos los niveles, logros y secciones traducidos
