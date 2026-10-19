@@ -58,6 +58,10 @@ function TopNav() {
   );
 }
 
+const SPEAK_LABEL: Record<string, string> = {
+  es: 'Hablar', en: 'Speak', fr: 'Parler', pt: 'Falar', jp: '話す', zh: '口语', ko: '말하기', ru: 'Говорить', ar: 'تحدث', hi: 'बोलें', ro: 'Vorbește',
+};
+
 function BottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -73,7 +77,7 @@ function BottomNav() {
     { id: 'home', icon: '🏠', label: tt('home'), path: '/', color: 'hsl(263, 70%, 50%)' },
     { id: 'lessons', icon: '📚', label: tt('lessons'), path: `/levels/${lessonsLang}`, color: 'hsl(217, 91%, 60%)' },
     { id: 'progress', icon: '📊', label: tt('progress'), path: '/dashboard', color: 'hsl(152, 69%, 46%)' },
-    { id: 'speaking', icon: '🗣️', label: tt('tap_to_speak').split(' ').slice(-1)[0], path: '/speaking', color: 'hsl(187, 85%, 53%)' },
+    { id: 'speaking', icon: '🗣️', label: SPEAK_LABEL[state.nativeLang] || SPEAK_LABEL.en, path: '/speaking', color: 'hsl(187, 85%, 53%)' },
     { id: 'conversation', icon: '🎙️', label: tt('conversation'), path: '/conversation', color: 'hsl(25, 95%, 53%)' },
   ];
 
