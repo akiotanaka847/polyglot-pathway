@@ -3,6 +3,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { translateLessonTitle } from '@/utils/lessonI18n';
 import { getLessonData, LEVELS } from '@/data/lessons/index';
+import { getLevelQuiz } from '@/data/levelQuiz';
 import { QUIZ_DATA } from '@/data/quizzes';
 import { getLangConfig } from '@/data/languages';
 import { Lesson } from '@/data/types';
@@ -67,7 +68,7 @@ export default function LevelMapPage() {
       const doneLessons = prog.done[lvl] || {};
       const doneCount = Object.keys(doneLessons).length;
       const pct = lessons.length > 0 ? Math.round((doneCount / lessons.length) * 100) : 0;
-      const quizAvail = (QUIZ_DATA[l]?.[lvl] || []).length > 0;
+      const quizAvail = getLevelQuiz(l, lvl, state.nativeLang || 'en').length > 0;
       const quizPassed = prog.passed[lvl];
       const allDone = lessons.length > 0 && lessons.every(les => doneLessons[les.id]);
       const isCurrent = unlocked && !quizPassed && idx <= levels.findIndex((_, i2) => i2 === 0 || !prog.passed[levels[i2 - 1]]) + 1;
