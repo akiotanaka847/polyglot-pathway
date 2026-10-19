@@ -105,11 +105,10 @@ export default function LessonPage() {
   const aiTexts = useMemo(() => {
     if (!lesson || nativeLang === 'es') return [];
     const out: string[] = [];
-    const looksSourceText = (v: string) => /[¿¡ñáéíóú]|\b(de|el|la|los|las|en|que|un|una|con|por|para|del|the|of|in|with|and|is|example)\b/i.test(v);
     const push = (v: unknown, strict = false) => {
       if (typeof v !== 'string' || !v.trim() || !/[A-Za-zÀ-ÿ]/.test(v)) return;
       if (translateLessonText(v, nativeLang) !== v) return; // dictionary already handled it
-      if (strict && !looksSourceText(v)) return;
+      if (strict && !/[¿¡ñáéíóú]|\b(de|el|la|los|las|que|una|con|por|para|del|es)\b/i.test(v)) return;
       if (nativeLang === 'en' && !/[¿¡ñáéíóú]|\b(de|el|la|los|las|que|una|con|por|para|del)\b/i.test(v)) return;
       out.push(v);
     };
@@ -118,13 +117,13 @@ export default function LessonPage() {
     (lesson.steps ?? []).forEach((st) => {
       const any = st as unknown as Record<string, unknown>;
       push(any.q); push(any.note); push(any.text); push(any.mn); push(any.title);
-      if (Array.isArray(any.opts) && (st.t === 'mc' || st.t === 'rd')) {
+      if (l !== 'es' && Array.isArray(any.opts) && (st.t === 'mc' || st.t === 'rd')) {
         // Options may be meanings (native side) — only translate those that read like Spanish/English text
         any.opts.forEach((o) => push(o, true));
       }
     });
     return [...new Set(out)];
-  }, [lesson, nativeLang]);
+  }, [lesson, nativeLang, l]);
   const { tr: aiTr } = useAiTranslate(aiTexts, nativeLang);
 
   const tl = (text: string | undefined) => {
