@@ -55,7 +55,7 @@ Deno.serve(async (req) => {
       const aiKey = Deno.env.get("LOVABLE_API_KEY");
       if (!aiKey) throw new Error("LOVABLE_API_KEY missing");
 
-      const prompt = `Translate each numbered line from Spanish into ${target}.
+      const prompt = `Translate each numbered line into ${target}. Lines are written in Spanish, English or a mix of both; any line already fully in ${target} stays unchanged.
 Rules:
 - Keep words written in the language being taught (Japanese, Chinese, Korean, Arabic, etc.) EXACTLY as they are, untranslated.
 - Keep emojis, names, punctuation and numbering.
