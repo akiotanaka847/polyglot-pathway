@@ -24,7 +24,7 @@ export default function CulturePage() {
   const overlay = nativeLang !== 'es' ? (CULTURE_I18N[nativeLang] || CULTURE_I18N['en'] || {}) : {};
   // Texts that need AI translation (culture prose + slang) for natives other than ES/EN.
   const aiTexts = useMemo(() => {
-    if (nativeLang === 'es' || nativeLang === 'en') return [];
+    if (nativeLang === 'es') return [];
     const out: string[] = [];
     cards.forEach(c => {
       if (!overlay[c.id]?.title) out.push(c.title, c.body, c.fact);
@@ -41,7 +41,7 @@ export default function CulturePage() {
 
   const tr = (cardId: string, field: 'title' | 'body' | 'fact', fallback: string) => {
     if (nativeLang === 'es') return fallback;
-    if (nativeLang === 'en') return CULTURE_I18N['en']?.[cardId]?.[field] || fallback;
+    if (nativeLang === 'en') return CULTURE_I18N['en']?.[cardId]?.[field] || tslang(fallback);
     return overlay[cardId]?.[field] || tslang(fallback);
   };
 
