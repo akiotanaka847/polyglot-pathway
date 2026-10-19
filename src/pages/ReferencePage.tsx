@@ -54,7 +54,7 @@ export default function ReferencePage() {
 
   // AI translation for grammar explanations and vocabulary meanings.
   const aiTexts = useMemo(() => {
-    if (nativeLang === 'es' || nativeLang === 'en') return [];
+    if (nativeLang === 'es') return [];
     const out: string[] = [];
     // Only the folder the user opened, to keep translation work small.
     if (tab === 'grammar') {

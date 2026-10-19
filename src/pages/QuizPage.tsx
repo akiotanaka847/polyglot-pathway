@@ -48,7 +48,7 @@ export default function QuizPage() {
   const nativeLang = state.nativeLang || 'es';
   // AI translation for question prose/options the offline dictionary misses.
   const aiTexts = useMemo(() => {
-    if (nativeLang === 'es' || nativeLang === 'en') return [];
+    if (nativeLang === 'es') return [];
     const out: string[] = [];
     questions.forEach((qq) => {
       if (qq.ready) return; // already in the learner's language
