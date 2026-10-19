@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { ChoiceButton } from '@/components/lesson/LessonControls';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { EXAM_DATA } from '@/data/exams';
@@ -312,7 +313,7 @@ export default function ExamPage() {
                   u.rate = 0.85;
                   speechSynthesis.speak(u);
                 }}
-                  className="px-5 py-2.5 rounded-xl text-sm font-bold text-card"
+                  className="min-h-12 px-6 rounded-2xl text-base font-bold text-card shadow-md active:scale-[0.97] transition-all"
                   style={{ background: `hsl(${config.hue}, 70%, 46%)` }}>
                   ▶ {tt('listen')}
                 </button>
@@ -334,14 +335,9 @@ export default function ExamPage() {
             {(q.t === 'mc' || q.t === 'rd') && (
               <div className="space-y-2.5">
                 {(q as MCStep).opts.map((o, i) => (
-                  <button key={i} onClick={() => submit(i)}
-                    className="w-full text-left px-4 py-3.5 rounded-xl border-[1.5px] border-border hover:border-foreground/30 hover:shadow-sm transition-all text-sm bg-background">
-                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-md text-[0.65rem] font-bold mr-2.5"
-                      style={{ background: `hsl(${config.hue}, 50%, 20%)`, color: `hsl(${config.hue}, 85%, 78%)` }}>
-                      {['A','B','C','D'][i]}
-                    </span>
+                  <ChoiceButton key={i} label={['A','B','C','D'][i]} hue={config.hue} state="idle" onClick={() => submit(i)}>
                     {aiTr(o) !== o ? aiTr(o) : translateOption(o, nativeLang)}
-                  </button>
+                  </ChoiceButton>
                 ))}
               </div>
             )}
@@ -353,11 +349,11 @@ export default function ExamPage() {
                   <input type="text" value={input} onChange={e => setInput(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && input.trim() && submit(input.trim())}
                     placeholder={tt('write_answer')}
-                    className="w-full px-4 py-3.5 pr-12 rounded-xl border-[1.5px] border-border bg-background text-sm focus:border-foreground/40 outline-none transition-colors"
+                    className="w-full h-14 px-4 pr-14 rounded-2xl border-2 border-border bg-background text-base focus:border-foreground/40 outline-none transition-colors"
                     autoFocus />
                   {speech.isSupported && (
                     <button onClick={() => speech.isListening ? speech.stop() : speech.start()}
-                      className={`absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-sm transition-all ${
+                      className={`absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center text-sm transition-all ${
                         speech.isListening ? 'bg-red-100 text-red-600 animate-pulse' : 'bg-background border border-border hover:bg-card'
                       }`}>
                       {speech.isListening ? '⏹' : '🎤'}
@@ -365,7 +361,7 @@ export default function ExamPage() {
                   )}
                 </div>
                 <button onClick={() => input.trim() && submit(input.trim())} disabled={!input.trim()}
-                  className="w-full px-4 py-3.5 rounded-xl text-sm font-bold text-card disabled:opacity-40 transition-all"
+                  className="w-full h-14 rounded-2xl text-base font-bold text-card shadow-lg disabled:opacity-40 disabled:shadow-none active:scale-[0.97] transition-all"
                   style={{ background: `hsl(${config.hue}, 70%, 46%)` }}>
                   {tt('confirm')}
                 </button>
@@ -383,7 +379,7 @@ export default function ExamPage() {
                   )}
                 </div>
                 <button onClick={() => speech.isListening ? speech.stop() : speech.start()}
-                  className={`w-full px-4 py-4 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 ${
+                  className={`w-full h-14 rounded-2xl text-base font-bold transition-all active:scale-[0.97] flex items-center justify-center gap-2 ${
                     speech.isListening
                       ? 'bg-red-100 text-red-600 border-2 border-red-300 animate-pulse'
                       : 'text-card'
@@ -396,7 +392,7 @@ export default function ExamPage() {
                     <p className="text-xs text-foreground-muted mb-1">{tt('write_response')}:</p>
                     <p className="text-sm font-medium">{speech.transcript}</p>
                     <button onClick={() => submit(speech.transcript)}
-                      className="mt-2 w-full px-4 py-2.5 rounded-xl text-sm font-bold text-card"
+                      className="mt-2 w-full h-12 rounded-2xl text-base font-bold text-card active:scale-[0.97] transition-all"
                       style={{ background: `hsl(${config.hue}, 70%, 46%)` }}>
                       {tt('confirm')}
                     </button>
