@@ -117,20 +117,33 @@ export default function StoryPage() {
 
           <div className="bg-card border border-border rounded-[16px] p-4">
             <div className="text-sm font-semibold mb-2.5">❓ {sceneI18n?.quizQ || tr(scene.quiz.q)}</div>
-            {(sceneI18n?.quizOpts || scene.quiz.opts.map(o => tr(o))).map((opt, i) => (
-              <button key={i} onClick={() => {
-                if (i === scene.quiz.ans) {
-                  setQuizFb('correct');
-                  addXP(lang, 50);
-                  markStoryDone(scene.id);
-                  earnAchievement('story_chapter');
-                } else {
-                  setQuizFb('wrong');
-                }
-              }} className="block w-full text-left px-3 py-2 rounded-xl border border-border bg-card text-sm mb-1.5 hover:bg-background transition-colors">
-                {opt}
-              </button>
-            ))}
+            {(() => {
+              const opts = sceneI18n?.quizOpts || scene.quiz.opts.map(o => tr(o));
+              // Always randomize answer order (stable per scene visit)
+              const order = quizOrder.length === opts.length ? quizOrder : opts.map((_, i) => i);
+              return (
+                <div className="grid gap-2">
+                  {order.map((i, pos) => (
+                    <ChoiceButton key={i} label={['A', 'B', 'C', 'D'][pos]} hue={getLangConfig(lang).hue}
+                      disabled={quizFb === 'correct'}
+                      state={quizFb === 'correct' ? (i === scene.quiz.ans ? 'correct' : 'dim') : quizFb === 'wrong' && quizPick === i ? 'wrong' : 'idle'}
+                      onClick={() => {
+                        setQuizPick(i);
+                        if (i === scene.quiz.ans) {
+                          setQuizFb('correct');
+                          addXP(lang, 50);
+                          markStoryDone(scene.id);
+                          earnAchievement('story_chapter');
+                        } else {
+                          setQuizFb('wrong');
+                        }
+                      }}>
+                      {opts[i]}
+                    </ChoiceButton>
+                  ))}
+                </div>
+              );
+            })()}
             {quizFb === 'correct' && <div className="mt-2 p-2 rounded-lg bg-success-light text-success text-sm">✅ {tt('correct')} +50 XP</div>}
             {quizFb === 'wrong' && <div className="mt-2 p-2 rounded-lg bg-destructive/10 text-destructive text-sm">❌ {tt('try_again')}</div>}
           </div>
