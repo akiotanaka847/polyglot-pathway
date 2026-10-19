@@ -33,7 +33,7 @@ import { esA1Bank } from './wordbanks/es';
 import { koA1Bank } from './wordbanks/ko';
 import { zhA1Bank } from './wordbanks/zh';
 import { ptA1Bank } from './wordbanks/pt';
-import { getHigherLevelBank } from './wordbanks/universal';
+import { getLevelBank } from './wordbanks/universal';
 
 export const LEVELS: Record<string, string[]> = {};
 LANGUAGES.forEach(l => { LEVELS[l.code] = l.levels; });
@@ -71,103 +71,41 @@ export function getLessonData(nativeLang: string): Record<string, Record<string,
   const zhGenA1 = generateLessons('zh', 'HSK1', 'Chinese', zhA1Bank, nativeLang);
   const ptGenA1 = generateLessons('pt', 'A1', 'Português', ptA1Bank, nativeLang);
 
-  // Get A2+ wordbanks for jp and fr
-  const jpA2Bank = getHigherLevelBank('jp');
-  const frA2Bank = getHigherLevelBank('fr');
-
-  // Helper to boost level with generated content
-  const boost = (lessons: Lesson[], code: string, level: string, lang: string, bank: any) =>
-    ensureMinLessons(wu(lessons, code, level), code, level, lang, nativeLang, bank);
-
-  const data: Record<string, Record<string, Lesson[]>> = {
-    jp: {
-      N5: boost(jpN5Lessons, 'jp', 'N5', 'Japanese', jpA2Bank),
-      N4: boost(jpN4Lessons, 'jp', 'N4', 'Japanese', jpA2Bank),
-      N3: boost(jpN3Lessons, 'jp', 'N3', 'Japanese', jpA2Bank),
-      N2: boost(jpN2Lessons, 'jp', 'N2', 'Japanese', jpA2Bank),
-      N1: boost(jpN1Lessons, 'jp', 'N1', 'Japanese', jpA2Bank),
-    },
-    fr: {
-      A1: boost(frA1Lessons, 'fr', 'A1', 'Français', frA2Bank),
-      A2: boost(frA2Lessons, 'fr', 'A2', 'Français', frA2Bank),
-      B1: boost(frB1Lessons, 'fr', 'B1', 'Français', frA2Bank),
-      B2: boost(frB2Lessons, 'fr', 'B2', 'Français', frA2Bank),
-      C1: boost(frC1Lessons, 'fr', 'C1', 'Français', frA2Bank),
-      C2: boost(frC2Lessons, 'fr', 'C2', 'Français', frA2Bank),
-    },
-    zh: {
-      HSK1: zhGenA1.length >= 120 ? zhGenA1 : ensureMinLessons(zhGenA1, 'zh', 'HSK1', 'Chinese', nativeLang, zhA1Bank),
-      HSK2: boost(zhHSK2Lessons, 'zh', 'HSK2', 'Chinese', zhA1Bank),
-      HSK3: boost(zhHSK3Lessons, 'zh', 'HSK3', 'Chinese', zhA1Bank),
-      HSK4: boost(zhHSK4Lessons, 'zh', 'HSK4', 'Chinese', zhA1Bank),
-      HSK5: boost(zhHSK5Lessons, 'zh', 'HSK5', 'Chinese', zhA1Bank),
-      HSK6: boost(zhHSK6Lessons, 'zh', 'HSK6', 'Chinese', zhA1Bank),
-    },
-    pt: {
-      A1: ptGenA1.length >= 120 ? ptGenA1 : ensureMinLessons(ptGenA1, 'pt', 'A1', 'Português', nativeLang, ptA1Bank),
-      A2: boost(ptA2Lessons, 'pt', 'A2', 'Português', ptA1Bank),
-      B1: boost(ptB1Lessons, 'pt', 'B1', 'Português', ptA1Bank),
-      B2: boost(ptB2Lessons, 'pt', 'B2', 'Português', ptA1Bank),
-      C1: boost(ptC1Lessons, 'pt', 'C1', 'Português', ptA1Bank),
-      C2: boost(ptC2Lessons, 'pt', 'C2', 'Português', ptA1Bank),
-    },
-    ko: {
-      TOPIK1: koGenA1.length >= 120 ? koGenA1 : ensureMinLessons(koGenA1, 'ko', 'TOPIK1', 'Korean', nativeLang, koA1Bank),
-      TOPIK2: boost(koTOPIK2Lessons, 'ko', 'TOPIK2', 'Korean', koA1Bank),
-      TOPIK3: boost(koTOPIK3Lessons, 'ko', 'TOPIK3', 'Korean', koA1Bank),
-      TOPIK4: boost(koTOPIK4Lessons, 'ko', 'TOPIK4', 'Korean', koA1Bank),
-      TOPIK5: boost(koTOPIK5Lessons, 'ko', 'TOPIK5', 'Korean', koA1Bank),
-      TOPIK6: boost(koTOPIK6Lessons, 'ko', 'TOPIK6', 'Korean', koA1Bank),
-    },
-    ru: {
-      A1: boost(ruA1Lessons, 'ru', 'A1', 'Russian', esA1Bank),
-      A2: boost(ruA2Lessons, 'ru', 'A2', 'Russian', esA1Bank),
-      B1: boost(ruB1Lessons, 'ru', 'B1', 'Russian', esA1Bank),
-      B2: boost(ruB2Lessons, 'ru', 'B2', 'Russian', esA1Bank),
-      C1: boost(ruC1Lessons, 'ru', 'C1', 'Russian', esA1Bank),
-      C2: boost(ruC2Lessons, 'ru', 'C2', 'Russian', esA1Bank),
-    },
-    ar: {
-      A1: boost(arA1Lessons, 'ar', 'A1', 'Arabic', esA1Bank),
-      A2: boost(arA2Lessons, 'ar', 'A2', 'Arabic', esA1Bank),
-      B1: boost(arB1Lessons, 'ar', 'B1', 'Arabic', esA1Bank),
-      B2: boost(arB2Lessons, 'ar', 'B2', 'Arabic', esA1Bank),
-      C1: boost(arC1Lessons, 'ar', 'C1', 'Arabic', esA1Bank),
-      C2: boost(arC2Lessons, 'ar', 'C2', 'Arabic', esA1Bank),
-    },
-    hi: {
-      A1: boost(hiA1Lessons, 'hi', 'A1', 'Hindi', esA1Bank),
-      A2: boost(hiA2Lessons, 'hi', 'A2', 'Hindi', esA1Bank),
-      B1: boost(hiB1Lessons, 'hi', 'B1', 'Hindi', esA1Bank),
-      B2: boost(hiB2Lessons, 'hi', 'B2', 'Hindi', esA1Bank),
-      C1: boost(hiC1Lessons, 'hi', 'C1', 'Hindi', esA1Bank),
-      C2: boost(hiC2Lessons, 'hi', 'C2', 'Hindi', esA1Bank),
-    },
-    en: {
-      A1: boost(enA1Lessons, 'en', 'A1', 'English', esA1Bank),
-      A2: boost(enA2Lessons, 'en', 'A2', 'English', esA1Bank),
-      B1: boost(enB1Lessons, 'en', 'B1', 'English', esA1Bank),
-      B2: boost(enB2Lessons, 'en', 'B2', 'English', esA1Bank),
-      C1: boost(enC1Lessons, 'en', 'C1', 'English', esA1Bank),
-      C2: boost(enC2Lessons, 'en', 'C2', 'English', esA1Bank),
-    },
-    es: {
-      A1: esGenA1.length >= 120 ? esGenA1 : ensureMinLessons(esGenA1, 'es', 'A1', 'Español', nativeLang, esA1Bank),
-      A2: boost(esA2Lessons, 'es', 'A2', 'Español', esA1Bank),
-      B1: boost(esB1Lessons, 'es', 'B1', 'Español', esA1Bank),
-      B2: boost(esB2Lessons, 'es', 'B2', 'Español', esA1Bank),
-      C1: boost(esC1Lessons, 'es', 'C1', 'Español', esA1Bank),
-      C2: boost(esC2Lessons, 'es', 'C2', 'Español', esA1Bank),
-    },
-    ro: {
-      A1: boost(roA1Lessons, 'ro', 'A1', 'Română', esA1Bank),
-      A2: boost([], 'ro', 'A2', 'Română', esA1Bank),
-      B1: boost([], 'ro', 'B1', 'Română', esA1Bank),
-      B2: boost([], 'ro', 'B2', 'Română', esA1Bank),
-      C1: boost([], 'ro', 'C1', 'Română', esA1Bank),
-      C2: boost([], 'ro', 'C2', 'Română', esA1Bank),
-    },
+  // Helper to boost level with generated content from THAT language's own bank for THAT level
+  const boost = (lessons: Lesson[], code: string, level: string, lang: string) => {
+    const idx = Math.max(0, (LEVELS[code] || []).indexOf(level));
+    return ensureMinLessons(wu(lessons, code, level), code, level, lang, nativeLang, getLevelBank(code, idx));
   };
+
+  const HANDCRAFTED: Record<string, Record<string, Lesson[]>> = {
+    jp: { N5: jpN5Lessons, N4: jpN4Lessons, N3: jpN3Lessons, N2: jpN2Lessons, N1: jpN1Lessons },
+    fr: { A1: frA1Lessons, A2: frA2Lessons, B1: frB1Lessons, B2: frB2Lessons, C1: frC1Lessons, C2: frC2Lessons },
+    zh: { HSK2: zhHSK2Lessons, HSK3: zhHSK3Lessons, HSK4: zhHSK4Lessons, HSK5: zhHSK5Lessons, HSK6: zhHSK6Lessons },
+    pt: { A2: ptA2Lessons, B1: ptB1Lessons, B2: ptB2Lessons, C1: ptC1Lessons, C2: ptC2Lessons },
+    ko: { TOPIK2: koTOPIK2Lessons, TOPIK3: koTOPIK3Lessons, TOPIK4: koTOPIK4Lessons, TOPIK5: koTOPIK5Lessons, TOPIK6: koTOPIK6Lessons },
+    ru: { A1: ruA1Lessons, A2: ruA2Lessons, B1: ruB1Lessons, B2: ruB2Lessons, C1: ruC1Lessons, C2: ruC2Lessons },
+    ar: { A1: arA1Lessons, A2: arA2Lessons, B1: arB1Lessons, B2: arB2Lessons, C1: arC1Lessons, C2: arC2Lessons },
+    hi: { A1: hiA1Lessons, A2: hiA2Lessons, B1: hiB1Lessons, B2: hiB2Lessons, C1: hiC1Lessons, C2: hiC2Lessons },
+    en: { A1: enA1Lessons, A2: enA2Lessons, B1: enB1Lessons, B2: enB2Lessons, C1: enC1Lessons, C2: enC2Lessons },
+    es: { A2: esA2Lessons, B1: esB1Lessons, B2: esB2Lessons, C1: esC1Lessons, C2: esC2Lessons },
+    ro: { A1: roA1Lessons },
+  };
+  // First levels that already have a full handcrafted wordbank course
+  const FIRST_LEVEL: Record<string, Lesson[]> = { es: esGenA1, ko: koGenA1, zh: zhGenA1, pt: ptGenA1 };
+
+  const data: Record<string, Record<string, Lesson[]>> = {};
+  LANGUAGES.forEach(cfg => {
+    const code = cfg.code;
+    data[code] = {};
+    cfg.levels.forEach((level, i) => {
+      if (i === 0 && FIRST_LEVEL[code]) {
+        const base = FIRST_LEVEL[code];
+        data[code][level] = base.length >= 120 ? base : boost(base, code, level, cfg.nativeName);
+      } else {
+        data[code][level] = boost(HANDCRAFTED[code]?.[level] || [], code, level, cfg.nativeName);
+      }
+    });
+  });
 
   lessonCache.set(nativeLang, data);
   return data;
