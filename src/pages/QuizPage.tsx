@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
+import { ActionBar, ChoiceButton, ExitButton, choiceState } from '@/components/lesson/LessonControls';
 import { useApp } from '@/contexts/AppContext';
 import { QUIZ_DATA } from '@/data/quizzes';
 import { LEVELS } from '@/data/lessons/index';
@@ -127,13 +128,13 @@ export default function QuizPage() {
         </div>
         <div className="flex flex-col gap-2 w-full max-w-xs">
           {passed && nextLvl ? (
-            <button onClick={() => navigate(`/levels/${l}`)} className="w-full py-3 rounded-full bg-foreground text-background font-medium">🔓 {tt('go_to_level')} {nextLvl}</button>
+            <button onClick={() => navigate(`/levels/${l}`)} className="w-full h-14 rounded-2xl bg-primary text-primary-foreground text-base font-bold shadow-lg active:scale-[0.97] transition-all">🔓 {tt('go_to_level')} {nextLvl}</button>
           ) : !passed ? (
-            <button onClick={() => window.location.reload()} className="w-full py-3 rounded-full bg-foreground text-background font-medium">🔄 {tt('repeat_quiz')}</button>
+            <button onClick={() => window.location.reload()} className="w-full h-14 rounded-2xl bg-primary text-primary-foreground text-base font-bold shadow-lg active:scale-[0.97] transition-all">🔄 {tt('repeat_quiz')}</button>
           ) : (
-            <button onClick={() => navigate(`/levels/${l}`)} className="w-full py-3 rounded-full bg-foreground text-background font-medium">🏅 {tt('max_level')}</button>
+            <button onClick={() => navigate(`/levels/${l}`)} className="w-full h-14 rounded-2xl bg-primary text-primary-foreground text-base font-bold shadow-lg active:scale-[0.97] transition-all">🏅 {tt('max_level')}</button>
           )}
-          <button onClick={() => navigate(`/levels/${l}`)} className="w-full py-3 rounded-full border border-border text-foreground-secondary font-medium">{tt('back_to_map')}</button>
+          <button onClick={() => navigate(`/levels/${l}`)} className="w-full h-12 rounded-2xl border-2 border-border text-foreground-secondary font-semibold active:scale-[0.97] transition-all">{tt('back_to_map')}</button>
         </div>
       </div>
     );
@@ -146,7 +147,7 @@ export default function QuizPage() {
   return (
     <div className="flex-1 flex flex-col">
       <div className="flex items-center gap-3 px-4 h-[52px] border-b border-border bg-card shrink-0">
-        <button onClick={() => navigate(`/levels/${l}`)} className="px-3 py-1 rounded-full border border-border text-sm">✕</button>
+        <ExitButton nativeLang={state.nativeLang || 'en'} question={tt('exit_confirm')} onExit={() => navigate(`/levels/${l}`)} />
         <div className="flex-1 bg-border rounded-full h-1.5 overflow-hidden">
           <div className="h-full rounded-full transition-all duration-500" style={{ width: `${(qIdx / questions.length) * 100}%`, background: `linear-gradient(to right, hsl(${config.hue}, 60%, 35%), hsl(${config.hue}, 70%, 46%))` }} />
         </div>
@@ -171,21 +172,14 @@ export default function QuizPage() {
           <div className="font-serif text-xl mb-4" dangerouslySetInnerHTML={{ __html: tq(q.q) }} />
 
           {q.t === 'mc' && q.opts && (
-            <div className="grid gap-2 grid-cols-2">
-              {q.opts.map((opt, i) => {
-                const labels = ['A', 'B', 'C', 'D'];
-                let cls = 'bg-card border-border hover:border-foreground-secondary';
-                if (locked) {
-                  if (i === q.ans) cls = 'bg-success-light border-success text-success';
-                  else if (i === selected && !feedback?.correct) cls = 'bg-destructive/10 border-destructive text-destructive';
-                } else if (i === selected) cls = 'bg-background border-foreground/40';
-                return (
-                  <button key={i} disabled={locked} onClick={() => setSelected(i)} className={`flex items-center gap-2 p-2.5 border-[1.5px] rounded-xl text-sm text-left transition-all ${cls}`}>
-                    <span className="w-5 h-5 rounded-md bg-foreground/[0.06] flex items-center justify-center text-[0.63rem] font-bold">{labels[i]}</span>
-                    {aiTr(opt) !== opt ? aiTr(opt) : translateOption(opt, state.nativeLang)}
-                  </button>
-                );
-              })}
+            <div className="grid gap-2.5 grid-cols-1 sm:grid-cols-2">
+              {q.opts.map((opt, i) => (
+                <ChoiceButton key={i} label={['A', 'B', 'C', 'D'][i]} hue={config.hue} disabled={locked}
+                  state={choiceState(i, selected, q.ans as number, locked, feedback?.correct)}
+                  onClick={() => setSelected(i)}>
+                  {aiTr(opt) !== opt ? aiTr(opt) : translateOption(opt, state.nativeLang)}
+                </ChoiceButton>
+              ))}
             </div>
           )}
 
@@ -196,24 +190,20 @@ export default function QuizPage() {
               onKeyDown={e => e.key === 'Enter' && nextAction()}
               disabled={locked}
               placeholder={tt('write_answer')}
-              className={`w-full p-3 border-[1.5px] rounded-xl text-sm bg-card outline-none ${locked ? (feedback?.correct ? 'border-success bg-success-light' : 'border-destructive bg-destructive/10') : 'border-border focus:border-foreground-secondary'}`}
+              className={`w-full h-14 px-4 border-2 rounded-2xl text-base bg-card outline-none ${locked ? (feedback?.correct ? 'border-success bg-success-light' : 'border-destructive bg-destructive/10') : 'border-border focus:border-foreground-secondary'}`}
             />
           )}
 
-          {feedback && (
-            <div className={`p-3 rounded-xl text-sm mt-3 animate-fade-in ${feedback.correct ? 'bg-success-light text-success' : 'bg-destructive/10 text-destructive'}`}>
-              <strong>{feedback.correct ? `✅ ${tt('correct')}` : `❌ ${tt('incorrect')}`}</strong>
-              {!feedback.correct && <span> — {tt('answer_was')}: <em>{feedback.answer}</em></span>}
-            </div>
-          )}
         </div>
       </div>
 
-      <div className="sticky bottom-0 bg-background/95 backdrop-blur-sm border-t border-border px-5 py-3 flex justify-end">
-        <button onClick={nextAction} disabled={!feedback && selected === null && textInput.trim() === ''} className="px-5 py-2 rounded-full bg-foreground text-background text-sm font-medium disabled:opacity-40">
-          {feedback ? (qIdx < questions.length - 1 ? `${tt('next')} →` : `${tt('see_result')} →`) : `${tt('confirm')} →`}
-        </button>
-      </div>
+      <ActionBar
+        hue={config.hue}
+        onPrimary={nextAction}
+        disabled={!feedback && selected === null && textInput.trim() === ''}
+        primaryLabel={feedback ? (qIdx < questions.length - 1 ? `${tt('next')} →` : `${tt('see_result')} →`) : `${tt('confirm')} ✓`}
+        feedback={feedback ? { correct: feedback.correct, title: feedback.correct ? tt('correct') : tt('incorrect'), detail: feedback.correct ? undefined : <>{tt('answer_was')}: <strong>{feedback.answer}</strong></> } : null}
+      />
     </div>
   );
 }

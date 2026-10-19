@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, useNavigate, useParams } from "react-router-dom";
 import { AppProvider, useApp } from "@/contexts/AppContext";
 import HomePage from "./pages/HomePage";
 import LevelMapPage from "./pages/LevelMapPage";
@@ -23,6 +23,12 @@ import NotFound from "@/pages/NotFound";
 import InstallPrompt from "@/components/InstallPrompt";
 
 const queryClient = new QueryClient();
+
+// Remount the lesson on every lesson change so its state starts fresh without a page reload.
+function LessonRoute() {
+  const { lang, level, index } = useParams();
+  return <LessonPage key={`${lang}-${level}-${index}`} />;
+}
 
 function TopNav() {
   const { state, tt } = useApp();
@@ -100,7 +106,7 @@ function AppLayout() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/levels/:lang" element={<LevelMapPage />} />
-          <Route path="/lesson/:lang/:level/:index" element={<LessonPage />} />
+          <Route path="/lesson/:lang/:level/:index" element={<LessonRoute />} />
           <Route path="/quiz/:lang/:level" element={<QuizPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
 

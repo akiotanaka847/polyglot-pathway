@@ -274,20 +274,20 @@ export default function LessonPage() {
 
         <div className="flex flex-col gap-2 w-full max-w-xs">
           {nextIdx < lessons.length ? (
-            <button onClick={() => { window.location.href = `/lesson/${l}/${lvl}/${nextIdx}`; }}
-              className="w-full py-3.5 rounded-2xl font-semibold text-card shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5"
+            <button onClick={() => navigate(`/lesson/${l}/${lvl}/${nextIdx}`)}
+              className="w-full h-14 rounded-2xl text-base font-bold text-primary-foreground shadow-lg transition-all hover:-translate-y-0.5 active:scale-[0.97]"
               style={{ background: `hsl(${config.hue}, 70%, 46%)` }}>
               {tt('next_lesson')} →
             </button>
           ) : (
             <button onClick={() => navigate(`/levels/${l}`)}
-              className="w-full py-3.5 rounded-2xl font-semibold text-card shadow-md"
+              className="w-full h-14 rounded-2xl text-base font-bold text-primary-foreground shadow-lg active:scale-[0.97] transition-all"
               style={{ background: `hsl(${config.hue}, 70%, 46%)` }}>
               🗺 {tt('view_map')}
             </button>
           )}
           <button onClick={() => navigate(`/levels/${l}`)}
-            className="w-full py-3 rounded-2xl border border-border text-foreground-secondary font-medium hover:bg-card transition-colors">
+            className="w-full h-12 rounded-2xl border-2 border-border text-foreground-secondary font-semibold hover:bg-card active:scale-[0.97] transition-all">
             {tt('view_map')}
           </button>
         </div>
@@ -338,7 +338,7 @@ export default function LessonPage() {
           )}
           <span className="flex-1" />
           <button onClick={() => speakText(step.t === 'th' ? step.char : step.t === 'la' ? step.audio : (step as any).q || '', l)}
-            className="px-2.5 py-1 rounded-full border border-border bg-card text-[0.65rem] hover:bg-background transition-colors">
+            className="min-h-9 px-3.5 py-1.5 rounded-full border border-border bg-card text-xs font-semibold hover:bg-background active:scale-95 transition-all touch-manipulation">
             🔊 {tt('listen')}
           </button>
         </div>
@@ -436,7 +436,7 @@ export default function LessonPage() {
                   {/* Microphone button */}
                   {speech.isSupported && !locked && (
                     <button onClick={() => speech.isListening ? speech.stop() : speech.start()}
-                      className={`absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-sm transition-all ${
+                      className={`absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center text-sm transition-all ${
                         speech.isListening ? 'bg-red-100 text-red-300 animate-pulse' : 'bg-background border border-border hover:bg-card'
                       }`}>
                       {speech.isListening ? '⏹' : '🎤'}
