@@ -7,6 +7,7 @@ import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { normalizeAnswer, shuffleArray, speakText, playCorrectSound, playIncorrectSound, playLevelUpSound, spawnConfetti } from '@/utils/helpers';
 import { translateLessonText, translateLessonTitle } from '@/utils/lessonI18n';
 import { useAiTranslate } from '@/hooks/useAiTranslate';
+import { ActionBar, ChoiceButton, ExitButton, choiceState } from '@/components/lesson/LessonControls';
 import RecallBars from '@/components/RecallBars';
 import VoiceOrb from '@/components/VoiceOrb';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
@@ -100,18 +101,30 @@ export default function LessonPage() {
     }
   }, []);
 
-  // Long explanations (advanced levels) fall back to AI translation, cached forever.
+  // Any instruction the offline dictionary could not translate goes to AI translation (cached forever),
+  // so handcrafted advanced lessons never stay in Spanish/English for other native languages.
   const aiTexts = useMemo(() => {
-    if (!lesson || nativeLang === 'es' || nativeLang === 'en') return [];
+    if (!lesson || nativeLang === 'es') return [];
     const out: string[] = [];
-    const push = (v: unknown) => { if (typeof v === 'string' && v.length > 45) out.push(v); };
+    const push = (v: unknown, strict = false) => {
+      if (typeof v !== 'string' || !v.trim() || !/[A-Za-zÀ-ÿ]/.test(v)) return;
+      if (translateLessonText(v, nativeLang) !== v) return; // dictionary already handled it
+      if (strict && !/[¿¡ñáéíóú]|\b(de|el|la|los|las|que|una|con|por|para|del|es)\b/i.test(v)) return;
+      if (nativeLang === 'en' && !/[¿¡ñáéíóú]|\b(de|el|la|los|las|que|una|con|por|para|del)\b/i.test(v)) return;
+      out.push(v);
+    };
     push(lesson.title);
+    if (lesson.unit?.name) push(lesson.unit.name);
     (lesson.steps ?? []).forEach((st) => {
       const any = st as unknown as Record<string, unknown>;
-      push(any.q); push(any.note); push(any.text); push(any.hint); push(any.mn);
+      push(any.q); push(any.note); push(any.text); push(any.mn); push(any.title);
+      if (l !== 'es' && Array.isArray(any.opts) && (st.t === 'mc' || st.t === 'rd')) {
+        // Options may be meanings (native side) — only translate those that read like Spanish/English text
+        any.opts.forEach((o) => push(o, true));
+      }
     });
     return [...new Set(out)];
-  }, [lesson, nativeLang]);
+  }, [lesson, nativeLang, l]);
   const { tr: aiTr } = useAiTranslate(aiTexts, nativeLang);
 
   const tl = (text: string | undefined) => {
@@ -237,7 +250,7 @@ export default function LessonPage() {
           {medal.icon}
         </div>
         <h2 className="font-serif text-3xl font-light mb-1">{medal.label}</h2>
-        <p className="text-sm text-foreground-secondary mb-5">{tlTitle(lesson.title)}</p>
+        <p className="text-sm text-foreground-secondary mb-5">{aiTr(lesson.title) !== lesson.title ? aiTr(lesson.title) : tlTitle(lesson.title)}</p>
 
         <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full font-bold text-lg mb-6 animate-pop-in shadow-md"
           style={{ background: `linear-gradient(135deg, hsl(${config.hue}, 70%, 46%), hsl(${config.hue}, 80%, 56%))`, color: 'white' }}>
@@ -261,20 +274,20 @@ export default function LessonPage() {
 
         <div className="flex flex-col gap-2 w-full max-w-xs">
           {nextIdx < lessons.length ? (
-            <button onClick={() => { window.location.href = `/lesson/${l}/${lvl}/${nextIdx}`; }}
-              className="w-full py-3.5 rounded-2xl font-semibold text-card shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5"
+            <button onClick={() => navigate(`/lesson/${l}/${lvl}/${nextIdx}`)}
+              className="w-full h-14 rounded-2xl text-base font-bold text-primary-foreground shadow-lg transition-all hover:-translate-y-0.5 active:scale-[0.97]"
               style={{ background: `hsl(${config.hue}, 70%, 46%)` }}>
               {tt('next_lesson')} →
             </button>
           ) : (
             <button onClick={() => navigate(`/levels/${l}`)}
-              className="w-full py-3.5 rounded-2xl font-semibold text-card shadow-md"
+              className="w-full h-14 rounded-2xl text-base font-bold text-primary-foreground shadow-lg active:scale-[0.97] transition-all"
               style={{ background: `hsl(${config.hue}, 70%, 46%)` }}>
               🗺 {tt('view_map')}
             </button>
           )}
           <button onClick={() => navigate(`/levels/${l}`)}
-            className="w-full py-3 rounded-2xl border border-border text-foreground-secondary font-medium hover:bg-card transition-colors">
+            className="w-full h-12 rounded-2xl border-2 border-border text-foreground-secondary font-semibold hover:bg-card active:scale-[0.97] transition-all">
             {tt('view_map')}
           </button>
         </div>
@@ -289,8 +302,7 @@ export default function LessonPage() {
     <div ref={containerRef} className="flex-1 flex flex-col relative overflow-hidden">
       {/* Top bar */}
       <div className="flex items-center gap-3 px-4 h-14 border-b border-border bg-card/80 backdrop-blur-sm shrink-0 z-10">
-        <button onClick={() => { if (confirm(tt('exit_confirm'))) navigate(`/levels/${l}`); }}
-          className="w-8 h-8 rounded-full border border-border flex items-center justify-center text-sm hover:bg-background transition-colors">✕</button>
+        <ExitButton nativeLang={nativeLang} question={tt('exit_confirm')} onExit={() => navigate(`/levels/${l}`)} />
         
         {/* Animated progress bar */}
         <div className="flex-1 h-2.5 bg-border rounded-full overflow-hidden">
@@ -326,7 +338,7 @@ export default function LessonPage() {
           )}
           <span className="flex-1" />
           <button onClick={() => speakText(step.t === 'th' ? step.char : step.t === 'la' ? step.audio : (step as any).q || '', l)}
-            className="px-2.5 py-1 rounded-full border border-border bg-card text-[0.65rem] hover:bg-background transition-colors">
+            className="min-h-9 px-3.5 py-1.5 rounded-full border border-border bg-card text-xs font-semibold hover:bg-background active:scale-95 transition-all touch-manipulation">
             🔊 {tt('listen')}
           </button>
         </div>
@@ -342,7 +354,7 @@ export default function LessonPage() {
             </div>
             <div className="flex-1 min-w-0">
               <div className="font-serif text-sm font-semibold truncate" style={{ color: `hsl(${config.hue}, 85%, 80%)` }}>
-                {tlTitle(lesson.title)}
+                {aiTr(lesson.title) !== lesson.title ? aiTr(lesson.title) : tlTitle(lesson.title)}
               </div>
               {lesson.unit && (
                 <div className="text-[0.65rem] text-foreground-muted">{lesson.unit.emoji} {tl(lesson.unit.name)}</div>
@@ -400,27 +412,14 @@ export default function LessonPage() {
 
             {/* MC options */}
             {(step.t === 'mc' || step.t === 'rd') && step.opts && (
-              <div className={`grid gap-2.5 ${step.opts.some(o => o.length > 30) ? 'grid-cols-1' : 'grid-cols-2'}`}>
-                {step.opts.map((opt, i) => {
-                  const labels = ['A', 'B', 'C', 'D'];
-                  let cls = 'bg-background border-border hover:border-foreground/30 hover:shadow-sm';
-                  if (locked) {
-                    if (i === step.ans) cls = 'bg-green-500/15 border-green-400 text-green-300 shadow-sm';
-                    else if (i === selectedChoice && !feedback?.correct) cls = 'bg-red-500/15 border-red-400 text-red-300 animate-shake';
-                    else cls = 'bg-background border-border opacity-50';
-                  } else if (i === selectedChoice) cls = 'border-2 shadow-md bg-background';
-                  return (
-                    <button key={i} disabled={locked} onClick={() => setSelectedChoice(i)}
-                      className={`flex items-center gap-2.5 p-3 border-[1.5px] rounded-xl text-sm text-left transition-all ${cls}`}
-                      style={!locked && i === selectedChoice ? { borderColor: `hsl(${config.hue}, 70%, 46%)` } : undefined}>
-                      <span className="w-6 h-6 rounded-lg flex items-center justify-center text-[0.65rem] font-bold shrink-0"
-                        style={{ background: `hsl(${config.hue}, 50%, 20%)`, color: `hsl(${config.hue}, 85%, 78%)` }}>
-                        {labels[i]}
-                      </span>
-                      <span className="flex-1">{tl(opt)}</span>
-                    </button>
-                  );
-                })}
+              <div className={`grid gap-2.5 ${step.opts.some(o => o.length > 22) ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2'}`}>
+                {step.opts.map((opt, i) => (
+                  <ChoiceButton key={i} label={['A', 'B', 'C', 'D'][i]} hue={config.hue} disabled={locked}
+                    state={choiceState(i, selectedChoice, step.ans, locked, feedback?.correct)}
+                    onClick={() => setSelectedChoice(i)}>
+                    {tl(opt)}
+                  </ChoiceButton>
+                ))}
               </div>
             )}
 
@@ -437,7 +436,7 @@ export default function LessonPage() {
                   {/* Microphone button */}
                   {speech.isSupported && !locked && (
                     <button onClick={() => speech.isListening ? speech.stop() : speech.start()}
-                      className={`absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-sm transition-all ${
+                      className={`absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center text-sm transition-all ${
                         speech.isListening ? 'bg-red-100 text-red-300 animate-pulse' : 'bg-background border border-border hover:bg-card'
                       }`}>
                       {speech.isListening ? '⏹' : '🎤'}
@@ -569,33 +568,23 @@ export default function LessonPage() {
               </div>
             )}
 
-            {/* Feedback */}
-            {feedback && (
-              <div className={`p-4 rounded-xl text-sm mt-4 animate-scale-in border ${
-                feedback.correct ? 'bg-green-500/15 text-green-300 border-green-500/40' : 'bg-red-500/15 text-red-300 border-red-500/40'
-              }`}>
-                <strong className="block mb-0.5 text-base">{feedback.correct ? `✅ ${tt('correct')}` : `❌ ${tt('incorrect')}`}</strong>
-                {feedback.correct ? tt('excellent') : `${tt('answer_was')}: ${feedback.answer}`}
-              </div>
-            )}
           </div>
         )}
       </div>
 
-      {/* Bottom action bar */}
-      <div className="sticky bottom-0 bg-card/95 backdrop-blur-sm border-t border-border px-5 py-3 flex justify-end gap-2 z-10">
-        {!locked && step.t !== 'th' && (
-          <button onClick={() => { setAccuracy(p => [...p, false]); advance(); }}
-            className="px-4 py-2.5 rounded-xl border border-border text-sm text-foreground-muted hover:bg-background transition-colors">
-            {tt('skip')}
-          </button>
-        )}
-        <button onClick={nextAction} disabled={!canCheck && !feedback}
-          className="px-6 py-2.5 rounded-xl text-sm font-semibold text-card disabled:opacity-40 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5"
-          style={{ background: canCheck || feedback ? `hsl(${config.hue}, 70%, 46%)` : undefined }}>
-          {feedback ? `${tt('next')} →` : step.t === 'th' ? `${tt('continue')} →` : `${tt('check')} ✓`}
-        </button>
-      </div>
+      {/* Bottom action bar: feedback + one big full-width action */}
+      <ActionBar
+        hue={config.hue}
+        onPrimary={nextAction}
+        disabled={!canCheck && !feedback}
+        primaryLabel={feedback ? `${tt('next')} →` : step.t === 'th' ? `${tt('continue')} →` : `${tt('check')} ✓`}
+        feedback={feedback ? {
+          correct: feedback.correct,
+          title: feedback.correct ? tt('correct') : tt('incorrect'),
+          detail: feedback.correct ? tt('excellent') : <>{tt('answer_was')}: <strong>{feedback.answer}</strong></>,
+        } : null}
+        secondary={!locked && step.t !== 'th' ? { label: tt('skip'), onClick: () => { setAccuracy(p => [...p, false]); advance(); } } : null}
+      />
     </div>
   );
 }

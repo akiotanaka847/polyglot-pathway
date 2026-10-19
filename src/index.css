@@ -203,3 +203,15 @@
 @media (prefers-reduced-motion: reduce) {
   .animate-speaking-wave, .animate-neon-breathe, .animate-node-ping { animation: none; }
 }
+
+/* Touch-friendly defaults for every button */
+@layer base {
+  button, [role="button"] {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  button:focus-visible, [role="button"]:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+}

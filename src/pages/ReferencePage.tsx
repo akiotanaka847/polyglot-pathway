@@ -112,7 +112,7 @@ export default function ReferencePage() {
       <div className="max-w-[680px] mx-auto px-4 py-5">
         {/* Header */}
         <div className="flex items-center gap-2 mb-5">
-          <button onClick={() => navigate('/')} className="px-3 py-1.5 rounded-full border border-border text-sm hover:bg-card transition-all">← {tt('go_home')}</button>
+          <button onClick={() => navigate('/')} className="inline-flex min-h-10 items-center px-4 py-2 rounded-full border border-border bg-card text-sm font-semibold hover:bg-card/80 active:scale-95 transition-all">← {tt('go_home')}</button>
           <span className="flex-1 text-center font-serif text-lg font-semibold">📚 {tt('reference')}</span>
         </div>
 

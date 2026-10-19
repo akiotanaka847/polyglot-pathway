@@ -215,14 +215,16 @@ export default function LevelMapPage() {
                                 <span className="text-[0.65rem] text-foreground-muted">{unitDone}/{unit.lessons.length}</span>
                               </div>
                               {unitUnlocked && (
-                                <div className="grid grid-cols-6 gap-1 pl-6">
+                                <div className="grid grid-cols-5 sm:grid-cols-8 gap-2 pl-6">
                                   {unit.lessons.map(({ lesson: les, originalIndex: i }) => {
                                     const isDone = d.doneLessons[les.id];
+                                    const isNext = !isDone && d.lessons.findIndex((x: any) => !d.doneLessons[x.id]) === i;
                                     return (
                                       <button key={les.id} onClick={() => navigate(`/lesson/${l}/${d.lvl}/${i}`)}
                                         title={les.title}
-                                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-[0.65rem] font-bold transition-all hover:scale-110 active:scale-95 ${
-                                          isDone ? 'text-background' : 'bg-muted border border-border hover:border-primary/60'
+                                        aria-label={`${i + 1}. ${les.title}`}
+                                        className={`h-10 w-full rounded-xl flex items-center justify-center text-xs font-bold transition-all hover:scale-105 active:scale-95 touch-manipulation ${
+                                          isDone ? 'text-background' : isNext ? 'bg-primary text-primary-foreground ring-2 ring-primary/40 ring-offset-2 ring-offset-background animate-pulse' : 'bg-muted border border-border hover:border-primary/60'
                                         }`}
                                         style={isDone ? { background: 'hsl(var(--neon-cyan))', boxShadow: '0 0 12px hsl(var(--neon-cyan) / 0.5)' } : undefined}
                                       >
@@ -240,7 +242,7 @@ export default function LevelMapPage() {
                           <button
                             onClick={() => d.allDone && navigate(`/quiz/${l}/${d.lvl}`)}
                             disabled={!d.allDone}
-                            className={`w-full flex items-center gap-2 p-3 rounded-xl border-2 border-dashed mt-3 transition-all ${
+                            className={`w-full min-h-14 flex items-center gap-3 p-3.5 rounded-2xl border-2 border-dashed mt-3 transition-all active:scale-[0.98] ${
                               !d.allDone ? 'opacity-40 cursor-not-allowed' : 'hover:shadow-md cursor-pointer'
                             }`}
                             style={{ borderColor: 'hsl(var(--neon-violet) / 0.5)', background: 'hsl(var(--neon-violet) / 0.1)' }}
@@ -265,10 +267,10 @@ export default function LevelMapPage() {
 
         {/* Bottom nav */}
         <div className="flex gap-2 mt-6 mb-24 justify-center">
-          <button onClick={() => navigate('/')} className="px-4 py-2 rounded-full border border-border text-sm hover:bg-card transition-colors">
+          <button onClick={() => navigate('/')} className="inline-flex min-h-11 items-center px-5 rounded-full border border-border bg-card text-sm font-semibold hover:bg-card/80 active:scale-95 transition-all">
             ← {tt('go_home')}
           </button>
-          <button onClick={() => navigate('/dashboard')} className="px-4 py-2 rounded-full border border-border text-sm hover:bg-card transition-colors">
+          <button onClick={() => navigate('/dashboard')} className="inline-flex min-h-11 items-center px-5 rounded-full border border-border bg-card text-sm font-semibold hover:bg-card/80 active:scale-95 transition-all">
             📊 {tt('progress')}
           </button>
         </div>

@@ -71,7 +71,7 @@ export default function StoryPage() {
     return (
       <div className="animate-fade-in flex-1 overflow-y-auto">
         <div className="max-w-[620px] mx-auto px-4 py-5">
-          <button onClick={() => { setActiveScene(null); setQuizFb(null); }} className="px-3 py-1 rounded-full border border-border text-sm text-foreground-secondary mb-4">← {tt('back')}</button>
+          <button onClick={() => { setActiveScene(null); setQuizFb(null); }} className="inline-flex min-h-10 items-center px-4 py-2 rounded-full border border-border bg-card text-sm font-semibold hover:bg-card/80 active:scale-95 transition-all text-foreground-secondary mb-4">← {tt('back')}</button>
           <div className="rounded-[20px] overflow-hidden mb-4" style={{ background: scene.color }}>
             <div className="p-4 flex items-center gap-3.5">
               <span className="text-4xl">{scene.image_emoji}</span>
@@ -143,7 +143,7 @@ export default function StoryPage() {
     <div className="animate-fade-in flex-1 overflow-y-auto">
       <div className="max-w-[620px] mx-auto px-4 py-5">
         <div className="flex items-center gap-2 mb-4">
-          <button onClick={() => navigate('/')} className="px-3 py-1 rounded-full border border-border text-sm">← {tt('go_home')}</button>
+          <button onClick={() => navigate('/')} className="inline-flex min-h-10 items-center px-4 py-2 rounded-full border border-border bg-card text-sm font-semibold hover:bg-card/80 active:scale-95 transition-all">← {tt('go_home')}</button>
           <span className="flex-1 text-center font-serif font-semibold">📖 {tt('story_mode')}{aiLoading && <span className="ml-1 text-xs opacity-60 animate-pulse">•••</span>}</span>
           <div className="flex gap-1">
             {storyLangs.map(l => {
