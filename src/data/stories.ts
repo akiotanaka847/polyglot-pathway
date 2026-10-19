@@ -594,3 +594,6 @@ export const STORIES: Record<string, StoryData> = {
     ],
   },
 };
+
+import RO_STORY from './content-fill/ro-story.json';
+if (!STORIES.ro) STORIES.ro = RO_STORY as StoryData;

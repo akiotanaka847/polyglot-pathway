@@ -660,3 +660,32 @@ Object.keys(VOCAB_EXPAND).forEach(lang => {
     VOCAB_REF[lang][level] = [...VOCAB_REF[lang][level], ...VOCAB_EXPAND[lang][level]];
   });
 });
+
+// Audited fill-ins for levels that had little or no reference content
+import GRAMMAR_FILL from './content-fill/grammar.json';
+import { getLevelBank } from './lessons/wordbanks/universal';
+import ES_MEANINGS from './lessons/meanings/es.json';
+import { LANGUAGES as REF_LANGS } from './languages';
+
+Object.entries(GRAMMAR_FILL as Record<string, GrammarEntry[]>).forEach(([lang, items]) => {
+  const have = new Set((GRAMMAR_REF[lang] || []).map(g => g.title));
+  GRAMMAR_REF[lang] = [...(GRAMMAR_REF[lang] || []), ...items.filter(g => !have.has(g.title))];
+});
+
+// Every level gets at least 12 vocabulary words from that language's own level bank (meanings in Spanish base).
+const MIN_VOCAB = 12;
+REF_LANGS.forEach(cfg => {
+  if (!VOCAB_REF[cfg.code]) VOCAB_REF[cfg.code] = {};
+  cfg.levels.forEach((lv, i) => {
+    const list = VOCAB_REF[cfg.code][lv] || [];
+    if (list.length >= MIN_VOCAB) return;
+    const bank = getLevelBank(cfg.code, i);
+    if (!bank) return;
+    const have = new Set(list.map(v => v.word));
+    const extra: VocabEntry[] = [];
+    Object.values(bank).forEach(arr => (arr as { w: string; mn: string }[] || []).slice(0, 2).forEach(e => {
+      if (!have.has(e.w)) { have.add(e.w); extra.push({ word: e.w, meaning: (ES_MEANINGS as Record<string, string>)[e.mn] || e.mn, example: '' } as VocabEntry); }
+    }));
+    VOCAB_REF[cfg.code][lv] = [...list, ...extra];
+  });
+});
