@@ -1,3 +1,4 @@
+import FILL_I18N from '@/data/content-fill/fill-i18n.json';
 import { useEffect, useState, useMemo } from 'react';
 import { getCachedTranslation, translateBatch } from '@/utils/aiTranslate';
 
@@ -12,6 +13,9 @@ export function useAiTranslate(texts: string[], nativeLang: string) {
 
   useEffect(() => {
     if (nativeLang === 'es' || !texts.length) return;
+    const fixed = (FILL_I18N as Record<string, Record<string, string>>)[nativeLang] || {};
+    texts = texts.filter(t => !fixed[t]);
+    if (!texts.length) return;
     const missing = texts.filter(t => t && !getCachedTranslation(t, nativeLang));
     if (!missing.length) return;
     let alive = true;
@@ -34,7 +38,7 @@ export function useAiTranslate(texts: string[], nativeLang: string) {
   const tr = (text: string | undefined) => {
     if (!text) return '';
     if (nativeLang === 'es') return text;
-    return getCachedTranslation(text, nativeLang) ?? text;
+    return (FILL_I18N as Record<string, Record<string, string>>)[nativeLang]?.[text] ?? getCachedTranslation(text, nativeLang) ?? text;
   };
 
   return { tr, loading, version };
