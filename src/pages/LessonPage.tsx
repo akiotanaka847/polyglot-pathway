@@ -7,6 +7,7 @@ import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { normalizeAnswer, shuffleArray, speakText, playCorrectSound, playIncorrectSound, playLevelUpSound, spawnConfetti } from '@/utils/helpers';
 import { translateLessonText, translateLessonTitle } from '@/utils/lessonI18n';
 import { useAiTranslate } from '@/hooks/useAiTranslate';
+import { ActionBar, ChoiceButton, ExitButton, choiceState } from '@/components/lesson/LessonControls';
 import RecallBars from '@/components/RecallBars';
 import VoiceOrb from '@/components/VoiceOrb';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
