@@ -80,3 +80,19 @@ describe('speaking topics are named in every native language', () => {
     });
   });
 });
+
+import { CONVERSATION_DATA } from '@/data/conversations';
+import { getThemedConversations } from '@/data/convGenerate';
+import CONV_I18N from '@/data/content-fill/conv-i18n.json';
+
+describe('conversation topics are translated for every native language', () => {
+  it('every title and scenario has a translation', () => {
+    const missing: string[] = [];
+    LANGUAGES.forEach(l => getThemedConversations(l.code, (CONVERSATION_DATA as any)[l.code] || []).forEach((c: any) => {
+      LANGUAGES.filter(n => n.code !== 'es').forEach(n => [c.title, c.scenario].forEach(s => {
+        if (s && !(CONV_I18N as any)[n.code]?.[s]) missing.push(`${n.code}: ${s}`);
+      }));
+    }));
+    expect(missing.slice(0, 10)).toEqual([]);
+  });
+});
