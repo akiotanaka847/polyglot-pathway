@@ -11,6 +11,7 @@ export function useAiTranslate(texts: string[], nativeLang: string) {
   const signature = useMemo(() => nativeLang + '|' + texts.join('¶'), [nativeLang, texts]);
 
   useEffect(() => {
+    console.log('[aiTr]', nativeLang, texts.length);
     if (nativeLang === 'es' || !texts.length) return;
     const missing = texts.filter(t => t && !getCachedTranslation(t, nativeLang));
     if (!missing.length) return;
