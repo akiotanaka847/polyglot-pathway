@@ -18,7 +18,12 @@ export default function QuizPage() {
   const lvl = level || 'N5';
   const config = getLangConfig(l);
 
-  const [questions] = useState<LevelQuizQuestion[]>(() => shuffleArray(getLevelQuiz(l, lvl, state.nativeLang || 'en')).slice(0, 15));
+  const [questions] = useState<LevelQuizQuestion[]>(() => shuffleArray(getLevelQuiz(l, lvl, state.nativeLang || 'en')).slice(0, 15).map(qq => {
+    // Always randomize the answer order
+    if (qq.t !== 'mc' || !qq.opts) return qq;
+    const order = shuffleArray(qq.opts.map((_, i) => i));
+    return { ...qq, opts: order.map(i => qq.opts![i]), ans: order.indexOf(qq.ans as number) };
+  }));
   const [qIdx, setQIdx] = useState(0);
   const [score, setScore] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
