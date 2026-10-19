@@ -301,8 +301,7 @@ export default function LessonPage() {
     <div ref={containerRef} className="flex-1 flex flex-col relative overflow-hidden">
       {/* Top bar */}
       <div className="flex items-center gap-3 px-4 h-14 border-b border-border bg-card/80 backdrop-blur-sm shrink-0 z-10">
-        <button onClick={() => { if (confirm(tt('exit_confirm'))) navigate(`/levels/${l}`); }}
-          className="w-8 h-8 rounded-full border border-border flex items-center justify-center text-sm hover:bg-background transition-colors">✕</button>
+        <ExitButton nativeLang={nativeLang} question={tt('exit_confirm')} onExit={() => navigate(`/levels/${l}`)} />
         
         {/* Animated progress bar */}
         <div className="flex-1 h-2.5 bg-border rounded-full overflow-hidden">
@@ -412,27 +411,14 @@ export default function LessonPage() {
 
             {/* MC options */}
             {(step.t === 'mc' || step.t === 'rd') && step.opts && (
-              <div className={`grid gap-2.5 ${step.opts.some(o => o.length > 30) ? 'grid-cols-1' : 'grid-cols-2'}`}>
-                {step.opts.map((opt, i) => {
-                  const labels = ['A', 'B', 'C', 'D'];
-                  let cls = 'bg-background border-border hover:border-foreground/30 hover:shadow-sm';
-                  if (locked) {
-                    if (i === step.ans) cls = 'bg-green-500/15 border-green-400 text-green-300 shadow-sm';
-                    else if (i === selectedChoice && !feedback?.correct) cls = 'bg-red-500/15 border-red-400 text-red-300 animate-shake';
-                    else cls = 'bg-background border-border opacity-50';
-                  } else if (i === selectedChoice) cls = 'border-2 shadow-md bg-background';
-                  return (
-                    <button key={i} disabled={locked} onClick={() => setSelectedChoice(i)}
-                      className={`flex items-center gap-2.5 p-3 border-[1.5px] rounded-xl text-sm text-left transition-all ${cls}`}
-                      style={!locked && i === selectedChoice ? { borderColor: `hsl(${config.hue}, 70%, 46%)` } : undefined}>
-                      <span className="w-6 h-6 rounded-lg flex items-center justify-center text-[0.65rem] font-bold shrink-0"
-                        style={{ background: `hsl(${config.hue}, 50%, 20%)`, color: `hsl(${config.hue}, 85%, 78%)` }}>
-                        {labels[i]}
-                      </span>
-                      <span className="flex-1">{tl(opt)}</span>
-                    </button>
-                  );
-                })}
+              <div className={`grid gap-2.5 ${step.opts.some(o => o.length > 22) ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2'}`}>
+                {step.opts.map((opt, i) => (
+                  <ChoiceButton key={i} label={['A', 'B', 'C', 'D'][i]} hue={config.hue} disabled={locked}
+                    state={choiceState(i, selectedChoice, step.ans, locked, feedback?.correct)}
+                    onClick={() => setSelectedChoice(i)}>
+                    {tl(opt)}
+                  </ChoiceButton>
+                ))}
               </div>
             )}
 
@@ -581,33 +567,23 @@ export default function LessonPage() {
               </div>
             )}
 
-            {/* Feedback */}
-            {feedback && (
-              <div className={`p-4 rounded-xl text-sm mt-4 animate-scale-in border ${
-                feedback.correct ? 'bg-green-500/15 text-green-300 border-green-500/40' : 'bg-red-500/15 text-red-300 border-red-500/40'
-              }`}>
-                <strong className="block mb-0.5 text-base">{feedback.correct ? `✅ ${tt('correct')}` : `❌ ${tt('incorrect')}`}</strong>
-                {feedback.correct ? tt('excellent') : `${tt('answer_was')}: ${feedback.answer}`}
-              </div>
-            )}
           </div>
         )}
       </div>
 
-      {/* Bottom action bar */}
-      <div className="sticky bottom-0 bg-card/95 backdrop-blur-sm border-t border-border px-5 py-3 flex justify-end gap-2 z-10">
-        {!locked && step.t !== 'th' && (
-          <button onClick={() => { setAccuracy(p => [...p, false]); advance(); }}
-            className="px-4 py-2.5 rounded-xl border border-border text-sm text-foreground-muted hover:bg-background transition-colors">
-            {tt('skip')}
-          </button>
-        )}
-        <button onClick={nextAction} disabled={!canCheck && !feedback}
-          className="px-6 py-2.5 rounded-xl text-sm font-semibold text-card disabled:opacity-40 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5"
-          style={{ background: canCheck || feedback ? `hsl(${config.hue}, 70%, 46%)` : undefined }}>
-          {feedback ? `${tt('next')} →` : step.t === 'th' ? `${tt('continue')} →` : `${tt('check')} ✓`}
-        </button>
-      </div>
+      {/* Bottom action bar: feedback + one big full-width action */}
+      <ActionBar
+        hue={config.hue}
+        onPrimary={nextAction}
+        disabled={!canCheck && !feedback}
+        primaryLabel={feedback ? `${tt('next')} →` : step.t === 'th' ? `${tt('continue')} →` : `${tt('check')} ✓`}
+        feedback={feedback ? {
+          correct: feedback.correct,
+          title: feedback.correct ? tt('correct') : tt('incorrect'),
+          detail: feedback.correct ? tt('excellent') : <>{tt('answer_was')}: <strong>{feedback.answer}</strong></>,
+        } : null}
+        secondary={!locked && step.t !== 'th' ? { label: tt('skip'), onClick: () => { setAccuracy(p => [...p, false]); advance(); } } : null}
+      />
     </div>
   );
 }
