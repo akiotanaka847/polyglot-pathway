@@ -5,7 +5,8 @@ import { LANGUAGES } from '@/data/languages';
 import { STORIES } from '@/data/stories';
 import { STORY_I18N_EN } from '@/data/storyI18n';
 import { getLangConfig } from '@/data/languages';
-import { speakText } from '@/utils/helpers';
+import { speakText, shuffleArray } from '@/utils/helpers';
+import { ChoiceButton } from '@/components/lesson/LessonControls';
 import { translateLessonText, translateLessonTitle } from '@/utils/lessonI18n';
 import { useAiTranslate } from '@/hooks/useAiTranslate';
 
@@ -31,6 +32,12 @@ export default function StoryPage() {
   const [lang, setLang] = useState<string>(storyLangs.includes(state.currentLearningLang) ? state.currentLearningLang : (storyLangs[0] || 'jp'));
   const [activeScene, setActiveScene] = useState<{ ci: number; si: number } | null>(null);
   const [quizFb, setQuizFb] = useState<string | null>(null);
+  const [quizPick, setQuizPick] = useState<number | null>(null);
+  const quizOrder = useMemo(() => {
+    if (!activeScene) return [] as number[];
+    const n = STORIES[lang]?.chapters[activeScene.ci]?.scenes[activeScene.si]?.quiz.opts.length || 0;
+    return shuffleArray(Array.from({ length: n }, (_, i) => i));
+  }, [activeScene, lang]);
   const config = getLangConfig(lang);
   const story = STORIES[lang];
   const i18n = useStoryI18n(lang, state.nativeLang || 'es');
@@ -39,17 +46,22 @@ export default function StoryPage() {
   // Long narration cannot be covered by the offline dictionary: translate it with AI.
   const aiTexts = useMemo(() => {
     const s = STORIES[lang];
-    if (!s || nat === 'es' || nat === 'en') return [];
-    const out: string[] = [s.subtitle];
+    // English speakers use the curated English overlay when it exists for this story
+    if (!s || nat === 'es' || (nat === 'en' && STORY_I18N_EN[lang])) return [];
+    const sceneTexts = (sc: (typeof s.chapters)[number]['scenes'][number]) => {
+      const out: string[] = [sc.title, sc.setting, sc.lesson, sc.quiz.q, ...sc.quiz.opts, ...(sc.vocab || [])];
+      sc.dialogue.forEach(d => { if (d.tr) out.push(d.tr); });
+      return out;
+    };
+    // The open scene goes first so it is translated before everything else
+    const first = activeScene ? sceneTexts(s.chapters[activeScene.ci].scenes[activeScene.si]) : [];
+    const out: string[] = [...first, s.subtitle];
     s.chapters.forEach(ch => {
       out.push(ch.title);
-      ch.scenes.forEach(sc => {
-        out.push(sc.title, sc.setting, sc.lesson, sc.quiz.q, ...sc.quiz.opts);
-        sc.dialogue.forEach(d => { if (d.tr) out.push(d.tr); });
-      });
+      ch.scenes.forEach(sc => out.push(...sceneTexts(sc)));
     });
     return [...new Set(out.filter(Boolean))];
-  }, [lang, nat]);
+  }, [lang, nat, activeScene]);
   const { tr, loading: aiLoading } = useAiTranslate(aiTexts, nat);
 
 
@@ -71,7 +83,7 @@ export default function StoryPage() {
     return (
       <div className="animate-fade-in flex-1 overflow-y-auto">
         <div className="max-w-[620px] mx-auto px-4 py-5">
-          <button onClick={() => { setActiveScene(null); setQuizFb(null); }} className="inline-flex min-h-10 items-center px-4 py-2 rounded-full border border-border bg-card text-sm font-semibold hover:bg-card/80 active:scale-95 transition-all text-foreground-secondary mb-4">← {tt('back')}</button>
+          <button onClick={() => { setActiveScene(null); setQuizFb(null); setQuizPick(null); }} className="inline-flex min-h-10 items-center px-4 py-2 rounded-full border border-border bg-card text-sm font-semibold hover:bg-card/80 active:scale-95 transition-all text-foreground-secondary mb-4">← {tt('back')}</button>
           <div className="rounded-[20px] overflow-hidden mb-4" style={{ background: scene.color }}>
             <div className="p-4 flex items-center gap-3.5">
               <span className="text-4xl">{scene.image_emoji}</span>
@@ -110,27 +122,40 @@ export default function StoryPage() {
           <div className="flex flex-wrap gap-1.5 mb-4">
             {scene.vocab.map(v => (
               <button key={v} onClick={() => speakText(v, lang)} className="px-2.5 py-1 rounded-full bg-background border border-border text-[0.75rem] hover:shadow-sm transition-colors">
-                {v} 🔊
+                {tr(v)} 🔊
               </button>
             ))}
           </div>
 
           <div className="bg-card border border-border rounded-[16px] p-4">
             <div className="text-sm font-semibold mb-2.5">❓ {sceneI18n?.quizQ || tr(scene.quiz.q)}</div>
-            {(sceneI18n?.quizOpts || scene.quiz.opts.map(o => tr(o))).map((opt, i) => (
-              <button key={i} onClick={() => {
-                if (i === scene.quiz.ans) {
-                  setQuizFb('correct');
-                  addXP(lang, 50);
-                  markStoryDone(scene.id);
-                  earnAchievement('story_chapter');
-                } else {
-                  setQuizFb('wrong');
-                }
-              }} className="block w-full text-left px-3 py-2 rounded-xl border border-border bg-card text-sm mb-1.5 hover:bg-background transition-colors">
-                {opt}
-              </button>
-            ))}
+            {(() => {
+              const opts = sceneI18n?.quizOpts || scene.quiz.opts.map(o => tr(o));
+              // Always randomize answer order (stable per scene visit)
+              const order = quizOrder.length === opts.length ? quizOrder : opts.map((_, i) => i);
+              return (
+                <div className="grid gap-2">
+                  {order.map((i, pos) => (
+                    <ChoiceButton key={i} label={['A', 'B', 'C', 'D'][pos]} hue={getLangConfig(lang).hue}
+                      disabled={quizFb === 'correct'}
+                      state={quizFb === 'correct' ? (i === scene.quiz.ans ? 'correct' : 'dim') : quizFb === 'wrong' && quizPick === i ? 'wrong' : 'idle'}
+                      onClick={() => {
+                        setQuizPick(i);
+                        if (i === scene.quiz.ans) {
+                          setQuizFb('correct');
+                          addXP(lang, 50);
+                          markStoryDone(scene.id);
+                          earnAchievement('story_chapter');
+                        } else {
+                          setQuizFb('wrong');
+                        }
+                      }}>
+                      {opts[i]}
+                    </ChoiceButton>
+                  ))}
+                </div>
+              );
+            })()}
             {quizFb === 'correct' && <div className="mt-2 p-2 rounded-lg bg-success-light text-success text-sm">✅ {tt('correct')} +50 XP</div>}
             {quizFb === 'wrong' && <div className="mt-2 p-2 rounded-lg bg-destructive/10 text-destructive text-sm">❌ {tt('try_again')}</div>}
           </div>

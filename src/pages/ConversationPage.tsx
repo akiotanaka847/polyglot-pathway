@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { CONVERSATION_DATA } from '@/data/conversations';
 import { getThemedConversations } from '@/data/convGenerate';
+import CONV_I18N from '@/data/content-fill/conv-i18n.json';
 import { getLangConfig } from '@/data/languages';
 import { translateLessonText } from '@/utils/lessonI18n';
 import { speakText } from '@/utils/helpers';
@@ -52,7 +53,7 @@ export default function ConversationPage() {
   const [input, setInput] = useState('');
 
   const config = getLangConfig(lang);
-  const tl = (s: string) => translateLessonText(s, nativeLang) || s;
+  const tl = (s: string) => (nativeLang !== 'es' && (CONV_I18N as Record<string, Record<string, string>>)[nativeLang]?.[s]) || translateLessonText(s, nativeLang) || s;
 
   const convs = useMemo(
     () => getThemedConversations(lang, CONVERSATION_DATA[lang] || []),

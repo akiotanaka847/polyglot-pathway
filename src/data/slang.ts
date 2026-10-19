@@ -164,3 +164,6 @@ export const SLANG_DATA: Record<string, SlangEntry[]> = {
     { id: 'de-s12', word: 'haha / lol', meaning: 'jajaja', example: 'lol das ist witzig — jaja eso es gracioso', literal: 'Igual que en inglés' },
   ],
 };
+
+import RO_SLANG from './content-fill/ro-slang.json';
+if (!SLANG_DATA.ro?.length) SLANG_DATA.ro = RO_SLANG as SlangEntry[];

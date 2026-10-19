@@ -72,3 +72,6 @@ export const CULTURE_DATA: Record<string, CultureCard[]> = {
     { id: 'es-c5', icon: '🌎', title: 'El español en el mundo', body: 'El español es la lengua materna de 500 millones de personas en 21 países. Es el segundo idioma más hablado como lengua nativa después del mandarín. Cada país tiene su acento y expresiones únicas: "chévere" (Venezuela), "mola" (España), "padre" (México).', fact: 'Estados Unidos tiene más hispanohablantes que España. Para 2060, se proyecta que EE.UU. será el país con más hispanohablantes del mundo.' },
   ],
 };
+
+import RO_CULTURE from './content-fill/ro-culture.json';
+if (!CULTURE_DATA.ro?.length) CULTURE_DATA.ro = RO_CULTURE as CultureCard[];

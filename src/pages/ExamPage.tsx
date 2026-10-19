@@ -46,7 +46,7 @@ export default function ExamPage() {
   const examForAi = EXAM_DATA[lang]?.[level];
   // AI translation for exam prose (questions, options, reading passages).
   const aiTexts = useMemo(() => {
-    if (!examForAi || nativeLang === 'es' || nativeLang === 'en') return [];
+    if (!examForAi || nativeLang === 'es') return [];
     const out: string[] = [];
     examForAi.sections.forEach(sec => {
       out.push(sec.name);

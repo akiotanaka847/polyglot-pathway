@@ -1,3 +1,4 @@
+import FILL_I18N from '@/data/content-fill/fill-i18n.json';
 // Runtime translation layer for hardcoded Spanish content across the app
 // All handcrafted content (lessons, exams, reference) is in Spanish base
 // This module translates at display time to the user's native language
@@ -774,6 +775,9 @@ const translationCache = new Map<string, string>();
 export function translateLessonText(text: string | undefined, nativeLang: string): string {
   if (!text) return '';
   if (nativeLang === 'es') return text;
+  // Audited, pre-translated copy for generated content (grammar fill, Romanian culture/story/slang)
+  const fixed = (FILL_I18N as Record<string, Record<string, string>>)[nativeLang]?.[text];
+  if (fixed) return fixed;
 
   const cacheKey = nativeLang + '\u0000' + text;
   const cached = translationCache.get(cacheKey);

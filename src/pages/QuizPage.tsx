@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { ActionBar, ChoiceButton, ExitButton, choiceState } from '@/components/lesson/LessonControls';
 import { useApp } from '@/contexts/AppContext';
-import { QUIZ_DATA } from '@/data/quizzes';
+import { getLevelQuiz, LevelQuizQuestion } from '@/data/levelQuiz';
 import { LEVELS } from '@/data/lessons/index';
 import { QuizQuestion } from '@/data/types';
 import { getLangConfig } from '@/data/languages';
@@ -18,7 +18,12 @@ export default function QuizPage() {
   const lvl = level || 'N5';
   const config = getLangConfig(l);
 
-  const [questions] = useState(() => shuffleArray(QUIZ_DATA[l]?.[lvl] || []).slice(0, 15));
+  const [questions] = useState<LevelQuizQuestion[]>(() => shuffleArray(getLevelQuiz(l, lvl, state.nativeLang || 'en')).slice(0, 15).map(qq => {
+    // Always randomize the answer order
+    if (qq.t !== 'mc' || !qq.opts) return qq;
+    const order = shuffleArray(qq.opts.map((_, i) => i));
+    return { ...qq, opts: order.map(i => qq.opts![i]), ans: order.indexOf(qq.ans as number) };
+  }));
   const [qIdx, setQIdx] = useState(0);
   const [score, setScore] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
@@ -43,9 +48,10 @@ export default function QuizPage() {
   const nativeLang = state.nativeLang || 'es';
   // AI translation for question prose/options the offline dictionary misses.
   const aiTexts = useMemo(() => {
-    if (nativeLang === 'es' || nativeLang === 'en') return [];
+    if (nativeLang === 'es') return [];
     const out: string[] = [];
-    questions.forEach((qq: QuizQuestion) => {
+    questions.forEach((qq) => {
+      if (qq.ready) return; // already in the learner's language
       out.push(qq.q);
       if (qq.opts) out.push(...qq.opts);
       if (typeof qq.ans === 'string') out.push(qq.ans);
@@ -55,11 +61,12 @@ export default function QuizPage() {
   const { tr: aiTr } = useAiTranslate(aiTexts, nativeLang);
   const tq = (text: string | undefined) => {
     if (!text) return '';
+    if (questions[qIdx]?.ready) return text;
     const ai = aiTr(text);
     return ai && ai !== text ? ai : translateLessonText(text, nativeLang);
   };
 
-  const q = questions[qIdx] as QuizQuestion | undefined;
+  const q = questions[qIdx] as LevelQuizQuestion | undefined;
 
   const handleCheck = useCallback(() => {
     if (!q) return;
@@ -177,7 +184,7 @@ export default function QuizPage() {
                 <ChoiceButton key={i} label={['A', 'B', 'C', 'D'][i]} hue={config.hue} disabled={locked}
                   state={choiceState(i, selected, q.ans as number, locked, feedback?.correct)}
                   onClick={() => setSelected(i)}>
-                  {aiTr(opt) !== opt ? aiTr(opt) : translateOption(opt, state.nativeLang)}
+                  {q.ready ? opt : aiTr(opt) !== opt ? aiTr(opt) : translateOption(opt, state.nativeLang)}
                 </ChoiceButton>
               ))}
             </div>
