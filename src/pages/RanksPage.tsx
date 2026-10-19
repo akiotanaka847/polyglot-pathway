@@ -15,7 +15,7 @@ export default function RanksPage() {
     <div className="animate-fade-in flex-1 overflow-y-auto">
       <div className="max-w-[600px] mx-auto px-4 py-5">
         <div className="flex items-center gap-2 mb-5">
-          <button onClick={() => navigate('/')} className="px-3 py-1 rounded-full border border-border text-sm">← {tt('go_home')}</button>
+          <button onClick={() => navigate('/')} className="inline-flex min-h-10 items-center px-4 py-2 rounded-full border border-border bg-card text-sm font-semibold hover:bg-card/80 active:scale-95 transition-all">← {tt('go_home')}</button>
           <span className="flex-1 text-center font-serif font-semibold">🏆 {tt('achievements')}</span>
         </div>
 

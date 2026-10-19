@@ -148,7 +148,7 @@ export default function ExamPage() {
     return (
       <div className="flex-1 flex items-center justify-center flex-col gap-3 p-6">
         <p className="text-foreground-secondary">{tt('coming_soon')}</p>
-        <button onClick={() => navigate('/exams')} className="px-4 py-2 rounded-full border border-border text-sm">← {tt('back')}</button>
+        <button onClick={() => navigate('/exams')} className="inline-flex min-h-10 items-center px-4 py-2 rounded-full border border-border bg-card text-sm font-semibold active:scale-95 transition-all">← {tt('back')}</button>
       </div>
     );
   }
