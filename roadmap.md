@@ -40,7 +40,7 @@
 - [x] Auditoría oct 2026: idioma elegido en Historias/Cultura/Repositorio/Simulacros, simulacros para todos los niveles, logros y secciones traducidos
 
 ## Oct 19 2026: lecciones en el idioma correcto + botones
-- [ ] Vocabulario propio por idioma y nivel (sin relleno en español)
-- [ ] Significados traducidos a los 11 idiomas nativos (nunca fallback a español)
-- [ ] Prueba automática de idioma en lecciones
-- [ ] Botones unificados (tamaño táctil, barra de acción fija, opciones claras, salida con diálogo propio)
+- [x] Vocabulario propio por idioma y nivel (sin relleno en español)
+- [x] Significados traducidos a los 11 idiomas nativos (nunca fallback a español)
+- [x] Prueba automática de idioma en lecciones
+- [x] Botones unificados (tamaño táctil, barra de acción fija, opciones claras, salida con diálogo propio)
