@@ -5,7 +5,8 @@ import { LANGUAGES } from '@/data/languages';
 import { STORIES } from '@/data/stories';
 import { STORY_I18N_EN } from '@/data/storyI18n';
 import { getLangConfig } from '@/data/languages';
-import { speakText } from '@/utils/helpers';
+import { speakText, shuffleArray } from '@/utils/helpers';
+import { ChoiceButton } from '@/components/lesson/LessonControls';
 import { translateLessonText, translateLessonTitle } from '@/utils/lessonI18n';
 import { useAiTranslate } from '@/hooks/useAiTranslate';
 
@@ -31,6 +32,12 @@ export default function StoryPage() {
   const [lang, setLang] = useState<string>(storyLangs.includes(state.currentLearningLang) ? state.currentLearningLang : (storyLangs[0] || 'jp'));
   const [activeScene, setActiveScene] = useState<{ ci: number; si: number } | null>(null);
   const [quizFb, setQuizFb] = useState<string | null>(null);
+  const [quizPick, setQuizPick] = useState<number | null>(null);
+  const quizOrder = useMemo(() => {
+    if (!activeScene) return [] as number[];
+    const n = STORIES[lang]?.chapters[activeScene.ci]?.scenes[activeScene.si]?.quiz.opts.length || 0;
+    return shuffleArray(Array.from({ length: n }, (_, i) => i));
+  }, [activeScene, lang]);
   const config = getLangConfig(lang);
   const story = STORIES[lang];
   const i18n = useStoryI18n(lang, state.nativeLang || 'es');
@@ -71,7 +78,7 @@ export default function StoryPage() {
     return (
       <div className="animate-fade-in flex-1 overflow-y-auto">
         <div className="max-w-[620px] mx-auto px-4 py-5">
-          <button onClick={() => { setActiveScene(null); setQuizFb(null); }} className="inline-flex min-h-10 items-center px-4 py-2 rounded-full border border-border bg-card text-sm font-semibold hover:bg-card/80 active:scale-95 transition-all text-foreground-secondary mb-4">← {tt('back')}</button>
+          <button onClick={() => { setActiveScene(null); setQuizFb(null); setQuizPick(null); }} className="inline-flex min-h-10 items-center px-4 py-2 rounded-full border border-border bg-card text-sm font-semibold hover:bg-card/80 active:scale-95 transition-all text-foreground-secondary mb-4">← {tt('back')}</button>
           <div className="rounded-[20px] overflow-hidden mb-4" style={{ background: scene.color }}>
             <div className="p-4 flex items-center gap-3.5">
               <span className="text-4xl">{scene.image_emoji}</span>
