@@ -114,21 +114,30 @@ function lookup(dict: Record<string, string> | undefined, mn: string): string | 
   return key ? dict[key] : null;
 }
 
-function translateMeaning(mn: string, nativeLang: string): string {
-  if (nativeLang === 'en') return mn;
+// Audited meaning glossaries: English key -> native language (one file per native language)
+const MEANING_FILES = import.meta.glob('../lessons/meanings/*.json', { eager: true, import: 'default' }) as Record<string, Record<string, string>>;
+const MEANINGS: Record<string, Record<string, string>> = {};
+const MEANINGS_LC: Record<string, Record<string, string>> = {};
+for (const [path, dict] of Object.entries(MEANING_FILES)) {
+  const code = path.split('/').pop()!.replace('.json', '');
+  MEANINGS[code] = dict;
+  MEANINGS_LC[code] = Object.fromEntries(Object.entries(dict).map(([k, v]) => [k.toLowerCase(), v]));
+}
+
+export function translateMeaning(mn: string, nativeLang: string): string {
+  if (!mn || nativeLang === 'en') return mn;
+  const glossary = MEANINGS[nativeLang]?.[mn] || MEANINGS_LC[nativeLang]?.[mn.toLowerCase()];
+  if (glossary) return glossary;
   const direct = lookup(MEANING_DICT[nativeLang], mn);
   if (direct) return direct;
-  // Chain: English meaning -> Spanish (base language of all content) -> native
-  const spanish = lookup(MEANING_DICT.es, mn);
-  if (spanish) {
-    if (nativeLang === 'es') return spanish;
-    const translated = translateLessonText(spanish, nativeLang);
-    if (translated && translated !== spanish) return translated;
-    return spanish;
-  }
-  // Last resort: try translating the English meaning itself
+  // Never fall back to another learner language: English is the neutral key.
   const viaEn = translateLessonText(mn, nativeLang);
   return viaEn || mn;
+}
+
+export function hasMeaning(mn: string, nativeLang: string): boolean {
+  if (nativeLang === 'en') return true;
+  return !!(MEANINGS[nativeLang]?.[mn] || MEANINGS_LC[nativeLang]?.[mn.toLowerCase()] || lookup(MEANING_DICT[nativeLang], mn));
 }
 
 // Question template translations
@@ -221,6 +230,14 @@ const LESSON_I18N: Record<string, LessonTemplates> = {
     noteTemplate: '$2 में $1।',
     review: 'दोहराई',
     unitNames: ['आधार','अभिवादन और शिष्टाचार','संख्या और समय','परिचय','रंग और विशेषण','दिन और महीने','खाना और पीना','शरीर','कपड़े और फैशन','घर','परिवहन','मौसम और प्रकृति','पेशे','खरीदारी और पैसा','आवश्यक क्रियाएँ','बुनियादी व्याकरण','जीवन रक्षा','जानवर और दोहराई'],
+  },
+  ro: {
+    whatIsInLang: '„$1" în $2?',
+    writeInLang: 'Scrie „$1" în $2:',
+    whatMeans: 'Ce înseamnă „$1"?',
+    noteTemplate: '$1 în $2.',
+    review: 'Recapitulare',
+    unitNames: ['Fundamente','Salutări și politețe','Numere și timp','Prezentări','Culori și adjective','Zile și luni','Mâncare și băuturi','Corpul','Haine și modă','Casa','Transport','Vreme și natură','Profesii','Cumpărături și bani','Verbe esențiale','Gramatică de bază','Supraviețuire','Animale și recapitulare'],
   },
 };
 
