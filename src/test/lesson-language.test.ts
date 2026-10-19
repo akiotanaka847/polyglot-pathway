@@ -17,6 +17,8 @@ function bankWords(code: string): Set<string> {
 }
 
 const OWN = Object.fromEntries(codes.map(c => [c, bankWords(c)]));
+// Real cognates spelled the same in several languages
+const COGNATES = new Set(['doctor', 'recibo']);
 
 describe('lessons stay in the language being learned', () => {
   it('every language has its own bank for every level', () => {
@@ -32,7 +34,7 @@ describe('lessons stay in the language being learned', () => {
       for (const target of codes) {
         if (target === native) continue;
         const foreign = new Set<string>();
-        codes.filter(c => c !== target).forEach(c => OWN[c].forEach(w => { if (w.length > 3 && !OWN[target].has(w)) foreign.add(w); }));
+        codes.filter(c => c !== target).forEach(c => OWN[c].forEach(w => { if (w.length > 3 && !OWN[target].has(w) && !COGNATES.has(w)) foreign.add(w); }));
         Object.entries(data[target]).forEach(([lv, lessons]) => lessons.forEach(l => l.steps.forEach((s: any) => {
           if (s.t === 'th' && foreign.has(String(s.char).toLowerCase())) problems.push(`${target} ${lv} ${l.id}: ${s.char}`);
         })));
