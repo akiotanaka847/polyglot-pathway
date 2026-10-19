@@ -96,3 +96,17 @@ describe('conversation topics are translated for every native language', () => {
     expect(missing.slice(0, 10)).toEqual([]);
   });
 });
+
+import FILL_I18N from '@/data/content-fill/fill-i18n.json';
+import RO_CULTURE from '@/data/content-fill/ro-culture.json';
+describe('generated content has fixed translations', () => {
+  it('every Romanian culture text is translated into all 10 help languages', () => {
+    const fill = FILL_I18N as Record<string, Record<string, string>>;
+    for (const nat of ['en','fr','pt','jp','zh','ko','ru','ar','hi','ro']) {
+      for (const c of RO_CULTURE as { title: string; body: string }[]) {
+        expect(fill[nat][c.title], `${nat}: ${c.title}`).toBeTruthy();
+        expect(fill[nat][c.body], `${nat}: ${c.body.slice(0, 30)}`).toBeTruthy();
+      }
+    }
+  });
+});
