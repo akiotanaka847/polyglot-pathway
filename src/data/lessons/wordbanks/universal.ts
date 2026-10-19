@@ -308,3 +308,17 @@ export function extendBank(base: LevelWordbank, extra: Partial<LevelWordbank>): 
   });
   return result;
 }
+
+// ==================== PER-LEVEL BANKS (every learnable language) ====================
+// levels/<code>.json holds one audited bank per level index (0 = first level).
+const LEVEL_FILES = import.meta.glob('./levels/*.json', { eager: true, import: 'default' }) as Record<string, Record<string, Record<string, WordEntry[]>>>;
+const LEVEL_BANKS: Record<string, Record<string, Record<string, WordEntry[]>>> = {};
+for (const [path, data] of Object.entries(LEVEL_FILES)) {
+  LEVEL_BANKS[path.split('/').pop()!.replace('.json', '')] = data;
+}
+
+/** Bank for one language at one level index, always in that language. */
+export function getLevelBank(langCode: string, levelIdx: number): LevelWordbank | null {
+  const lv = LEVEL_BANKS[langCode]?.[String(levelIdx)];
+  return lv ? toWordbank(lv) : null;
+}

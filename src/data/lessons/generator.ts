@@ -115,7 +115,7 @@ function lookup(dict: Record<string, string> | undefined, mn: string): string | 
 }
 
 // Audited meaning glossaries: English key -> native language (one file per native language)
-const MEANING_FILES = import.meta.glob('../lessons/meanings/*.json', { eager: true, import: 'default' }) as Record<string, Record<string, string>>;
+const MEANING_FILES = import.meta.glob('./meanings/*.json', { eager: true, import: 'default' }) as Record<string, Record<string, string>>;
 const MEANINGS: Record<string, Record<string, string>> = {};
 const MEANINGS_LC: Record<string, Record<string, string>> = {};
 for (const [path, dict] of Object.entries(MEANING_FILES)) {
