@@ -250,7 +250,7 @@ export default function LessonPage() {
           {medal.icon}
         </div>
         <h2 className="font-serif text-3xl font-light mb-1">{medal.label}</h2>
-        <p className="text-sm text-foreground-secondary mb-5">{tlTitle(lesson.title)}</p>
+        <p className="text-sm text-foreground-secondary mb-5">{aiTr(lesson.title) !== lesson.title ? aiTr(lesson.title) : tlTitle(lesson.title)}</p>
 
         <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full font-bold text-lg mb-6 animate-pop-in shadow-md"
           style={{ background: `linear-gradient(135deg, hsl(${config.hue}, 70%, 46%), hsl(${config.hue}, 80%, 56%))`, color: 'white' }}>
@@ -354,7 +354,7 @@ export default function LessonPage() {
             </div>
             <div className="flex-1 min-w-0">
               <div className="font-serif text-sm font-semibold truncate" style={{ color: `hsl(${config.hue}, 85%, 80%)` }}>
-                {tlTitle(lesson.title)}
+                {aiTr(lesson.title) !== lesson.title ? aiTr(lesson.title) : tlTitle(lesson.title)}
               </div>
               {lesson.unit && (
                 <div className="text-[0.65rem] text-foreground-muted">{lesson.unit.emoji} {tl(lesson.unit.name)}</div>
