@@ -46,17 +46,22 @@ export default function StoryPage() {
   // Long narration cannot be covered by the offline dictionary: translate it with AI.
   const aiTexts = useMemo(() => {
     const s = STORIES[lang];
-    if (!s || nat === 'es' || nat === 'en') return [];
-    const out: string[] = [s.subtitle];
+    // English speakers use the curated English overlay when it exists for this story
+    if (!s || nat === 'es' || (nat === 'en' && STORY_I18N_EN[lang])) return [];
+    const sceneTexts = (sc: (typeof s.chapters)[number]['scenes'][number]) => {
+      const out: string[] = [sc.title, sc.setting, sc.lesson, sc.quiz.q, ...sc.quiz.opts, ...(sc.vocab || [])];
+      sc.dialogue.forEach(d => { if (d.tr) out.push(d.tr); });
+      return out;
+    };
+    // The open scene goes first so it is translated before everything else
+    const first = activeScene ? sceneTexts(s.chapters[activeScene.ci].scenes[activeScene.si]) : [];
+    const out: string[] = [...first, s.subtitle];
     s.chapters.forEach(ch => {
       out.push(ch.title);
-      ch.scenes.forEach(sc => {
-        out.push(sc.title, sc.setting, sc.lesson, sc.quiz.q, ...sc.quiz.opts);
-        sc.dialogue.forEach(d => { if (d.tr) out.push(d.tr); });
-      });
+      ch.scenes.forEach(sc => out.push(...sceneTexts(sc)));
     });
     return [...new Set(out.filter(Boolean))];
-  }, [lang, nat]);
+  }, [lang, nat, activeScene]);
   const { tr, loading: aiLoading } = useAiTranslate(aiTexts, nat);
 
 
@@ -117,7 +122,7 @@ export default function StoryPage() {
           <div className="flex flex-wrap gap-1.5 mb-4">
             {scene.vocab.map(v => (
               <button key={v} onClick={() => speakText(v, lang)} className="px-2.5 py-1 rounded-full bg-background border border-border text-[0.75rem] hover:shadow-sm transition-colors">
-                {v} 🔊
+                {tr(v)} 🔊
               </button>
             ))}
           </div>
