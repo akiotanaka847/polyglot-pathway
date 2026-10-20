@@ -223,7 +223,7 @@ export default function SpeakingPage() {
 
       <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[0.9fr_1.1fr]">
         <section className={`${glass} flex min-h-[320px] flex-col items-center justify-center rounded-3xl p-5 text-center`}>
-          <div className="mb-2 flex items-center gap-2 text-xs font-bold text-coach"><span className="h-2 w-2 rounded-full bg-coach" />{u('coach')}</div>
+          <div className="mb-2 flex items-center gap-2 text-xs font-bold text-coach"><span className="h-2 w-2 rounded-full bg-coach" />{persona.avatar} {persona.name} · {u('coach')}</div>
           <VoiceOrb mode={isListening ? 'listening' : (loading || isTranscribing) ? 'speaking' : 'idle'} hue={config.hue} onClick={() => coach?.reply && speakText(coach.reply, lang)} label={u('speak')} />
           {isListening && <div className="mt-3 flex items-end justify-center gap-1" aria-label={u('speak')}>
             {[.25,.5,.75,1,.65,.4,.8].map((threshold, index) => <span key={index} className="animate-speaking-wave w-1 rounded-full bg-secondary" style={{ height: `${12 + Math.max(micLevel, threshold) * 24}px`, animationDelay: `${index * -90}ms` }} />)}
