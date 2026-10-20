@@ -20,7 +20,7 @@ Deno.serve(async (req) => {
   try {
     const body = await req.json() as {
       said?: string; lang?: string; native?: string; topic?: string;
-      level?: string; history?: Turn[]; noSpeech?: boolean;
+      level?: string; history?: Turn[]; noSpeech?: boolean; persona?: string;
       mistakes?: { wrong?: string; right?: string }[];
     };
     const said = (body.said || "").trim();
@@ -61,7 +61,7 @@ Reply ONLY with JSON in exactly this shape, no markdown:
   "replyMeaning": "translation into ${native}",
   "tip": "warm encouragement in ${native}"
 }`
-      : `You are a real human friend chatting with someone who is learning ${target}.
+      : `${body.persona ? `Your name is ${String(body.persona).slice(0, 30)}. ` : ""}You are a real human friend chatting with someone who is learning ${target}.
 You are NOT a robot, NOT a quiz, NOT a teacher reading a script. You are a friendly person around their age
 having a genuine conversation. Their native language is ${native}. Level: ${body.level || "beginner"}.
 Conversation topic: ${body.topic || "anything they want to talk about"}.
@@ -88,7 +88,7 @@ Reply ONLY with JSON in exactly this shape, no markdown:
   ],
   "reply": "your human reaction + one follow-up question, in ${target}",
   "replyMeaning": "your reply translated into ${native}",
-  "tip": "encouragement and one concrete tip, in ${native}"
+  "tip": "encouragement and one concrete tip, in ${native}; if there were corrections, end with a model sentence they can copy"
 }`;
 
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {

@@ -115,7 +115,7 @@ export function FreeTalk({ lang, nativeLang, level, onXP }: Props) {
       <Button variant="ghost" size="sm" className="mt-2" onClick={shuffle} disabled={mic.isListening || busy}><Shuffle />{t.other}</Button>
     </div>
     <div className="flex flex-col items-center gap-4">
-      {mic.isListening ? <Ring seconds={Math.round(mic.seconds / 4)} /> : <VoiceOrb state={busy || mic.isTranscribing ? 'thinking' : 'idle'} />}
+      {mic.isListening ? <Ring seconds={Math.round(mic.seconds / 4)} /> : <VoiceOrb hue={190} mode={busy || mic.isTranscribing ? 'thinking' : 'idle'} />}
       {busy || mic.isTranscribing ? <p className="text-sm text-foreground-secondary">{t.evaluating}</p> :
         <Button size="lg" variant={mic.isListening ? 'destructive' : 'default'} disabled={!mic.isSupported} onClick={() => { if (mic.isListening) void mic.stop(); else { setEv(null); void mic.start(); } }}>
           {mic.isListening ? <Square /> : <Mic />}{mic.isListening ? t.stop : ev ? t.again : t.speak60}
@@ -187,7 +187,7 @@ export function DailyTest({ lang, nativeLang, level, onXP }: Props) {
         : <p className="mt-2 font-display text-2xl font-bold">{getSpeakTopicTitle(item.topicId, nativeLang)}</p>}
     </div>
     <div className="flex flex-col items-center gap-3">
-      <VoiceOrb state={mic.isListening ? 'listening' : busy || mic.isTranscribing ? 'thinking' : 'idle'} />
+      <VoiceOrb hue={190} mode={mic.isListening ? 'listening' : busy || mic.isTranscribing ? 'thinking' : 'idle'} />
       {!feedback && <Button size="lg" variant={mic.isListening ? 'destructive' : 'default'} disabled={busy || mic.isTranscribing || !mic.isSupported} onClick={() => mic.isListening ? void mic.stop() : void mic.start()}>
         {mic.isListening ? <Square /> : <Mic />}{mic.isListening ? t.stop : item.kind === 'repeat' ? t.repeat : t.answer}
       </Button>}
