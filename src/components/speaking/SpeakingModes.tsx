@@ -189,7 +189,7 @@ export function DailyTest({ lang, nativeLang, level, onXP }: Props) {
     <div className="flex flex-col items-center gap-3">
       <VoiceOrb state={mic.isListening ? 'listening' : busy || mic.isTranscribing ? 'thinking' : 'idle'} />
       {!feedback && <Button size="lg" variant={mic.isListening ? 'destructive' : 'default'} disabled={busy || mic.isTranscribing || !mic.isSupported} onClick={() => mic.isListening ? void mic.stop() : void mic.start()}>
-        {mic.isListening ? <Square /> : <Mic />}{mic.isListening ? t.stop : t.chat === 'Chat' ? 'Speak' : t.repeat.split(' ')[0]}
+        {mic.isListening ? <Square /> : <Mic />}{mic.isListening ? t.stop : item.kind === 'repeat' ? t.repeat : t.answer}
       </Button>}
       {busy && <p className="text-sm text-foreground-secondary">{t.evaluating}</p>}
       {mic.micError && <p className="text-sm text-destructive">{mic.micError}</p>}
