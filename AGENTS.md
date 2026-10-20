@@ -5,3 +5,4 @@
 - Vocabulary meanings resolve through `src/data/lessons/meanings/<native>.json` keyed by the English gloss, with English (never Spanish) as the last fallback; `src/test/lesson-language.test.ts` guards both rules.
 - Lesson, quiz and exam answer UI uses the shared `components/lesson/LessonControls` (ChoiceButton, ActionBar, ExitButton) so touch sizes and feedback stay consistent.
 - Generated Spanish-base content (content-fill) is pre-translated in `content-fill/fill-i18n.json`, checked first by `translateLessonText` and `useAiTranslate`, so it never depends on live AI; English speakers get the same fallback as everyone else.
+- Speaking scoring rules (band 1-9, 60s monologue, retry similarity, daily set, streak) live in pure helpers in `src/utils/speakEval.ts`, guarded by `src/test/speak-eval.test.ts`, so UI and backend cannot drift.

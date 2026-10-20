@@ -11,6 +11,8 @@ import { MicHelpCard } from '@/components/MicHelpCard';
 import { micMessages } from '@/data/micMessages';
 import { supabase } from '@/integrations/supabase/client';
 import VoiceOrb from '@/components/VoiceOrb';
+import { DailyTest, FreeTalk, modeLabel } from '@/components/speaking/SpeakingModes';
+import { getPersona } from '@/data/coachPersonas';
 import { Button } from '@/components/ui/button';
 import { Conversation, ConversationContent, ConversationScrollButton } from '@/components/ai-elements/conversation';
 import { Message, MessageContent, MessageResponse } from '@/components/ai-elements/message';
@@ -61,6 +63,8 @@ export default function SpeakingPage() {
     try { return JSON.parse(localStorage.getItem(STORE) || '[]'); } catch { return []; }
   });
   const [showSaved, setShowSaved] = useState(false);
+  const [mode, setMode] = useState<'chat' | 'free' | 'daily'>('chat');
+  const persona = getPersona(lang);
   const spokenRef = useRef('');
 
   const activeTopic = topic ? `${topic.id}: ${topic.prompt}` : customTopic;
@@ -75,7 +79,7 @@ export default function SpeakingPage() {
     setTurns(current => [...current, { role: 'user', text }]);
     try {
       const { data, error: invokeError } = await supabase.functions.invoke('speak-coach', {
-        body: { said: text, lang, native: nativeLang, topic: activeTopic, level, history, mistakes: saved.slice(-8) },
+        body: { said: text, lang, native: nativeLang, topic: activeTopic, level, history, persona: persona.name, mistakes: saved.slice(-8) },
       });
       if (invokeError || (data as { error?: string })?.error) throw new Error(invokeError?.message || (data as { error?: string }).error);
       const reply = data as CoachReply;
@@ -168,6 +172,15 @@ export default function SpeakingPage() {
           </div>
         </header>
 
+        <div className={`${glass} mb-6 grid grid-cols-3 gap-1 rounded-2xl p-1`} role="tablist">
+          {(['free', 'chat', 'daily'] as const).map(m => <Button key={m} role="tab" aria-selected={mode === m} variant={mode === m ? 'default' : 'ghost'} className="h-11 rounded-xl" onClick={() => setMode(m)}>
+            {m === 'free' ? '⏱️' : m === 'chat' ? persona.avatar : '🔥'} {modeLabel(nativeLang, m)}
+          </Button>)}
+        </div>
+        {mode === 'free' && <FreeTalk key={lang} lang={lang} nativeLang={nativeLang} level={level} onXP={n => addXP(lang, n)} />}
+        {mode === 'daily' && <DailyTest key={lang} lang={lang} nativeLang={nativeLang} level={level} onXP={n => addXP(lang, n)} />}
+        {mode === 'chat' && <>
+        <div className={`${glass} mb-4 flex items-center gap-3 rounded-2xl p-3`}><span className="text-3xl">{persona.avatar}</span><div><p className="font-display font-bold">{persona.name}</p><p className="text-xs text-foreground-muted">{u('coach')}</p></div></div>
         <PromptInput onSubmit={({ text }) => { if (text.trim()) { setCustomTopic(text.trim()); setTurns([]); } }} className={`${glass} mb-6 rounded-2xl`}>
           <PromptInputTextarea placeholder={u('own')} className="h-12 min-h-0 py-3" />
           <PromptInputFooter className="justify-end"><PromptInputSubmit aria-label={u('start')} /></PromptInputFooter>
@@ -195,6 +208,7 @@ export default function SpeakingPage() {
             </Button>;
           })}
         </div>
+        </>}
       </div>
     </div>;
   }
@@ -209,7 +223,7 @@ export default function SpeakingPage() {
 
       <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[0.9fr_1.1fr]">
         <section className={`${glass} flex min-h-[320px] flex-col items-center justify-center rounded-3xl p-5 text-center`}>
-          <div className="mb-2 flex items-center gap-2 text-xs font-bold text-coach"><span className="h-2 w-2 rounded-full bg-coach" />{u('coach')}</div>
+          <div className="mb-2 flex items-center gap-2 text-xs font-bold text-coach"><span className="h-2 w-2 rounded-full bg-coach" />{persona.avatar} {persona.name} · {u('coach')}</div>
           <VoiceOrb mode={isListening ? 'listening' : (loading || isTranscribing) ? 'speaking' : 'idle'} hue={config.hue} onClick={() => coach?.reply && speakText(coach.reply, lang)} label={u('speak')} />
           {isListening && <div className="mt-3 flex items-end justify-center gap-1" aria-label={u('speak')}>
             {[.25,.5,.75,1,.65,.4,.8].map((threshold, index) => <span key={index} className="animate-speaking-wave w-1 rounded-full bg-secondary" style={{ height: `${12 + Math.max(micLevel, threshold) * 24}px`, animationDelay: `${index * -90}ms` }} />)}

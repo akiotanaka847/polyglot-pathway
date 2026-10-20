@@ -61,7 +61,10 @@ export function useSpeechRecognition(
   lang: string,
   onTranscript?: (text: string) => void | Promise<void>,
   messages?: Partial<MicMessages>,
+  options?: { monologue?: boolean; maxMs?: number },
 ) {
+  const monologue = !!options?.monologue;
+  const maxMs = options?.maxMs ?? MAX_RECORDING_MS;
   const msgsRef = useRef<MicMessages>({ ...DEFAULT_MESSAGES, ...messages });
   useEffect(() => { msgsRef.current = { ...DEFAULT_MESSAGES, ...messages }; }, [messages]);
   const [transcript, setTranscript] = useState('');
@@ -191,8 +194,9 @@ export function useSpeechRecognition(
         const active = recorderRef.current;
         if (!active || stoppingRef.current) return;
         const now = Date.now();
-        if ((active.heardVoice && now - active.lastVoiceAt >= SILENCE_AFTER_SPEECH_MS)
-          || now - startedAt >= MAX_RECORDING_MS) {
+        if ((!monologue && active.heardVoice && now - active.lastVoiceAt >= SILENCE_AFTER_SPEECH_MS)
+          || (monologue && active.heardVoice && now - active.lastVoiceAt >= 6_000)
+          || now - startedAt >= maxMs) {
           void stopRef.current();
         } else if (!active.heardVoice && now - startedAt >= NO_SPEECH_MS) {
           void stopRef.current();
@@ -214,7 +218,7 @@ export function useSpeechRecognition(
       setIsListening(false);
       cleanupMeters();
     }
-  }, [isSupported, cleanupMeters]);
+  }, [isSupported, cleanupMeters, monologue, maxMs]);
 
   const stop = useCallback(async () => {
     const recording = recorderRef.current;
