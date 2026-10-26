@@ -24,3 +24,10 @@ describe('speaking evaluation rules', () => {
     expect(nextStreak({ last: '2026-10-15', streak: 3 }, '2026-10-20')).toBe(1);
   });
 });
+
+import { levelRules } from '@/utils/speakEval';
+describe('levelRules', () => {
+  it('beginner: 1 correction, translation always', () => expect(levelRules('beginner')).toEqual({ maxCorrections: 1, showTranslation: 'always' }));
+  it('intermediate: 2 corrections, tap to see', () => expect(levelRules('intermediate')).toEqual({ maxCorrections: 2, showTranslation: 'tap' }));
+  it('advanced: 4 corrections, no translation', () => expect(levelRules('advanced')).toEqual({ maxCorrections: 4, showTranslation: 'never' }));
+});

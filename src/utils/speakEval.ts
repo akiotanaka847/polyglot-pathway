@@ -72,3 +72,11 @@ export function nextStreak(prev: { last?: string; streak?: number } | undefined,
   const diff = Math.round((Date.parse(today) - Date.parse(prev.last)) / 86_400_000);
   return diff === 1 ? (prev.streak || 0) + 1 : 1;
 }
+
+export type ChatLevel = 'beginner' | 'intermediate' | 'advanced';
+/** How much correction / help each chosen level gets in the live chat. */
+export function levelRules(level: ChatLevel): { maxCorrections: number; showTranslation: 'always' | 'tap' | 'never' } {
+  if (level === 'advanced') return { maxCorrections: 4, showTranslation: 'never' };
+  if (level === 'intermediate') return { maxCorrections: 2, showTranslation: 'tap' };
+  return { maxCorrections: 1, showTranslation: 'always' };
+}
