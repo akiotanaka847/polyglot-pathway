@@ -1,4 +1,5 @@
 import { getLangConfig } from '@/data/languages';
+import { extractTarget } from '@/utils/ttsGuard';
 
 // Cache of best available voices per language
 let voiceCache: Record<string, SpeechSynthesisVoice | null> = {};
@@ -60,8 +61,9 @@ function getBestVoice(langCode: string): SpeechSynthesisVoice | null {
 }
 
 export function speakText(text: string, lang: string) {
-  if (!window.speechSynthesis) return;
-  const clean = text.replace(/<[^>]*>/g, '').replace(/[()（）]/g, '');
+  if (!window.speechSynthesis || !text) return;
+  // Never read text in another language with this voice (no "Spanish with a Japanese accent").
+  const clean = extractTarget(text, lang);
   if (!clean) return;
   window.speechSynthesis.cancel();
 
