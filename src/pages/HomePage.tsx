@@ -163,7 +163,7 @@ export default function HomePage() {
         {/* Quick links */}
         {hasProgress && (
           <div className="px-5 pb-8 lg:px-8">
-            <button onClick={() => navigate('/conversation')}
+            <button onClick={() => navigate('/speaking')}
               className="w-full mb-3 border-2 rounded-3xl p-4 flex items-center gap-4 text-left hover:shadow-xl hover:-translate-y-1 transition-all"
               style={{ borderColor: 'hsl(var(--neon-violet))', background: 'linear-gradient(135deg, hsl(258, 55%, 22%), hsl(330, 50%, 22%))', boxShadow: '0 0 30px hsl(var(--neon-violet) / 0.35)' }}>
               <span className="text-4xl">🎙️</span>
