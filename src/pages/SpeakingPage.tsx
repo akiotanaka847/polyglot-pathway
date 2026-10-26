@@ -23,8 +23,25 @@ import { Shimmer } from '@/components/ai-elements/shimmer';
  type CoachReply = {
   score: number; better: string; corrections: Correction[];
   reply: string; replyMeaning: string; tip: string; noSpeech?: boolean;
+  scores?: Scores | null; opener?: boolean;
 };
- type Turn = { role: 'user' | 'coach'; text: string; meaning?: string };
+ type Scores = { grammar: number; vocabulary: number; fluency: number; pronunciation: number };
+ type Turn = { role: 'user' | 'coach'; text: string; meaning?: string; scores?: Scores | null };
+
+const X: Record<string, Record<string, string>> = {
+  es: { cta: 'Empezar a hablar', ctaSub: 'Voxia te saluda, te propone un tema y te hace preguntas. Vos solo respondé.', other: 'Otro tema', end: 'Terminar', summary: 'Tu resumen', avg: 'Nota media', mistakes: 'A practicar', mins: 'min hablando', again: 'Seguir hablando', tr: 'Ver traducción', grammar: 'Gramática', vocabulary: 'Vocabulario', fluency: 'Fluidez', pronunciation: 'Pronunciación', more: 'Otras prácticas' },
+  en: { cta: 'Start talking', ctaSub: 'Voxia greets you, picks a topic and asks you questions. You just answer.', other: 'New topic', end: 'Finish', summary: 'Your summary', avg: 'Average band', mistakes: 'To practise', mins: 'min speaking', again: 'Keep talking', tr: 'Show translation', grammar: 'Grammar', vocabulary: 'Vocabulary', fluency: 'Fluency', pronunciation: 'Pronunciation', more: 'Other practice' },
+  fr: { cta: 'Commencer à parler', ctaSub: 'Voxia te salue, choisit un thème et te pose des questions. Tu réponds.', other: 'Autre thème', end: 'Terminer', summary: 'Ton résumé', avg: 'Note moyenne', mistakes: 'À pratiquer', mins: 'min de parole', again: 'Continuer', tr: 'Voir la traduction', grammar: 'Grammaire', vocabulary: 'Vocabulaire', fluency: 'Aisance', pronunciation: 'Prononciation', more: 'Autres pratiques' },
+  pt: { cta: 'Começar a falar', ctaSub: 'A Voxia cumprimenta, escolhe um tema e faz perguntas. Você só responde.', other: 'Outro tema', end: 'Terminar', summary: 'Seu resumo', avg: 'Nota média', mistakes: 'Para praticar', mins: 'min falando', again: 'Continuar', tr: 'Ver tradução', grammar: 'Gramática', vocabulary: 'Vocabulário', fluency: 'Fluência', pronunciation: 'Pronúncia', more: 'Outras práticas' },
+  zh: { cta: '开始对话', ctaSub: 'Voxia 会打招呼、选话题并向你提问，你只需回答。', other: '换个话题', end: '结束', summary: '你的总结', avg: '平均分', mistakes: '需要练习', mins: '分钟口语', again: '继续聊', tr: '查看翻译', grammar: '语法', vocabulary: '词汇', fluency: '流利度', pronunciation: '发音', more: '其他练习' },
+  jp: { cta: '話し始める', ctaSub: 'Voxiaがあいさつして話題を出し、質問します。答えるだけでOK。', other: '別の話題', end: '終わる', summary: 'まとめ', avg: '平均スコア', mistakes: '練習ポイント', mins: '分話した', again: '続ける', tr: '翻訳を見る', grammar: '文法', vocabulary: '語彙', fluency: '流暢さ', pronunciation: '発音', more: 'ほかの練習' },
+  ko: { cta: '대화 시작', ctaSub: 'Voxia가 인사하고 주제를 정해 질문해요. 대답만 하면 돼요.', other: '다른 주제', end: '끝내기', summary: '요약', avg: '평균 점수', mistakes: '연습할 점', mins: '분 말하기', again: '계속하기', tr: '번역 보기', grammar: '문법', vocabulary: '어휘', fluency: '유창성', pronunciation: '발음', more: '다른 연습' },
+  ru: { cta: 'Начать разговор', ctaSub: 'Voxia здоровается, выбирает тему и задаёт вопросы. Ты просто отвечаешь.', other: 'Другая тема', end: 'Закончить', summary: 'Итоги', avg: 'Средний балл', mistakes: 'Потренировать', mins: 'мин речи', again: 'Продолжить', tr: 'Показать перевод', grammar: 'Грамматика', vocabulary: 'Лексика', fluency: 'Беглость', pronunciation: 'Произношение', more: 'Другие практики' },
+  ar: { cta: 'ابدأ الحديث', ctaSub: 'تحييك Voxia وتختار موضوعًا وتسألك. فقط أجب.', other: 'موضوع آخر', end: 'إنهاء', summary: 'ملخصك', avg: 'المعدل', mistakes: 'للتدريب', mins: 'دقيقة تحدث', again: 'تابع', tr: 'عرض الترجمة', grammar: 'القواعد', vocabulary: 'المفردات', fluency: 'الطلاقة', pronunciation: 'النطق', more: 'تدريبات أخرى' },
+  hi: { cta: 'बात शुरू करें', ctaSub: 'Voxia नमस्ते कहेगी, विषय चुनेगी और सवाल पूछेगी। आप बस जवाब दें।', other: 'दूसरा विषय', end: 'समाप्त', summary: 'सारांश', avg: 'औसत अंक', mistakes: 'अभ्यास करें', mins: 'मिनट बोले', again: 'जारी रखें', tr: 'अनुवाद देखें', grammar: 'व्याकरण', vocabulary: 'शब्दावली', fluency: 'प्रवाह', pronunciation: 'उच्चारण', more: 'अन्य अभ्यास' },
+  ro: { cta: 'Începe să vorbești', ctaSub: 'Voxia te salută, alege o temă și îți pune întrebări. Tu doar răspunzi.', other: 'Altă temă', end: 'Termină', summary: 'Rezumatul tău', avg: 'Nota medie', mistakes: 'De exersat', mins: 'min vorbit', again: 'Continuă', tr: 'Vezi traducerea', grammar: 'Gramatică', vocabulary: 'Vocabular', fluency: 'Fluență', pronunciation: 'Pronunție', more: 'Alte exerciții' },
+};
+const SCORE_KEYS = ['grammar', 'vocabulary', 'fluency', 'pronunciation'] as const;
 
 const STORE = 'voxia-speak-corrections';
 
@@ -48,7 +65,7 @@ export default function SpeakingPage() {
   const navigate = useNavigate();
   const { state, addXP, recordAnswer, getAbility } = useApp();
   const nativeLang = state.nativeLang || 'es';
-  const u = (key: string) => UI[nativeLang]?.[key] || UI.es[key];
+  const u = (key: string) => UI[nativeLang]?.[key] || X[nativeLang]?.[key] || UI.en[key] || X.en[key];
   const lang = state.currentLearningLang || state.activeLangs[state.activeLangs.length - 1] || 'en';
   const config = getLangConfig(lang);
   const nativeConfig = getLangConfig(nativeLang);
@@ -66,6 +83,10 @@ export default function SpeakingPage() {
   const [mode, setMode] = useState<'chat' | 'free' | 'daily'>('chat');
   const persona = getPersona(lang);
   const spokenRef = useRef('');
+  const [showTr, setShowTr] = useState<Record<number, boolean>>({});
+  const [summary, setSummary] = useState(false);
+  const [sessionMistakes, setSessionMistakes] = useState<Correction[]>([]);
+  const startedAt = useRef(0);
 
   const activeTopic = topic ? `${topic.id}: ${topic.prompt}` : customTopic;
   const topicTitle = topic ? getSpeakTopicTitle(topic.id, nativeLang) : customTopic;
@@ -77,6 +98,7 @@ export default function SpeakingPage() {
     setLoading(true); setError(null); setCoach(null);
     const history = turns.slice(-8);
     setTurns(current => [...current, { role: 'user', text }]);
+    if (!startedAt.current) startedAt.current = Date.now();
     try {
       const { data, error: invokeError } = await supabase.functions.invoke('speak-coach', {
         body: { said: text, lang, native: nativeLang, topic: activeTopic, level, history, persona: persona.name, mistakes: saved.slice(-8) },
@@ -84,7 +106,12 @@ export default function SpeakingPage() {
       if (invokeError || (data as { error?: string })?.error) throw new Error(invokeError?.message || (data as { error?: string }).error);
       const reply = data as CoachReply;
       setCoach(reply);
-      setTurns(current => [...current, { role: 'coach', text: reply.reply, meaning: reply.replyMeaning }]);
+      setTurns(current => {
+        const next = [...current];
+        for (let i = next.length - 1; i >= 0; i--) if (next[i].role === 'user') { next[i] = { ...next[i], scores: reply.scores }; break; }
+        return [...next, { role: 'coach', text: reply.reply, meaning: reply.replyMeaning }];
+      });
+      if (reply.corrections?.length) setSessionMistakes(m => [...m, ...reply.corrections]);
       const clean = !reply.corrections?.length;
       recordAnswer(lang, clean);
       addXP(lang, clean ? 40 : 25);
@@ -114,6 +141,24 @@ export default function SpeakingPage() {
     finally { setLoading(false); }
   }
 
+  async function startChat(change = false) {
+    const pool = SPEAK_TOPICS.filter(t => t.level === (level === 'advanced' ? 3 : level === 'intermediate' ? 2 : 1));
+    const candidates = (pool.length ? pool : SPEAK_TOPICS).filter(t => t.id !== topic?.id);
+    const next = candidates[Math.floor(Math.random() * candidates.length)];
+    setTopic(next); setCoach(null); setError(null); setSummary(false); setLoading(true);
+    if (!change) { setTurns([]); setSessionMistakes([]); startedAt.current = 0; }
+    try {
+      const { data, error: invokeError } = await supabase.functions.invoke('speak-coach', {
+        body: { opener: true, lang, native: nativeLang, topic: `${next.id}: ${next.prompt}`, level, persona: persona.name, history: change ? turns.slice(-6) : [] },
+      });
+      if (invokeError || (data as { error?: string })?.error) throw new Error(invokeError?.message || (data as { error?: string }).error);
+      const reply = data as CoachReply;
+      setCoach(reply);
+      setTurns(current => [...current, { role: 'coach', text: reply.reply, meaning: reply.replyMeaning }]);
+    } catch (caught) { setError(String((caught as Error).message || caught)); }
+    finally { setLoading(false); }
+  }
+
   useEffect(() => { try { localStorage.setItem(STORE, JSON.stringify(saved.slice(-120))); } catch { /* ignore */ } }, [saved]);
   useEffect(() => {
     if (!coach?.reply || spokenRef.current === coach.reply) return;
@@ -129,6 +174,7 @@ export default function SpeakingPage() {
   }, [lastOutcome]);
 
   const resetSession = () => {
+    setSummary(false); setSessionMistakes([]); startedAt.current = 0;
     setTopic(null); setCustomTopic(''); setTurns([]); setCoach(null); setError(null); setTranscript(''); spokenRef.current = '';
   };
 
@@ -173,7 +219,7 @@ export default function SpeakingPage() {
         </header>
 
         <div className={`${glass} mb-6 grid grid-cols-3 gap-1 rounded-2xl p-1`} role="tablist">
-          {(['free', 'chat', 'daily'] as const).map(m => <Button key={m} role="tab" aria-selected={mode === m} variant={mode === m ? 'default' : 'ghost'} className="h-11 rounded-xl" onClick={() => setMode(m)}>
+          {(['chat', 'free', 'daily'] as const).map(m => <Button key={m} role="tab" aria-selected={mode === m} variant={mode === m ? 'default' : 'ghost'} className="h-11 rounded-xl" onClick={() => setMode(m)}>
             {m === 'free' ? '⏱️' : m === 'chat' ? persona.avatar : '🔥'} {modeLabel(nativeLang, m)}
           </Button>)}
         </div>
@@ -181,36 +227,37 @@ export default function SpeakingPage() {
         {mode === 'daily' && <DailyTest key={lang} lang={lang} nativeLang={nativeLang} level={level} onXP={n => addXP(lang, n)} />}
         {mode === 'chat' && <>
         <div className={`${glass} mb-4 flex items-center gap-3 rounded-2xl p-3`}><span className="text-3xl">{persona.avatar}</span><div><p className="font-display font-bold">{persona.name}</p><p className="text-xs text-foreground-muted">{u('coach')}</p></div></div>
-        <PromptInput onSubmit={({ text }) => { if (text.trim()) { setCustomTopic(text.trim()); setTurns([]); } }} className={`${glass} mb-6 rounded-2xl`}>
-          <PromptInputTextarea placeholder={u('own')} className="h-12 min-h-0 py-3" />
-          <PromptInputFooter className="justify-end"><PromptInputSubmit aria-label={u('start')} /></PromptInputFooter>
-        </PromptInput>
-
-        <div className="mb-4 flex items-center justify-between gap-3">
-          <h2 className="text-xs font-bold uppercase text-foreground-muted">{u('pick')}</h2>
-          <Button variant="ghost" size="sm" onClick={() => setShowSaved(true)}><BookOpenCheck />{u('mine')} · {saved.filter(item => item.lang === lang).length}</Button>
-        </div>
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:gap-4">
-          {SPEAK_TOPICS.map((item, index) => {
-            const difficulty = item.level === 1 ? u('beginner') : item.level === 2 ? u('intermediate') : u('advanced');
-            const accent = [
-              { border: 'hover:border-secondary/50', icon: 'bg-secondary/10', arrow: 'text-secondary' },
-              { border: 'hover:border-primary/50', icon: 'bg-primary/10', arrow: 'text-primary' },
-              { border: 'hover:border-coach/50', icon: 'bg-coach/10', arrow: 'text-coach' },
-            ][index % 3];
-            return <Button key={item.id} variant="ghost" onClick={() => { setTopic(item); setTurns([]); setCoach(null); }}
-              className={`group relative h-auto min-h-36 justify-start overflow-hidden whitespace-normal rounded-2xl border border-glass-border bg-glass p-4 text-left shadow-lg transition duration-300 hover:-translate-y-1 hover:bg-glass-strong focus-visible:ring-2 ${accent.border}`}>
-              <span className="flex h-full w-full flex-col items-start">
-                <span className={`mb-3 flex h-11 w-11 items-center justify-center rounded-xl text-2xl transition-transform group-hover:scale-110 ${accent.icon}`}>{item.emoji}</span>
-                <span className="font-display text-base font-bold">{getSpeakTopicTitle(item.id, nativeLang)}</span>
-                <span className="mt-auto flex w-full items-center justify-between pt-3 text-xs font-semibold text-foreground-muted"><span>{difficulty}</span><span className={accent.arrow}>→</span></span>
-              </span>
-            </Button>;
-          })}
-        </div>
+        <Button onClick={() => void startChat()} className="mb-4 h-auto w-full flex-col gap-2 whitespace-normal rounded-3xl bg-gradient-to-br from-secondary to-primary p-6 text-primary-foreground shadow-xl transition hover:-translate-y-0.5">
+          <span className="flex items-center gap-2 font-display text-2xl font-extrabold"><Mic className="h-6 w-6" />{u('cta')}</span>
+          <span className="max-w-md text-sm font-medium opacity-90">{u('ctaSub')}</span>
+        </Button>
+        <div className="flex justify-end"><Button variant="ghost" size="sm" onClick={() => setShowSaved(true)}><BookOpenCheck />{u('mine')} · {saved.filter(item => item.lang === lang).length}</Button></div>
         </>}
       </div>
     </div>;
+  }
+
+  if (summary) {
+    const scored = turns.filter(t => t.scores).map(t => t.scores!);
+    const avg = (k: typeof SCORE_KEYS[number]) => scored.length ? scored.reduce((a, s) => a + s[k], 0) / scored.length : 0;
+    const overall = scored.length ? SCORE_KEYS.reduce((a, k) => a + avg(k), 0) / 4 : 0;
+    const mins = startedAt.current ? Math.max(1, Math.round((Date.now() - startedAt.current) / 60000)) : 0;
+    const top = [...new Map(sessionMistakes.map(m => [m.right, m])).values()].slice(0, 3);
+    return <div className="flex-1 overflow-y-auto px-4 py-6"><div className="mx-auto max-w-xl space-y-4">
+      <h1 className="text-center font-display text-3xl font-extrabold">{u('summary')}</h1>
+      <div className={`${glass} rounded-3xl p-6 text-center`}>
+        <p className="text-xs font-bold uppercase text-foreground-muted">{u('avg')}</p>
+        <p className="font-display text-6xl font-black text-secondary">{overall ? overall.toFixed(1) : '–'}<span className="text-2xl text-foreground-muted">/9</span></p>
+        <p className="mt-1 text-sm text-foreground-secondary">{mins} {u('mins')} · {scored.length} 🗣️</p>
+        <div className="mt-4 grid grid-cols-4 gap-2">{SCORE_KEYS.map(k => <div key={k} className="rounded-xl bg-muted p-2"><p className="font-display text-lg font-black">{avg(k) ? avg(k).toFixed(1) : '–'}</p><p className="truncate text-[0.65rem] text-foreground-muted">{u(k)}</p></div>)}</div>
+      </div>
+      {!!top.length && <div className={`${glass} rounded-3xl p-5`}><p className="mb-2 text-xs font-bold uppercase text-coach">{u('mistakes')}</p>
+        {top.map((m, i) => <div key={i} className="mb-2 text-sm"><span className="text-foreground-muted line-through">{m.wrong}</span> → <Button variant="ghost" className="h-auto px-1 font-bold" onClick={() => speakText(m.right, lang)}><Volume2 />{m.right}</Button><p className="text-xs text-foreground-secondary">{m.why}</p></div>)}</div>}
+      <div className="grid grid-cols-2 gap-3">
+        <Button variant="outline" size="lg" onClick={resetSession}>{u('back')}</Button>
+        <Button size="lg" onClick={() => setSummary(false)}>{u('again')}</Button>
+      </div>
+    </div></div>;
   }
 
   return <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-3 py-3 md:px-6 md:py-5">
@@ -218,7 +265,8 @@ export default function SpeakingPage() {
       <header className="mb-3 flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={resetSession} aria-label={u('change')}><ArrowLeft /></Button>
         <div className="min-w-0 flex-1"><p className="truncate font-display font-bold">{topic?.emoji} {topicTitle}</p><p className="text-xs text-foreground-muted">{config.flag} {config.nativeName}</p></div>
-        <Button variant="ghost" size="icon" onClick={() => setShowSaved(true)} aria-label={u('mine')}><BookOpenCheck /></Button>
+        <Button variant="outline" size="sm" disabled={loading} onClick={() => void startChat(true)}><RotateCcw />{u('other')}</Button>
+        <Button variant="secondary" size="sm" onClick={() => { if (isListening) void stop(); setSummary(true); }}>{u('end')}</Button>
       </header>
 
       <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[0.9fr_1.1fr]">
@@ -242,10 +290,15 @@ export default function SpeakingPage() {
           <Conversation className="min-h-0">
             <ConversationContent className="gap-4 p-5">
               {!turns.length && !loading && <div className="flex min-h-52 flex-col items-center justify-center text-center text-foreground-muted"><Headphones className="mb-3 h-8 w-8 text-secondary" /><p className="max-w-xs text-sm">{u('sub')}</p></div>}
-              {turns.slice(-6).map((turn, index) => <Message key={`${turn.role}-${index}`} from={turn.role === 'coach' ? 'assistant' : 'user'}>
+              {turns.map((turn, index) => <Message key={`${turn.role}-${index}`} from={turn.role === 'coach' ? 'assistant' : 'user'}>
                 <MessageContent className={turn.role === 'user' ? 'bg-primary text-primary-foreground' : ''}>
                   <MessageResponse>{turn.text}</MessageResponse>
-                  {turn.meaning && <p className="text-xs italic text-foreground-muted">{turn.meaning}</p>}
+                  {turn.role === 'coach' && <div className="flex flex-wrap items-center gap-1">
+                    <Button size="sm" variant="ghost" className="h-7 px-2" onClick={() => speakText(turn.text, lang)}><Volume2 /></Button>
+                    {turn.meaning && (showTr[index] ? <p className="text-xs italic text-foreground-muted">{turn.meaning}</p>
+                      : <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => setShowTr(v => ({ ...v, [index]: true }))}>{u('tr')}</Button>)}
+                  </div>}
+                  {turn.scores && <div className="mt-1 grid grid-cols-4 gap-1">{SCORE_KEYS.map(k => <div key={k} className="rounded-lg bg-background/30 px-1 py-1 text-center"><p className="font-display text-sm font-black">{turn.scores![k]}</p><p className="truncate text-[0.6rem] opacity-80">{u(k)}</p></div>)}</div>}
                 </MessageContent>
               </Message>)}
               {(loading || isTranscribing) && <Message from="assistant"><MessageContent><Shimmer>{u('thinking')}</Shimmer></MessageContent></Message>}
@@ -255,8 +308,8 @@ export default function SpeakingPage() {
             <ConversationScrollButton />
           </Conversation>
 
-          {coach && !loading && <div className="mx-4 mb-3 rounded-2xl border border-coach/30 bg-coach/10 p-4">
-            <div className="mb-2 flex items-center justify-between gap-3"><span className="text-xs font-bold uppercase text-coach">{coach.corrections.length ? u('corrections') : u('none')}</span>{!coach.noSpeech && <span className="font-display text-lg font-black">{coach.score}%</span>}</div>
+          {coach && !loading && !coach.opener && <div className="mx-4 mb-3 rounded-2xl border border-coach/30 bg-coach/10 p-4">
+            <div className="mb-2 flex items-center justify-between gap-3"><span className="text-xs font-bold uppercase text-coach">{coach.corrections.length ? u('corrections') : u('none')}</span>{coach.scores && <span className="font-display text-lg font-black">{(SCORE_KEYS.reduce((a, k) => a + coach.scores![k], 0) / 4).toFixed(1)}/9</span>}</div>
             {coach.corrections.map((correction, index) => <div key={index} className="mb-2 text-sm"><span className="text-foreground-muted line-through">{correction.wrong}</span><span> → </span><Button variant="ghost" className="h-auto px-1 font-bold" onClick={() => speakText(correction.right, lang)}><Volume2 />{correction.right}</Button><p className="mt-1 text-xs text-foreground-secondary">{correction.why}</p></div>)}
             {coach.better && <p className="text-sm"><span className="text-foreground-muted">{u('better')}: </span><Button variant="ghost" className="h-auto px-1 font-semibold" onClick={() => speakText(coach.better, lang)}><Volume2 />{coach.better}</Button></p>}
             {coach.tip && <p className="mt-2 text-xs text-foreground-secondary">{u('tip')}: {coach.tip}</p>}

@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { EXAM_DATA } from '@/data/exams';
 import { getLangConfig } from '@/data/languages';
-import { normalizeAnswer, playCorrectSound, playIncorrectSound, playLevelUpSound, spawnConfetti } from '@/utils/helpers';
+import { speakText, normalizeAnswer, playCorrectSound, playIncorrectSound, playLevelUpSound, spawnConfetti } from '@/utils/helpers';
 import { translateLessonText, translateExamTitle, translateSectionName, translateOption } from '@/utils/lessonI18n';
 import { MCStep, TextStep, ReadingStep, SpeakStep, ListenAnswerStep } from '@/data/types';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
@@ -308,10 +308,7 @@ export default function ExamPage() {
                 <div className="text-4xl mb-2">🔊</div>
                 <p className="text-sm font-semibold mb-2">{tt('listen')}</p>
                 <button onClick={() => {
-                  const u = new SpeechSynthesisUtterance((q as ListenAnswerStep).audio);
-                  u.lang = config.ttsCode;
-                  u.rate = 0.85;
-                  speechSynthesis.speak(u);
+                  speakText((q as ListenAnswerStep).audio, lang);
                 }}
                   className="min-h-12 px-6 rounded-2xl text-base font-bold text-card shadow-md active:scale-[0.97] transition-all"
                   style={{ background: `hsl(${config.hue}, 70%, 46%)` }}>
