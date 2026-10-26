@@ -6,3 +6,5 @@
 - Lesson, quiz and exam answer UI uses the shared `components/lesson/LessonControls` (ChoiceButton, ActionBar, ExitButton) so touch sizes and feedback stay consistent.
 - Generated Spanish-base content (content-fill) is pre-translated in `content-fill/fill-i18n.json`, checked first by `translateLessonText` and `useAiTranslate`, so it never depends on live AI; English speakers get the same fallback as everyone else.
 - Speaking scoring rules (band 1-9, 60s monologue, retry similarity, daily set, streak) live in pure helpers in `src/utils/speakEval.ts`, guarded by `src/test/speak-eval.test.ts`, so UI and backend cannot drift.
+- All read-aloud goes through `speakText`, which uses `utils/ttsGuard.extractTarget` so a voice only reads text in its own language's script; guarded by `src/test/tts-guard.test.ts`.
+- Speaking practice is one screen (/speaking, /conversation redirects): the AI opens and steers the chat via speak-coach `opener` mode and returns per-turn 1-9 bands.
