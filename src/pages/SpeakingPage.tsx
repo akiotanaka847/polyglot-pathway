@@ -1,7 +1,8 @@
 import LearningLangSwitcher from '@/components/LearningLangSwitcher';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, BookOpenCheck, Headphones, Mic, RotateCcw, Volume2 } from 'lucide-react';
+import { ArrowLeft, BookOpenCheck, Headphones, Mic, Pause, Play, RotateCcw, Snail, Volume2 } from 'lucide-react';
+import { ChatLevel, levelRules } from '@/utils/speakEval';
 import { useApp } from '@/contexts/AppContext';
 import { getLangConfig } from '@/data/languages';
 import { getSpeakTopicTitle, SPEAK_TOPICS, SpeakTopic } from '@/data/speakTopics';
@@ -59,13 +60,27 @@ const UI: Record<string, Record<string, string>> = {
   ro: { title: 'Despre ce vorbim azi?', sub: 'Alege o temă și exersează cu un prieten care te ajută', pick: 'Alege o temă', own: 'Sau scrie propria temă…', speak: 'Vorbește', stop: 'Termină', thinking: 'Partenerul tău pregătește răspunsul…', corrections: 'Mică ajustare', none: 'A sunat natural!', better: 'O variantă mai naturală', mine: 'Corecturile mele', clear: 'Șterge', back: 'Acasă', start: 'Începe', change: 'Schimbă tema', nomic: 'Browserul tău nu permite microfonul', retry: 'Repetă', tip: 'Sfat', learning: 'Exersezi', help: 'Ajutor în', beginner: 'Ușor', intermediate: 'Intermediar', advanced: 'Provocare', heard: 'Am auzit', coach: 'Partenerul tău', write: 'Poți și să scrii…' },
 };
 
+const CALL: Record<string, Record<string, string>> = {
+  es: { pause: 'Pausar', resume: 'Seguir', slower: 'No entendí, más lento', level: 'Tu nivel', cta: 'Hablar con la IA', ctaSub: 'Te saluda, te propone un tema y charlan por turnos. El micrófono se abre solo cuando termina de hablar.', listen: 'Te escucho…', paused: 'En pausa' },
+  en: { pause: 'Pause', resume: 'Resume', slower: "Didn't get it, slower", level: 'Your level', cta: 'Talk with the AI', ctaSub: 'It greets you, suggests a topic and you take turns. The mic opens by itself when it finishes speaking.', listen: "I'm listening…", paused: 'Paused' },
+  fr: { pause: 'Pause', resume: 'Reprendre', slower: "Pas compris, plus lentement", level: 'Ton niveau', cta: "Parler avec l'IA", ctaSub: "Elle te salue, propose un sujet et vous parlez à tour de rôle. Le micro s'ouvre tout seul.", listen: "Je t'écoute…", paused: 'En pause' },
+  pt: { pause: 'Pausar', resume: 'Continuar', slower: 'Não entendi, mais devagar', level: 'Seu nível', cta: 'Falar com a IA', ctaSub: 'Ela cumprimenta, propõe um tema e vocês conversam por turnos. O microfone abre sozinho.', listen: 'Estou ouvindo…', paused: 'Pausado' },
+  zh: { pause: '暂停', resume: '继续', slower: '没听懂，慢一点', level: '你的水平', cta: '和AI聊天', ctaSub: 'AI会打招呼、提出话题，你们轮流说话。它说完后麦克风会自动打开。', listen: '我在听…', paused: '已暂停' },
+  jp: { pause: '一時停止', resume: '再開', slower: 'わからない、ゆっくり', level: 'レベル', cta: 'AIと話す', ctaSub: 'AIがあいさつして話題を出し、交代で話します。話し終わるとマイクが自動で開きます。', listen: '聞いています…', paused: '一時停止中' },
+  ko: { pause: '일시정지', resume: '계속', slower: '못 알아들었어요, 천천히', level: '내 레벨', cta: 'AI와 대화하기', ctaSub: 'AI가 인사하고 주제를 제안해 번갈아 말해요. 말이 끝나면 마이크가 자동으로 켜져요.', listen: '듣고 있어요…', paused: '일시정지됨' },
+  ru: { pause: 'Пауза', resume: 'Продолжить', slower: 'Не понял, медленнее', level: 'Твой уровень', cta: 'Говорить с ИИ', ctaSub: 'ИИ здоровается, предлагает тему, и вы говорите по очереди. Микрофон включается сам.', listen: 'Слушаю…', paused: 'Пауза' },
+  ar: { pause: 'إيقاف مؤقت', resume: 'متابعة', slower: 'لم أفهم، أبطأ', level: 'مستواك', cta: 'تحدّث مع الذكاء الاصطناعي', ctaSub: 'يحييك ويقترح موضوعًا وتتحدثان بالتناوب. يفتح الميكروفون تلقائيًا.', listen: 'أنا أستمع…', paused: 'متوقف' },
+  hi: { pause: 'रोकें', resume: 'जारी रखें', slower: 'समझ नहीं आया, धीरे', level: 'आपका स्तर', cta: 'AI से बात करें', ctaSub: 'AI नमस्ते कहता है, विषय सुझाता है और आप बारी-बारी बोलते हैं। माइक अपने आप खुलता है।', listen: 'सुन रहा हूँ…', paused: 'रुका हुआ' },
+  ro: { pause: 'Pauză', resume: 'Continuă', slower: 'Nu am înțeles, mai rar', level: 'Nivelul tău', cta: 'Vorbește cu AI', ctaSub: 'Te salută, propune un subiect și vorbiți pe rând. Microfonul se deschide singur.', listen: 'Te ascult…', paused: 'Pauză' },
+};
+
 const glass = 'border border-glass-border bg-glass/80 backdrop-blur-xl';
 
 export default function SpeakingPage() {
   const navigate = useNavigate();
   const { state, addXP, recordAnswer, getAbility } = useApp();
   const nativeLang = state.nativeLang || 'es';
-  const u = (key: string) => UI[nativeLang]?.[key] || X[nativeLang]?.[key] || UI.en[key] || X.en[key];
+  const u = (key: string) => CALL[nativeLang]?.[key] || UI[nativeLang]?.[key] || X[nativeLang]?.[key] || CALL.en[key] || UI.en[key] || X.en[key];
   const lang = state.currentLearningLang || state.activeLangs[state.activeLangs.length - 1] || 'en';
   const config = getLangConfig(lang);
   const nativeConfig = getLangConfig(nativeLang);
@@ -90,7 +105,14 @@ export default function SpeakingPage() {
 
   const activeTopic = topic ? `${topic.id}: ${topic.prompt}` : customTopic;
   const topicTitle = topic ? getSpeakTopicTitle(topic.id, nativeLang) : customTopic;
-  const level = getAbility(lang) > 0.75 ? 'advanced' : getAbility(lang) > 0.45 ? 'intermediate' : 'beginner';
+  const levelKey = `voxia_chat_level_${lang}`;
+  const [level, setLevelState] = useState<ChatLevel>(() => (localStorage.getItem(levelKey) as ChatLevel) || (getAbility(lang) > 0.75 ? 'advanced' : getAbility(lang) > 0.45 ? 'intermediate' : 'beginner'));
+  useEffect(() => { const v = localStorage.getItem(levelKey) as ChatLevel | null; if (v) setLevelState(v); }, [levelKey]);
+  const setLevel = (v: ChatLevel) => { setLevelState(v); try { localStorage.setItem(levelKey, v); } catch { /* ignore */ } };
+  const rules = levelRules(level);
+  const [paused, setPaused] = useState(false);
+  const autoRef = useRef(false);
+  const silentRef = useRef(0);
 
   async function send(said: string) {
     const text = said.trim();
@@ -105,6 +127,8 @@ export default function SpeakingPage() {
       });
       if (invokeError || (data as { error?: string })?.error) throw new Error(invokeError?.message || (data as { error?: string }).error);
       const reply = data as CoachReply;
+      reply.corrections = (reply.corrections || []).slice(0, rules.maxCorrections);
+      silentRef.current = 0;
       setCoach(reply);
       setTurns(current => {
         const next = [...current];
@@ -141,7 +165,24 @@ export default function SpeakingPage() {
     finally { setLoading(false); }
   }
 
+  async function slower() {
+    if (loading) return;
+    if (isListening) await stop();
+    setLoading(true); setError(null);
+    try {
+      const { data, error: invokeError } = await supabase.functions.invoke('speak-coach', {
+        body: { slower: true, lang, native: nativeLang, level, history: turns.slice(-8) },
+      });
+      if (invokeError || (data as { error?: string })?.error) throw new Error(invokeError?.message || (data as { error?: string }).error);
+      const reply = { ...(data as CoachReply), opener: true, corrections: [] };
+      setCoach(reply);
+      setTurns(current => [...current, { role: 'coach', text: reply.reply, meaning: reply.replyMeaning }]);
+    } catch (caught) { setError(String((caught as Error).message || caught)); }
+    finally { setLoading(false); }
+  }
+
   async function startChat(change = false) {
+    autoRef.current = true; setPaused(false); silentRef.current = 0;
     const pool = SPEAK_TOPICS.filter(t => t.level === (level === 'advanced' ? 3 : level === 'intermediate' ? 2 : 1));
     const candidates = (pool.length ? pool : SPEAK_TOPICS).filter(t => t.id !== topic?.id);
     const next = candidates[Math.floor(Math.random() * candidates.length)];
@@ -163,17 +204,22 @@ export default function SpeakingPage() {
   useEffect(() => {
     if (!coach?.reply || spokenRef.current === coach.reply) return;
     spokenRef.current = coach.reply;
-    speakText(coach.reply, lang);
+    speakText(coach.reply, lang, () => { if (autoRef.current) void startRef.current(); });
   }, [coach, lang]);
+  const startRef = useRef(start);
+  startRef.current = start;
   const noSpeechHandledRef = useRef(0);
   useEffect(() => {
     if (lastOutcome !== 'no-speech') return;
     noSpeechHandledRef.current += 1;
+    silentRef.current += 1;
+    if (silentRef.current > 2) { autoRef.current = false; setPaused(true); return; }
     void sendNoSpeech();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastOutcome]);
 
   const resetSession = () => {
+    autoRef.current = false; window.speechSynthesis?.cancel(); if (isListening) void stop();
     setSummary(false); setSessionMistakes([]); startedAt.current = 0;
     setTopic(null); setCustomTopic(''); setTurns([]); setCoach(null); setError(null); setTranscript(''); spokenRef.current = '';
   };
@@ -218,13 +264,10 @@ export default function SpeakingPage() {
           </div>
         </header>
 
-        <div className={`${glass} mb-6 grid grid-cols-3 gap-1 rounded-2xl p-1`} role="tablist">
-          {(['chat', 'free', 'daily'] as const).map(m => <Button key={m} role="tab" aria-selected={mode === m} variant={mode === m ? 'default' : 'ghost'} className="h-11 rounded-xl" onClick={() => setMode(m)}>
-            {m === 'free' ? '⏱️' : m === 'chat' ? persona.avatar : '🔥'} {modeLabel(nativeLang, m)}
-          </Button>)}
-        </div>
-        {mode === 'free' && <FreeTalk key={lang} lang={lang} nativeLang={nativeLang} level={level} onXP={n => addXP(lang, n)} />}
-        {mode === 'daily' && <DailyTest key={lang} lang={lang} nativeLang={nativeLang} level={level} onXP={n => addXP(lang, n)} />}
+        {mode === 'chat' && <div className="mb-4">
+          <p className="mb-2 text-xs font-bold uppercase text-foreground-muted">{u('level')}</p>
+          <div className="grid grid-cols-3 gap-2">{(['beginner', 'intermediate', 'advanced'] as const).map((lv, i) => <Button key={lv} variant={level === lv ? 'default' : 'outline'} className="h-14 flex-col gap-0 rounded-2xl" onClick={() => setLevel(lv)}><span>{['🌱', '🌿', '🌳'][i]}</span><span className="text-xs font-bold">{u(lv)}</span></Button>)}</div>
+        </div>}
         {mode === 'chat' && <>
         <div className={`${glass} mb-4 flex items-center gap-3 rounded-2xl p-3`}><span className="text-3xl">{persona.avatar}</span><div><p className="font-display font-bold">{persona.name}</p><p className="text-xs text-foreground-muted">{u('coach')}</p></div></div>
         <Button onClick={() => void startChat()} className="mb-4 h-auto w-full flex-col gap-2 whitespace-normal rounded-3xl bg-gradient-to-br from-secondary to-primary p-6 text-primary-foreground shadow-xl transition hover:-translate-y-0.5">
@@ -233,6 +276,8 @@ export default function SpeakingPage() {
         </Button>
         <div className="flex justify-end"><Button variant="ghost" size="sm" onClick={() => setShowSaved(true)}><BookOpenCheck />{u('mine')} · {saved.filter(item => item.lang === lang).length}</Button></div>
         </>}
+        <p className="mb-2 mt-6 text-xs font-bold uppercase text-foreground-muted">{u('more')}</p>
+        <div className="mb-4 grid grid-cols-3 gap-2">{(['chat', 'free', 'daily'] as const).map(m => <Button key={m} variant={mode === m ? 'secondary' : 'outline'} size="sm" className="h-11 rounded-xl" onClick={() => setMode(m)}>{m === 'free' ? '⏱️' : m === 'chat' ? persona.avatar : '🔥'} {modeLabel(nativeLang, m)}</Button>)}</div>
       </div>
     </div>;
   }
@@ -265,8 +310,8 @@ export default function SpeakingPage() {
       <header className="mb-3 flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={resetSession} aria-label={u('change')}><ArrowLeft /></Button>
         <div className="min-w-0 flex-1"><p className="truncate font-display font-bold">{topic?.emoji} {topicTitle}</p><p className="text-xs text-foreground-muted">{config.flag} {config.nativeName}</p></div>
-        <Button variant="outline" size="sm" disabled={loading} onClick={() => void startChat(true)}><RotateCcw />{u('other')}</Button>
-        <Button variant="secondary" size="sm" onClick={() => { if (isListening) void stop(); setSummary(true); }}>{u('end')}</Button>
+        <Button variant="outline" size="sm" disabled={loading} onClick={() => void startChat(true)}><RotateCcw /><span className="hidden sm:inline">{u('other')}</span></Button>
+        <Button variant="secondary" size="sm" onClick={() => { autoRef.current = false; window.speechSynthesis?.cancel(); if (isListening) void stop(); setSummary(true); }}>{u('end')}</Button>
       </header>
 
       <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[0.9fr_1.1fr]">
@@ -276,11 +321,17 @@ export default function SpeakingPage() {
           {isListening && <div className="mt-3 flex items-end justify-center gap-1" aria-label={u('speak')}>
             {[.25,.5,.75,1,.65,.4,.8].map((threshold, index) => <span key={index} className="animate-speaking-wave w-1 rounded-full bg-secondary" style={{ height: `${12 + Math.max(micLevel, threshold) * 24}px`, animationDelay: `${index * -90}ms` }} />)}
           </div>}
-          <p className="mt-3 text-sm text-foreground-secondary">{isListening ? `${u('speak')} · ${seconds}s` : isTranscribing ? u('thinking') : topicTitle}</p>
-          <Button disabled={loading || isTranscribing} onClick={async () => { if (isListening) await stop(); else { setCoach(null); await start(); } }}
-            variant={isListening ? 'destructive' : 'secondary'} size="lg" className="mt-5 min-w-40 rounded-2xl font-bold shadow-lg">
-            {isListening ? <><RotateCcw />{u('stop')}</> : <><Mic />{u('speak')}</>}
-          </Button>
+          <p className="mt-3 text-sm text-foreground-secondary">{isListening ? `${u('listen')} ${seconds}s` : isTranscribing || loading ? u('thinking') : paused ? u('paused') : topicTitle}</p>
+          <div className="mt-5 flex flex-wrap justify-center gap-2">
+            <Button disabled={loading || isTranscribing} onClick={async () => { if (isListening) await stop(); else { window.speechSynthesis?.cancel(); autoRef.current = true; setPaused(false); silentRef.current = 0; await start(); } }}
+              variant={isListening ? 'destructive' : 'secondary'} size="lg" className="min-w-36 rounded-2xl font-bold shadow-lg">
+              {isListening ? <><RotateCcw />{u('stop')}</> : <><Mic />{u('speak')}</>}
+            </Button>
+            <Button variant="outline" size="lg" className="rounded-2xl" onClick={async () => { if (paused) { setPaused(false); autoRef.current = true; silentRef.current = 0; await start(); } else { setPaused(true); autoRef.current = false; window.speechSynthesis?.cancel(); if (isListening) await stop(); } }}>
+              {paused ? <><Play />{u('resume')}</> : <><Pause />{u('pause')}</>}
+            </Button>
+            <Button variant="ghost" size="lg" className="rounded-2xl" disabled={loading || !turns.length} onClick={() => void slower()}><Snail />{u('slower')}</Button>
+          </div>
           {!isSupported && <p className="mt-3 text-xs text-foreground-muted">{u('nomic')}</p>}
           {micBlock && <div className="mt-4 w-full"><MicHelpCard reason={micBlock} nativeLang={nativeLang} glass={glass} /></div>}
           {micError && <p className="mt-3 text-xs text-destructive">{micError}</p>}
@@ -295,7 +346,7 @@ export default function SpeakingPage() {
                   <MessageResponse>{turn.text}</MessageResponse>
                   {turn.role === 'coach' && <div className="flex flex-wrap items-center gap-1">
                     <Button size="sm" variant="ghost" className="h-7 px-2" onClick={() => speakText(turn.text, lang)}><Volume2 /></Button>
-                    {turn.meaning && (showTr[index] ? <p className="text-xs italic text-foreground-muted">{turn.meaning}</p>
+                    {turn.meaning && rules.showTranslation !== 'never' && (rules.showTranslation === 'always' || showTr[index] ? <p className="text-xs italic text-foreground-muted">{turn.meaning}</p>
                       : <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => setShowTr(v => ({ ...v, [index]: true }))}>{u('tr')}</Button>)}
                   </div>}
                   {turn.scores && <div className="mt-1 grid grid-cols-4 gap-1">{SCORE_KEYS.map(k => <div key={k} className="rounded-lg bg-background/30 px-1 py-1 text-center"><p className="font-display text-sm font-black">{turn.scores![k]}</p><p className="truncate text-[0.6rem] opacity-80">{u(k)}</p></div>)}</div>}

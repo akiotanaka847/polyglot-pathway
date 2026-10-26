@@ -60,11 +60,11 @@ function getBestVoice(langCode: string): SpeechSynthesisVoice | null {
   return any;
 }
 
-export function speakText(text: string, lang: string) {
-  if (!window.speechSynthesis || !text) return;
+export function speakText(text: string, lang: string, onEnd?: () => void) {
+  if (!window.speechSynthesis || !text) { onEnd?.(); return; }
   // Never read text in another language with this voice (no "Spanish with a Japanese accent").
   const clean = extractTarget(text, lang);
-  if (!clean) return;
+  if (!clean) { onEnd?.(); return; }
   window.speechSynthesis.cancel();
 
   // Ensure voices are loaded
@@ -82,7 +82,7 @@ export function speakText(text: string, lang: string) {
   u.rate = 0.78;
   u.pitch = 1.1;
   u.volume = 0.9;
-  
+  if (onEnd) { let done = false; const fin = () => { if (!done) { done = true; onEnd(); } }; u.onend = fin; u.onerror = fin; }
   window.speechSynthesis.speak(u);
 }
 

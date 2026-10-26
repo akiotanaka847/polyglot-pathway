@@ -20,13 +20,13 @@ Deno.serve(async (req) => {
   try {
     const body = await req.json() as {
       said?: string; lang?: string; native?: string; topic?: string;
-      level?: string; history?: Turn[]; noSpeech?: boolean; persona?: string; opener?: boolean;
+      level?: string; history?: Turn[]; noSpeech?: boolean; persona?: string; opener?: boolean; slower?: boolean;
       mistakes?: { wrong?: string; right?: string }[];
     };
     const said = (body.said || "").trim();
     const target = LANG_NAMES[body.lang || ""] || "English";
     const native = LANG_NAMES[body.native || ""] || "Spanish";
-    if (!said && !body.noSpeech && !body.opener) {
+    if (!said && !body.noSpeech && !body.opener && !body.slower) {
       return new Response(JSON.stringify({ error: "said is required" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -44,10 +44,15 @@ Deno.serve(async (req) => {
     const levelGuide = body.level === "advanced" ? "Use rich, natural language and ask for opinions and reasons."
       : body.level === "intermediate" ? "Use everyday sentences and ask about experiences and plans."
       : "Use very short, very simple sentences and yes/no or one-word-answer questions.";
-    const prompt = body.opener
+    const maxFix = body.level === "advanced" ? 4 : body.level === "intermediate" ? 2 : 1;
+    const prompt = body.slower
+      ? `You are a warm human friend chatting in ${target} with a ${body.level || "beginner"} learner (native ${native}).
+${history ? `Conversation so far:\n${history}\n` : ""}The learner did not understand your last message. Say the same idea again in ${target}, much simpler and shorter (very common words, 1-2 short sentences), ending with the same question made easier.
+Reply ONLY with JSON: {"reply":"in ${target}","replyMeaning":"translation into ${native}","tip":"one short hint in ${native} on how to answer"}`
+      : body.opener
       ? `${body.persona ? `Your name is ${String(body.persona).slice(0, 30)}. ` : ""}You are a warm human friend starting a spoken chat with someone learning ${target}.
 Their native language is ${native}. Level: ${body.level || "beginner"}. ${levelGuide}
-${history ? `What you two said before:\n${history}\nNow change to a NEW topic, with a natural transition.\n` : ""}Topic idea: ${body.topic || "their day"}.
+${history ? `What you two said before:\n${history}\nNow change to a NEW topic, with a natural transition.\n` : ""}Topic idea: ${body.topic || "pick a fun, everyday topic that fits their level yourself"}.
 Greet them (only if this is the start) and ask ONE easy, specific question about the topic, so they never have to invent what to say. 1-2 short sentences, all in ${target}.
 Reply ONLY with JSON: {"reply":"in ${target}","replyMeaning":"translation into ${native}","tip":"one short hint in ${native} on how they could start answering"}`
       : body.noSpeech
@@ -84,7 +89,7 @@ How to answer, as a human friend:
 - Then keep the chat alive with ONE natural follow-up question about what they just told you. Never repeat a question you already asked.
 - Speak in ${target} at their level: short, everyday, contracted spoken language a friend really uses. 2-4 short sentences total including the question.
 - If what they said was unclear or off-topic, ask them warmly to say more instead of inventing meaning.
-- Correct ONLY real mistakes in ${target} (grammar, word order, verb form, particles, unnatural word choice). Never invent mistakes, never correct accent or punctuation. If it was fine, return an empty corrections list and say so warmly in the tip.
+- Correct ONLY real mistakes in ${target} (grammar, word order, verb form, particles, unnatural word choice). Never invent mistakes, never correct accent or punctuation. If it was fine, return an empty corrections list and say so warmly in the tip. Give at most ${maxFix} correction(s), the most important ones first.
 - Explanations and the tip go in ${native}, warm and short, like a friend explaining, not a grammar book.
 - Score honestly: 90-100 natural, 70-89 understandable with small errors, below 70 hard to understand.
 - Also give IELTS-style bands 1-9 for grammar, vocabulary, fluency (length/flow of what they said) and pronunciation (estimated only from transcription clarity).
