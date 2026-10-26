@@ -20,13 +20,13 @@ Deno.serve(async (req) => {
   try {
     const body = await req.json() as {
       said?: string; lang?: string; native?: string; topic?: string;
-      level?: string; history?: Turn[]; noSpeech?: boolean; persona?: string;
+      level?: string; history?: Turn[]; noSpeech?: boolean; persona?: string; opener?: boolean;
       mistakes?: { wrong?: string; right?: string }[];
     };
     const said = (body.said || "").trim();
     const target = LANG_NAMES[body.lang || ""] || "English";
     const native = LANG_NAMES[body.native || ""] || "Spanish";
-    if (!said && !body.noSpeech) {
+    if (!said && !body.noSpeech && !body.opener) {
       return new Response(JSON.stringify({ error: "said is required" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -41,7 +41,16 @@ Deno.serve(async (req) => {
     const pastMistakes = (body.mistakes || []).slice(-8)
       .map(m => `- said "${m.wrong}" instead of "${m.right}"`).join("\n");
 
-    const prompt = body.noSpeech
+    const levelGuide = body.level === "advanced" ? "Use rich, natural language and ask for opinions and reasons."
+      : body.level === "intermediate" ? "Use everyday sentences and ask about experiences and plans."
+      : "Use very short, very simple sentences and yes/no or one-word-answer questions.";
+    const prompt = body.opener
+      ? `${body.persona ? `Your name is ${String(body.persona).slice(0, 30)}. ` : ""}You are a warm human friend starting a spoken chat with someone learning ${target}.
+Their native language is ${native}. Level: ${body.level || "beginner"}. ${levelGuide}
+${history ? `What you two said before:\n${history}\nNow change to a NEW topic, with a natural transition.\n` : ""}Topic idea: ${body.topic || "their day"}.
+Greet them (only if this is the start) and ask ONE easy, specific question about the topic, so they never have to invent what to say. 1-2 short sentences, all in ${target}.
+Reply ONLY with JSON: {"reply":"in ${target}","replyMeaning":"translation into ${native}","tip":"one short hint in ${native} on how they could start answering"}`
+      : body.noSpeech
       ? `You are a warm human friend helping someone practice speaking ${target}.
 Their native language is ${native}. Level: ${body.level || "beginner"}.
 Conversation topic: ${body.topic || "anything they want to talk about"}.
@@ -78,10 +87,13 @@ How to answer, as a human friend:
 - Correct ONLY real mistakes in ${target} (grammar, word order, verb form, particles, unnatural word choice). Never invent mistakes, never correct accent or punctuation. If it was fine, return an empty corrections list and say so warmly in the tip.
 - Explanations and the tip go in ${native}, warm and short, like a friend explaining, not a grammar book.
 - Score honestly: 90-100 natural, 70-89 understandable with small errors, below 70 hard to understand.
+- Also give IELTS-style bands 1-9 for grammar, vocabulary, fluency (length/flow of what they said) and pronunciation (estimated only from transcription clarity).
+- ${levelGuide} If the current topic has been talked about for 3+ exchanges, move naturally to a new related topic in your question.
 
 Reply ONLY with JSON in exactly this shape, no markdown:
 {
   "score": 0-100,
+  "scores": { "grammar": 1-9, "vocabulary": 1-9, "fluency": 1-9, "pronunciation": 1-9 },
   "better": "the most natural way to say their sentence in ${target} (keep their meaning)",
   "corrections": [
     { "wrong": "exact part they said wrong", "right": "correct form in ${target}", "why": "short friendly explanation in ${native}" }
@@ -117,12 +129,18 @@ Reply ONLY with JSON in exactly this shape, no markdown:
 
     return new Response(JSON.stringify({
       noSpeech: !!body.noSpeech,
-      score: typeof out.score === "number" ? out.score : 70,
+      score: body.opener ? 0 : typeof out.score === "number" ? out.score : 70,
       better: typeof out.better === "string" ? out.better : said,
       corrections: Array.isArray(out.corrections) ? out.corrections.slice(0, 5) : [],
       reply: typeof out.reply === "string" ? out.reply : "",
       replyMeaning: typeof out.replyMeaning === "string" ? out.replyMeaning : "",
       tip: typeof out.tip === "string" ? out.tip : "",
+      scores: body.opener || body.noSpeech || typeof out.scores !== "object" || !out.scores ? null
+        : Object.fromEntries(["grammar", "vocabulary", "fluency", "pronunciation"].map(k => {
+            const v = Number((out.scores as Record<string, unknown>)[k]);
+            return [k, Number.isFinite(v) ? Math.min(9, Math.max(1, Math.round(v * 2) / 2)) : 5];
+          })),
+      opener: !!body.opener,
     }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e) {
     console.error("speak-coach error", e);
